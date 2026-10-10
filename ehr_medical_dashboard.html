@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EHR Medical Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc',
+                            primary: '#3ea4f5', /* Bright solid blue requested by user */
+                            primaryHover: '#2b8cd6',
+                            primaryDark: '#1a6ba8',
+                        },
+                        referral: { bg: '#3ea4f5', light: '#e8f4fc' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .custom-x-scroll::-webkit-scrollbar { display: block; height: 12px; }
+        .custom-x-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 8px; margin: 0 10px; }
+        .custom-x-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 8px; border: 2px solid transparent; background-clip: content-box;}
+        .custom-x-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.5); }
+
+        /* UI States */
+        .tab-active { color: #3ea4f5; border-bottom: 2px solid #3ea4f5; font-weight: 600; }
+        .date-tab-active { background-color: #3ea4f5; color: white; border-color: #3ea4f5; }
+        .modal-enter { animation: fadeIn 0.2s ease-out; }
+        .slide-enter { animation: slideInRight 0.3s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 h-screen flex overflow-hidden selection:bg-brand-200">
+
+    <!-- LEFT SIDEBAR: Patients List -->
+    <aside id="mainSidebar" class="w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 z-10 shadow-sm relative transition-all duration-300 ease-in-out">
+        
+        <div class="p-4 border-b border-gray-100 space-y-3">
+            <div class="flex items-center justify-between">
+                <button class="flex items-center space-x-1 text-sm font-bold text-gray-700 hover:text-brand-primary">
+                    <span>All Patients</span> <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                </button>
+                <button onclick="toggleModal('addPatientModal')" class="text-xs text-brand-primary font-semibold hover:underline flex items-center space-x-1">
+                    <i class="fa-solid fa-plus text-[10px]"></i> <span>Add Patient</span>
+                </button>
+            </div>
+            <div class="relative">
+                <input type="text" placeholder="Search Patient Names" class="w-full text-xs pl-8 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary bg-gray-50">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+            </div>
+            <div class="flex bg-gray-100 p-0.5 rounded-md text-xs font-medium">
+                <button onclick="switchSidebarTab('patients')" id="btnSidebarPatients" class="flex-1 py-1.5 bg-white rounded shadow-sm text-brand-primary">Patients</button>
+                <button onclick="switchSidebarTab('appointments')" id="btnSidebarAppts" class="flex-1 py-1.5 text-gray-500 hover:text-gray-700">Appointments</button>
+            </div>
+        </div>
+        <div id="sidebarPatientList" class="flex-1 overflow-y-auto divide-y divide-gray-50">
+            <!-- Populated via JS -->
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col min-w-0 bg-white relative w-full">
+        
+        <!-- SYSTEM & DOCTOR TOP BAR (New Section) -->
+        <div class="bg-white border-b border-gray-200 px-4 md:px-6 py-2 flex justify-between items-center shrink-0 z-20 h-14">
+            <div class="flex items-center space-x-3 text-gray-800">
+                <!-- Unified Sidebar Toggle Button -->
+                <button onclick="toggleSidebar()" class="text-gray-500 hover:text-brand-primary p-1.5 rounded transition hover:bg-gray-100 flex items-center justify-center mr-1" title="Toggle Sidebar">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="bg-brand-primary text-white p-1.5 rounded-md flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-notes-medical text-sm"></i>
+                </div>
+                <span class="font-bold text-sm tracking-wide hidden sm:inline text-gray-700 uppercase">Oasis Diagnostic and Laboratory Center</span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Dashboard Button -->
+                <button onclick="switchGlobalView('dashboard')" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-md transition flex items-center space-x-2 border border-gray-200 shadow-sm">
+                    <i class="fa-solid fa-chart-pie text-brand-primary"></i> <span class="hidden sm:inline">Dashboard</span>
+                </button>
+                
+                <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
+
+                <!-- Doctor Profile -->
+                <div onclick="toggleDoctorProfilePanel()" class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-1 rounded-lg transition border border-transparent hover:border-gray-200">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs font-bold leading-tight text-gray-900">Dr. Daniel Hernandez</div>
+                        <div class="text-[10px] text-gray-500 font-medium">Attending Physician • Cardiology</div>
+                    </div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=150" class="w-8 h-8 md:w-9 md:h-9 rounded-full border border-gray-200 object-cover shadow-sm" alt="Dr. Hernandez">
+                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></div>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-gray-400 text-[10px] ml-1"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN PATIENT HEADER (Compressed Blue Section) -->
+        <header id="patientHeader" class="bg-brand-primary border-b border-brand-primaryDark px-4 md:px-6 py-2.5 md:py-3 flex flex-col lg:flex-row lg:items-center justify-between flex-shrink-0 shadow-sm z-10 text-white transition-all duration-300 gap-3 hidden">
+            <div class="flex items-center justify-between w-full lg:w-auto">
+                <div class="flex items-center space-x-3 md:space-x-4">
+                    <img id="hdrAvatar" src="" class="w-9 h-9 md:w-11 md:h-11 rounded-full border-2 border-white shadow-sm object-cover hidden sm:block">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h1 id="hdrName" class="text-base md:text-lg font-bold tracking-tight leading-none"></h1>
+                            <a href="#" onclick="toggleProfileModal()" class="text-[10px] font-semibold text-brand-200 hover:text-white underline ml-2">Show Profile</a>
+                        </div>
+                        <p class="text-brand-100 text-[10px] font-medium mt-0.5"><span id="hdrPRN" class="font-mono"></span> • <span id="hdrDemo"></span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center w-full lg:w-auto overflow-x-auto hide-scrollbar pb-1 lg:pb-0 gap-2 shrink-0">
+                <!-- Action Buttons -->
+                <button onclick="toggleModal('scheduleModal')" class="px-3 py-1.5 bg-emerald-500 text-white border border-transparent rounded shadow-sm text-xs font-semibold hover:bg-emerald-600 transition flex items-center space-x-1.5 shrink-0" title="Schedule Next Visit">
+                    <i class="fa-solid fa-calendar-plus"></i> <span class="hidden xl:inline">Schedule</span>
+                </button>
+                <button onclick="toggleModal('labRequestModal')" class="px-3 py-1.5 bg-purple-500 text-white border border-transparent rounded shadow-sm text-xs font-semibold hover:bg-purple-600 transition flex items-center space-x-1.5 shrink-0" title="Assign Lab Procedures">
+                    <i class="fa-solid fa-vial"></i> <span class="hidden xl:inline">Assign Lab</span>
+                </button>
+                <button onclick="handleLabPDF()" class="px-3 py-1.5 bg-white/10 border border-white/20 text-white hover:bg-white/20 rounded shadow-sm text-xs font-medium transition flex items-center space-x-1.5 shrink-0" title="Tabulated lab results in PDF (Latest to Oldest)">
+                    <i class="fa-solid fa-file-pdf"></i> <span class="hidden xl:inline">Lab Results PDF</span>
+                </button>
+                <button onclick="toggleModal('referModal')" class="px-3 py-1.5 bg-white text-brand-primary border border-white rounded shadow-sm text-xs font-semibold hover:bg-gray-50 transition flex items-center space-x-1.5 shrink-0">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> <span class="hidden xl:inline">Refer to Doctor</span>
+                </button>
+                <button onclick="toggleReferralComments()" class="px-3 py-1.5 bg-white text-brand-primary border border-white rounded shadow-sm text-xs font-semibold hover:bg-gray-50 transition flex items-center space-x-1.5 relative shrink-0">
+                    <i class="fa-regular fa-comments"></i> <span class="hidden md:inline">Doctor Comments</span>
+                    <span class="absolute -top-1 -right-1 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-red-50"></span></span>
+                </button>
+                <button onclick="toggleAnalytics()" class="px-3 py-1.5 bg-brand-primaryDark text-white border border-transparent rounded shadow-sm text-xs font-semibold hover:bg-blue-900 transition flex items-center space-x-1.5 shrink-0">
+                    <i class="fa-solid fa-chart-line"></i> <span class="hidden md:inline">Analytics</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- PRIMARY NAVIGATION TABS -->
+        <nav id="patientNavTabs" class="border-b border-gray-200 px-6 bg-white flex-shrink-0 shadow-sm z-0 hidden">
+            <div id="mainTabs" class="flex space-x-6 overflow-x-auto hide-scrollbar text-sm text-gray-500 font-medium whitespace-nowrap">
+                <!-- Tabs generated by JS -->
+            </div>
+        </nav>
+
+        <!-- CONTENT SCROLL AREA -->
+        <div class="flex-1 overflow-hidden flex flex-col bg-gray-50 relative">
+            <div id="appContent" class="flex-1 overflow-y-auto p-6">
+                <!-- Dynamic Content Renders Here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- MODALS & OVERLAYS -->
+
+    <!-- Refer to Doctor Modal -->
+    <div id="referModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50 modal-enter">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="bg-brand-primary text-white px-4 py-3 flex justify-between items-center border-b border-brand-primaryDark">
+                <h3 class="font-semibold flex items-center space-x-2"><i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Refer patient to another doctor</span></h3>
+                <button onclick="toggleModal('referModal')" class="hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Refer to</label>
+                        <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none">
+                            <option>Dr. Arturo Mendoza — Cardiology</option>
+                            <option>Dr. Lina Villanueva — Endocrinology</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Urgency</label>
+                        <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none">
+                            <option>Routine</option>
+                            <option>Urgent</option>
+                            <option>Emergency</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Reason for referral</label>
+                    <textarea rows="3" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none resize-none" placeholder="Clinical question or reason..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-2">Share these pages (visit: Current)</label>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="inline-flex items-center space-x-1.5 border border-gray-300 rounded-full px-3 py-1 text-xs cursor-pointer hover:bg-gray-50"><input type="checkbox" checked class="accent-brand-primary"><span>Patient Info</span></label>
+                        <label class="inline-flex items-center space-x-1.5 border border-gray-300 rounded-full px-3 py-1 text-xs cursor-pointer hover:bg-gray-50"><input type="checkbox" checked class="accent-brand-primary"><span>Vitals</span></label>
+                        <label class="inline-flex items-center space-x-1.5 border border-gray-300 rounded-full px-3 py-1 text-xs cursor-pointer hover:bg-gray-50"><input type="checkbox" checked class="accent-brand-primary"><span>Diagnosis</span></label>
+                        <label class="inline-flex items-center space-x-1.5 border border-gray-300 rounded-full px-3 py-1 text-xs cursor-pointer hover:bg-gray-50"><input type="checkbox" checked class="accent-brand-primary"><span>Doctor's Note</span></label>
+                        <label class="inline-flex items-center space-x-1.5 border border-gray-300 rounded-full px-3 py-1 text-xs cursor-pointer hover:bg-gray-50"><input type="checkbox" checked class="accent-brand-primary"><span>Prescription</span></label>
+                        <label class="inline-flex items-center space-x-1.5 border border-gray-300 rounded-full px-3 py-1 text-xs cursor-pointer hover:bg-gray-50"><input type="checkbox" checked class="accent-brand-primary"><span>Lab Results</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t bg-gray-50 flex justify-end space-x-3">
+                <button onclick="toggleModal('referModal')" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded border">Cancel</button>
+                <button onclick="handleSuccessAction('referModal', 'Referral Sent', 'Patient has been successfully referred.')" class="px-4 py-2 text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 rounded shadow-sm">Send referral</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Next Visit Modal -->
+    <div id="scheduleModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50 modal-enter">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
+            <div class="bg-emerald-500 text-white px-4 py-3 flex justify-between items-center border-b border-emerald-600">
+                <h3 class="font-semibold flex items-center space-x-2"><i class="fa-solid fa-calendar-check"></i> <span>Schedule Next Visit</span></h3>
+                <button onclick="toggleModal('scheduleModal')" class="hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto max-h-[80vh] space-y-5">
+                <!-- Visit Details Section -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-800 mb-3 pb-1 border-b border-gray-100 flex items-center"><i class="fa-regular fa-clock text-emerald-500 mr-2"></i> Visit Details</h4>
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Date</label>
+                            <input type="date" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Time</label>
+                            <input type="time" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Visit Type</label>
+                        <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none">
+                            <option>Follow-up</option>
+                            <option>Routine Checkup</option>
+                            <option>Lab Results Review</option>
+                            <option>Procedure</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Notes / Instructions</label>
+                        <textarea rows="2" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-emerald-500 outline-none resize-none" placeholder="Fasting required, bring previous imaging, etc..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Assign Lab Procedures Section (Integrated) -->
+                <div>
+                    <h4 class="text-sm font-bold text-gray-800 mb-3 pb-1 border-b border-gray-100 flex items-center"><i class="fa-solid fa-vial text-purple-500 mr-2"></i> Assign Lab Procedures (Optional)</h4>
+                    <div class="grid grid-cols-2 gap-3 text-sm bg-gray-50 p-3 rounded-lg border border-gray-200 mb-3">
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Complete Blood Count (CBC)</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Lipid Profile</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Fasting Blood Sugar (FBS)</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Urinalysis</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Liver Function Test (SGPT/SGOT)</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Creatinine / BUN</span></label>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span class="text-sm font-medium text-gray-700">Patient must be fasting (8-10 hrs)</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t bg-gray-50 flex justify-end space-x-3 shrink-0">
+                <button onclick="toggleModal('scheduleModal')" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded border">Cancel</button>
+                <button onclick="handleSuccessAction('scheduleModal', 'Visit Scheduled', 'The patient\'s next appointment and optional lab procedures have been confirmed.')" class="px-4 py-2 text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded shadow-sm">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Lab Procedure Modal -->
+    <div id="labRequestModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50 modal-enter">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="bg-purple-600 text-white px-4 py-3 flex justify-between items-center border-b border-purple-700">
+                <h3 class="font-semibold flex items-center space-x-2"><i class="fa-solid fa-vial-circle-check"></i> <span>Assign Lab Procedures</span></h3>
+                <button onclick="toggleModal('labRequestModal')" class="hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-2">Select Procedures</label>
+                    <div class="grid grid-cols-2 gap-2 text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Complete Blood Count (CBC)</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Lipid Profile</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Fasting Blood Sugar (FBS)</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Urinalysis</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Liver Function Test (SGPT/SGOT)</span></label>
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span>Creatinine / BUN</span></label>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Urgency</label>
+                        <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-purple-600 outline-none">
+                            <option>Routine</option>
+                            <option>Urgent (ASAP)</option>
+                            <option>STAT</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center h-full pt-5">
+                        <label class="inline-flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="accent-purple-600 w-4 h-4 rounded"><span class="text-sm font-medium text-gray-700">Patient must be fasting (8-10 hrs)</span></label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Clinical Diagnosis / Reason</label>
+                    <textarea rows="2" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-purple-600 outline-none resize-none" placeholder="Reason for requesting these labs..."></textarea>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t bg-gray-50 flex justify-end space-x-3">
+                <button onclick="toggleModal('labRequestModal')" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded border">Cancel</button>
+                <button onclick="handleSuccessAction('labRequestModal', 'Lab Request Sent', 'Laboratory procedures have been successfully ordered.')" class="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded shadow-sm">Submit Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Multi-Window Screen -->
+    <div id="analyticsScreen" class="fixed inset-0 bg-gray-100 hidden z-50 flex flex-col modal-enter">
+        <div class="bg-brand-primaryDark text-white px-6 py-3 flex justify-between items-center shadow-md shrink-0">
+            <h2 class="text-lg font-bold flex items-center space-x-2"><i class="fa-solid fa-chart-line"></i> <span>Patient Analytics Workspace</span></h2>
+            <button onclick="toggleAnalytics()" class="bg-black/20 hover:bg-black/40 p-2 rounded-full transition"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex-1 p-4 grid grid-cols-1 lg:grid-cols-2 grid-rows-none lg:grid-rows-2 gap-4 overflow-y-auto lg:overflow-hidden">
+            <!-- Grid Cells (Dynamic selections) -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col min-h-[300px] lg:min-h-0 overflow-hidden">
+                <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center shrink-0">
+                    <select onchange="changeAnalyticsView(this)" class="text-sm font-semibold text-gray-700 bg-transparent outline-none">
+                        <option value="vitals" selected>Vitals Trend</option>
+                        <option value="labs">Laboratory Records</option>
+                        <option value="rx">Prescriptions History</option>
+                        <option value="dx">Diagnosis List</option>
+                        <option value="notes">Clinical Notes Summary</option>
+                        <option value="meds">Medical Records</option>
+                        <option value="imaging">Imaging</option>
+                    </select>
+                    <button class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-expand"></i></button>
+                </div>
+                <div class="analytics-panel-content flex-1 flex flex-col overflow-y-auto bg-white">
+                    <div class="w-full h-full p-4 flex flex-col items-center justify-center bg-white text-sm min-h-[250px]">
+                        <svg viewBox="0 0 400 150" class="w-full h-full drop-shadow-sm overflow-visible">
+                            <!-- Grid lines -->
+                            <line x1="0" y1="20" x2="400" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                            <line x1="0" y1="75" x2="400" y2="75" stroke="#f1f5f9" stroke-width="1"/>
+                            <line x1="0" y1="130" x2="400" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+                            <text x="0" y="15" fill="#94a3b8" font-size="10">140</text>
+                            <text x="0" y="70" fill="#94a3b8" font-size="10">100</text>
+                            <text x="0" y="125" fill="#94a3b8" font-size="10">60</text>
+                            
+                            <!-- Systolic Line (Red) -->
+                            <polyline points="40,50 150,30 260,60 370,40" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="40" cy="50" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <circle cx="150" cy="30" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <circle cx="260" cy="60" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <circle cx="370" cy="40" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <text x="370" y="25" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="middle">130</text>
+                            
+                            <!-- Diastolic Line (Blue) -->
+                            <polyline points="40,110 150,90 260,115 370,100" fill="none" stroke="#3ea4f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="40" cy="110" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                            <circle cx="150" cy="90" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                            <circle cx="260" cy="115" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                            <circle cx="370" cy="100" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                            <text x="370" y="85" fill="#3ea4f5" font-size="10" font-weight="bold" text-anchor="middle">85</text>
+
+                            <!-- X Axis Labels -->
+                            <text x="40" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Jan</text>
+                            <text x="150" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Mar</text>
+                            <text x="260" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Jun</text>
+                            <text x="370" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Current</text>
+                        </svg>
+                        <div class="flex justify-center space-x-6 mt-3 shrink-0">
+                            <span class="text-[11px] text-gray-600 font-medium flex items-center"><span class="w-3 h-3 rounded-full bg-red-500 mr-1.5 shadow-sm"></span> Systolic BP</span>
+                            <span class="text-[11px] text-gray-600 font-medium flex items-center"><span class="w-3 h-3 rounded-full bg-brand-primary mr-1.5 shadow-sm"></span> Diastolic BP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center shrink-0">
+                    <select onchange="changeAnalyticsView(this)" class="text-sm font-semibold text-gray-700 bg-transparent outline-none">
+                        <option value="vitals">Vitals Trend</option>
+                        <option value="labs" selected>Laboratory Records</option>
+                        <option value="rx">Prescriptions History</option>
+                        <option value="dx">Diagnosis List</option>
+                        <option value="notes">Clinical Notes Summary</option>
+                        <option value="meds">Medical Records</option>
+                        <option value="imaging">Imaging</option>
+                    </select>
+                </div>
+                <div class="analytics-panel-content flex-1 flex flex-col overflow-y-auto bg-white">
+                    <div class="p-4 text-sm w-full">
+                        <h4 class="font-bold text-gray-800 mb-2">Recent Complete Blood Count</h4>
+                        <table class="w-full text-left border-collapse">
+                            <tr class="border-b bg-gray-50"><th class="py-2 px-1">Test</th><th>Result</th><th>Ref</th></tr>
+                            <tr class="border-b text-red-600"><td class="py-2 px-1 font-medium">WBC</td><td>12.5 H</td><td>4.5-11.0</td></tr>
+                            <tr class="border-b"><td class="py-2 px-1 font-medium">RBC</td><td>4.8</td><td>4.0-5.2</td></tr>
+                            <tr class="border-b"><td class="py-2 px-1 font-medium">HGB</td><td>13.2</td><td>12.0-16.0</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center shrink-0">
+                    <select onchange="changeAnalyticsView(this)" class="text-sm font-semibold text-gray-700 bg-transparent outline-none">
+                        <option value="vitals">Vitals Trend</option>
+                        <option value="labs">Laboratory Records</option>
+                        <option value="rx" selected>Prescriptions History</option>
+                        <option value="dx">Diagnosis List</option>
+                        <option value="notes">Clinical Notes Summary</option>
+                        <option value="meds">Medical Records</option>
+                        <option value="imaging">Imaging</option>
+                    </select>
+                </div>
+                <div class="analytics-panel-content flex-1 flex flex-col overflow-y-auto bg-white">
+                    <div class="p-4 text-sm space-y-3 w-full">
+                         <div class="p-3 border rounded bg-gray-50 flex items-start space-x-3">
+                            <i class="fa-solid fa-capsules text-emerald-500 mt-0.5"></i>
+                            <div><strong>Lisinopril 10mg</strong><div class="text-xs text-gray-500">1 tab daily (Active)</div></div>
+                         </div>
+                         <div class="p-3 border rounded bg-gray-50 flex items-start space-x-3">
+                            <i class="fa-solid fa-capsules text-emerald-500 mt-0.5"></i>
+                            <div><strong>Metformin 500mg</strong><div class="text-xs text-gray-500">BID (Active)</div></div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center shrink-0">
+                    <select onchange="changeAnalyticsView(this)" class="text-sm font-semibold text-gray-700 bg-transparent outline-none">
+                        <option value="vitals">Vitals Trend</option>
+                        <option value="labs">Laboratory Records</option>
+                        <option value="rx">Prescriptions History</option>
+                        <option value="dx">Diagnosis List</option>
+                        <option value="notes" selected>Clinical Notes Summary</option>
+                        <option value="meds">Medical Records</option>
+                        <option value="imaging">Imaging</option>
+                    </select>
+                </div>
+                <div class="analytics-panel-content flex-1 flex flex-col overflow-y-auto bg-white">
+                    <div class="p-4 text-sm w-full">
+                        <p class="text-gray-700 bg-yellow-50 p-3 rounded border border-yellow-100">Patient shows mild improvement in BP management. Continue current medication regimen. Next follow up in 3 months.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Referrals & Doctor Comments Slide Panel -->
+    <div id="referralsPanel" class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col border-l border-gray-200">
+        <div class="bg-brand-primary text-white px-4 py-3 flex justify-between items-center shrink-0 border-b border-brand-primaryDark">
+            <h3 class="font-semibold flex items-center space-x-2"><i class="fa-regular fa-comments"></i> <span>Referrals & doctor comments</span></h3>
+            <button onclick="toggleReferralComments()" class="hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        
+        <!-- List View -->
+        <div id="refListView" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            <!-- Pending Item -->
+            <div onclick="openRefThread(1)" class="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-brand-300 hover:shadow-md transition">
+                <div class="flex justify-between items-start mb-1">
+                    <h4 class="font-bold text-gray-900 text-sm">Dr. Arturo Mendoza</h4>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">Pending</span>
+                </div>
+                <p class="text-xs text-gray-500 mb-2">Cardiology • Routine • Oct 9</p>
+                <p class="text-sm text-gray-700 truncate">Please evaluate for intermittent palpitations.</p>
+            </div>
+            <!-- Accepted Item -->
+            <div onclick="openRefThread(2)" class="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-brand-300 hover:shadow-md transition">
+                <div class="flex justify-between items-start mb-1">
+                    <h4 class="font-bold text-gray-900 text-sm">Dr. Lina Villanueva</h4>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">Accepted</span>
+                </div>
+                <p class="text-xs text-gray-500 mb-2">Endocrinology • Routine • Sep 19</p>
+                <p class="text-sm text-gray-700 line-clamp-2">Newly diagnosed T2DM, please advise on long-term glycaemic management.</p>
+            </div>
+        </div>
+
+        <!-- Thread View (Hidden by default) -->
+        <div id="refThreadView" class="hidden flex-1 flex-col h-full bg-white">
+            <div class="p-3 border-b bg-gray-50 shrink-0">
+                <button onclick="closeRefThread()" class="text-brand-primary text-sm font-medium hover:underline mb-2 flex items-center space-x-1"><i class="fa-solid fa-arrow-left text-xs"></i> <span>All referrals</span></button>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-sm">Dr. Arturo Mendoza</h4>
+                        <p class="text-xs text-gray-500">Cardiology • Routine • from Dr. Elena Reyes</p>
+                    </div>
+                    <select class="text-xs border rounded p-1 bg-white focus:ring-1 focus:ring-brand-primary outline-none"><option>Pending</option><option>Accepted</option></select>
+                </div>
+                <div class="flex flex-wrap gap-1 mt-2">
+                    <span class="text-[10px] bg-brand-50 border border-brand-200 text-brand-700 px-2 py-0.5 rounded-full">Patient Info</span>
+                    <span class="text-[10px] bg-brand-50 border border-brand-200 text-brand-700 px-2 py-0.5 rounded-full">Vitals</span>
+                    <span class="text-[10px] bg-brand-50 border border-brand-200 text-brand-700 px-2 py-0.5 rounded-full">Diagnosis</span>
+                </div>
+                <a href="#" class="text-xs text-brand-primary hover:underline mt-2 inline-block">Open shared visit (Current)</a>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50" id="chatArea">
+                <!-- Chat Message -->
+                <div class="flex flex-col items-end">
+                    <div class="bg-brand-primary text-white text-sm p-3 rounded-lg rounded-tr-none max-w-[85%] shadow-sm">
+                        <div class="text-[10px] text-blue-100 mb-1">Dr. Elena Reyes • 10/9/2026, 1:14 PM</div>
+                        Please evaluate for intermittent palpitations.
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 border-t bg-white shrink-0">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Comment as</label>
+                <select class="w-full text-xs border rounded p-1.5 mb-2 bg-gray-50 focus:ring-1 focus:ring-brand-primary outline-none"><option>Dr. Elena Reyes</option><option>Dr. Arturo Mendoza</option></select>
+                <textarea rows="2" class="w-full text-sm border rounded p-2 focus:ring-1 focus:ring-brand-primary outline-none resize-none mb-2" placeholder="Write a comment..."></textarea>
+                <button class="bg-brand-primary hover:bg-brand-primaryHover text-white text-sm font-medium px-4 py-1.5 rounded-full w-full transition shadow-sm">Post comment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Lab Files Comparison Modal -->
+    <div id="labFilesModal" class="fixed inset-0 bg-gray-900/95 hidden z-[70] flex-col backdrop-blur-sm modal-enter">
+        <div class="px-6 py-4 flex justify-between items-center text-white border-b border-gray-700 shrink-0 shadow-sm">
+            <h2 class="text-xl font-bold flex items-center space-x-2"><i class="fa-solid fa-microscope text-brand-300"></i> <span>Laboratory Records Comparison</span></h2>
+            <div class="flex items-center space-x-3">
+                <button onclick="window.print()" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded border border-white/20 text-sm font-medium transition flex items-center space-x-2"><i class="fa-solid fa-print"></i> <span>Print All</span></button>
+                <button onclick="toggleModal('labFilesModal')" class="p-2 hover:bg-red-500/80 rounded-full transition text-gray-300 hover:text-white" title="Close"><i class="fa-solid fa-xmark text-xl w-6 h-6 flex items-center justify-center"></i></button>
+            </div>
+        </div>
+        <div id="labFilesContainer" class="flex-1 overflow-x-auto overflow-y-hidden p-8 flex gap-8 items-start custom-x-scroll">
+            <!-- Dynamically injected side-by-side files -->
+        </div>
+    </div>
+
+    <!-- Full Patient Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-gray-900/80 hidden z-[80] flex-col justify-center items-center backdrop-blur-sm modal-enter p-4 sm:p-6">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-full overflow-hidden flex flex-col">
+            <!-- Header -->
+            <div class="bg-brand-primary text-white px-6 py-4 flex justify-between items-center shrink-0">
+                <h2 class="text-xl font-bold flex items-center space-x-2"><i class="fa-solid fa-address-card"></i> <span>Patient Profile</span></h2>
+                <button onclick="toggleProfileModal()" class="hover:text-gray-200 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <!-- Body -->
+            <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <div class="flex items-center space-x-6 mb-8 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                    <img id="profAvatar" src="" class="w-24 h-24 rounded-full object-cover shadow-md border-4 border-white">
+                    <div>
+                        <h3 id="profName" class="text-2xl font-bold text-gray-900">Name</h3>
+                        <p class="text-brand-primary font-semibold mb-1">PRN: <span id="profId"></span></p>
+                        <div class="flex space-x-4 text-sm text-gray-600 mt-2">
+                            <span class="bg-gray-100 px-2 py-1 rounded border border-gray-200"><i class="fa-solid fa-cake-candles mr-1"></i> <span id="profDob"></span></span>
+                            <span class="bg-gray-100 px-2 py-1 rounded border border-gray-200"><i class="fa-solid fa-droplet text-red-500 mr-1"></i> Type <span id="profBlood" class="font-bold"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Contact Info -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                        <h4 class="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-4 flex items-center"><i class="fa-solid fa-address-book text-brand-primary w-5"></i> Contact Information</h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-start border-b border-gray-50 pb-2"><span class="text-gray-500">Phone</span> <strong id="profPhone" class="text-gray-800"></strong></div>
+                            <div class="flex justify-between items-start border-b border-gray-50 pb-2"><span class="text-gray-500">Email</span> <strong id="profEmail" class="text-gray-800"></strong></div>
+                            <div class="flex justify-between items-start"><span class="text-gray-500">Address</span> <strong id="profAddress" class="text-gray-800 text-right w-2/3"></strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                        <h4 class="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-4 flex items-center"><i class="fa-solid fa-heart-pulse text-red-500 w-5"></i> Emergency Contact</h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-start border-b border-gray-50 pb-2"><span class="text-gray-500">Name</span> <strong id="profEmergName" class="text-gray-800"></strong></div>
+                            <div class="flex justify-between items-start border-b border-gray-50 pb-2"><span class="text-gray-500">Relation</span> <strong id="profEmergRel" class="text-gray-800"></strong></div>
+                            <div class="flex justify-between items-start"><span class="text-gray-500">Phone</span> <strong id="profEmergPhone" class="text-gray-800"></strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Insurance -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm md:col-span-2">
+                        <h4 class="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-4 flex items-center"><i class="fa-solid fa-shield-halved text-emerald-500 w-5"></i> Insurance Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div><span class="text-gray-500 block text-xs uppercase font-bold tracking-wider mb-1">Provider</span> <strong id="profInsProvider" class="text-gray-900 text-base"></strong></div>
+                            <div><span class="text-gray-500 block text-xs uppercase font-bold tracking-wider mb-1">Policy Number</span> <strong id="profInsPolicy" class="text-gray-800 font-mono"></strong></div>
+                            <div><span class="text-gray-500 block text-xs uppercase font-bold tracking-wider mb-1">Group Number</span> <strong id="profInsGroup" class="text-gray-800 font-mono"></strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-200 bg-white flex justify-end space-x-3 shrink-0">
+                <button onclick="handleAddData('Edit Profile')" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 text-sm font-medium hover:bg-gray-50 transition"><i class="fa-solid fa-pen mr-1"></i> Edit Details</button>
+                <button onclick="toggleProfileModal()" class="px-5 py-2 bg-brand-primary text-white rounded-md text-sm font-medium hover:bg-brand-primaryHover transition shadow-sm">Close Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Patient Modal -->
+    <div id="addPatientModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-[60] modal-enter">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
+            <div class="bg-brand-primary text-white px-4 py-3 flex justify-between items-center border-b border-brand-primaryDark">
+                <h3 class="font-semibold flex items-center space-x-2"><i class="fa-solid fa-user-plus"></i> <span>Add New Patient</span></h3>
+                <button onclick="toggleModal('addPatientModal')" class="hover:text-gray-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto max-h-[80vh] space-y-4">
+                <h4 class="text-sm font-bold text-gray-800 border-b border-gray-100 pb-1">Personal Information</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none" placeholder="e.g. John">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none" placeholder="e.g. Doe">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Date of Birth</label>
+                        <input type="date" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Gender</label>
+                        <select class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none">
+                            <option>Male</option><option>Female</option><option>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h4 class="text-sm font-bold text-gray-800 border-b border-gray-100 pb-1 mt-4">Contact Details</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none" placeholder="+63 900 000 0000">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none" placeholder="email@example.com">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Home Address</label>
+                        <textarea rows="2" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-brand-primary outline-none resize-none" placeholder="Complete address..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t bg-gray-50 flex justify-end space-x-3 shrink-0">
+                <button onclick="toggleModal('addPatientModal')" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded border">Cancel</button>
+                <button onclick="handleSuccessAction('addPatientModal', 'Patient Added', 'New patient record successfully created.')" class="px-4 py-2 text-sm font-medium text-white bg-brand-primary hover:bg-brand-primaryHover rounded shadow-sm">Save Patient</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Profile Slide Panel -->
+    <div id="doctorProfilePanel" class="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[90] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-gray-200">
+        <div class="bg-gray-900 text-white px-4 py-4 flex justify-between items-center shrink-0 shadow-sm">
+            <h3 class="font-semibold flex items-center space-x-2"><i class="fa-solid fa-user-doctor"></i> <span>My Profile</span></h3>
+            <button onclick="toggleDoctorProfilePanel()" class="hover:text-gray-300"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto bg-gray-50">
+            <!-- Profile Header -->
+            <div class="bg-white p-6 flex flex-col items-center border-b border-gray-200">
+                <div class="relative mb-3">
+                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=150" class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover" alt="Dr. Hernandez">
+                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full" title="Online"></div>
+                </div>
+                <h2 class="text-lg font-bold text-gray-900 text-center">Dr. Daniel Hernandez, MD</h2>
+                <p class="text-brand-primary text-sm font-medium text-center">Cardiology Specialist</p>
+                <div class="mt-3 flex space-x-2">
+                    <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded border border-emerald-200">Available</span>
+                    <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded border border-gray-200">License: #894021</span>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="p-4 space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Contact Information</h4>
+                    <div class="space-y-2 text-sm text-gray-700">
+                        <div class="flex items-center"><i class="fa-solid fa-envelope w-5 text-gray-400"></i> d.hernandez@oasis.com</div>
+                        <div class="flex items-center"><i class="fa-solid fa-phone w-5 text-gray-400"></i> +63 917 888 1234</div>
+                        <div class="flex items-center"><i class="fa-solid fa-building w-5 text-gray-400"></i> Clinic Room 302</div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Settings</h4>
+                    <div class="space-y-1">
+                        <button class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded flex justify-between items-center transition">
+                            <span><i class="fa-solid fa-gear w-5 text-gray-400"></i> Account Settings</span> <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+                        </button>
+                        <button class="w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded flex justify-between items-center transition">
+                            <span><i class="fa-solid fa-bell w-5 text-gray-400"></i> Notifications</span> <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-gray-200 bg-white shrink-0">
+            <button class="w-full px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded text-sm font-semibold hover:bg-red-100 transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sign Out</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Modal for general alerts/info -->
+    <div id="infoModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-[100] modal-enter">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden flex flex-col p-6 text-center">
+            <i id="infoModalIcon" class="fa-solid fa-circle-check text-5xl text-emerald-500 mb-4"></i>
+            <h3 id="infoModalTitle" class="text-xl font-bold text-gray-900 mb-2">Action Successful</h3>
+            <p id="infoModalText" class="text-sm text-gray-600 mb-6">The operation was completed successfully.</p>
+            <button onclick="toggleModal('infoModal')" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg transition shadow-sm border border-gray-200">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const patientsData = {
+            'P251AQWSO': {
+                id: 'P251AQWSO', name: 'Caren Anne Rubia Centino', demo: 'Female, 24 years old', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
+                dob: 'Aug 14, 2002', bloodType: 'O+', phone: '+63 917 123 4567', email: 'caren.centino@email.com', address: '123 Mango Avenue, Cebu City',
+                emergName: 'Maria Centino', emergRel: 'Mother', emergPhone: '+63 918 765 4321', insProvider: 'MaxiCare', insPolicy: 'MX-99210-A', insGroup: 'GRP-2024',
+                visits: [
+                    { 
+                        dateId: 'current', dateLabel: 'Current', consultType: 'new', reason: 'Experiencing mild chest discomfort and shortness of breath.', 
+                        vitals: { hr: 98, bp: '130/85', temp: '36.8', w: 55 },
+                        diagnoses: ['Essential hypertension', 'Anxiety'], rx: ['Aspirin (Aspicort) 81mg Delayed-Release', 'Nitroglycerin (Nitrostat) 0.3mg Sublingual'], notes: 'Patient reports occasional palpitations. ECG recommended.',
+                        medRecords: ['ECG Report (Pending)'], labRecords: ['CBC', 'Lipid Panel'],
+                        allergies: ['Penicillin (Severe Hives)', 'Peanuts (Mild Rash)'],
+                        soap: {
+                            s: 'Patient reports occasional palpitations and shortness of breath during exertion over the past week.',
+                            o: 'Patient appears anxious. BP 130/85, HR 98. Lungs clear to auscultation.',
+                            a: '1. Essential hypertension\n2. Anxiety with psychosomatic palpitations',
+                            p: '1. Start Aspirin 81mg daily\n2. PRN Nitroglycerin 0.3mg\n3. Schedule resting ECG\n4. Follow-up in 2 weeks'
+                        },
+                        ophtha: {
+                            notes: 'Patient reports blurry vision in the left eye (OS) starting 3 days ago. No pain. Mild conjunctival injection noted on OD. OS unremarkable. IOP normal.',
+                        },
+                        immunization: ['COVID-19 Bivalent Booster (Oct 2025)', 'Influenza Vaccine (Nov 2025)'],
+                        serviceRequests: ['Cardiology Consult (Dr. Mendoza) - Pending'],
+                        procedures: ['Resting ECG (Completed)', 'Echocardiogram (Scheduled)'],
+                        files: ['Patient_Intake_Form_2026.pdf', 'Prior_Medical_Records.zip'],
+                        imaging: ['Chest X-Ray PA/Lateral (Normal)']
+                    },
+                    { 
+                        dateId: 'aug22', dateLabel: 'Aug 22, 2024', consultType: 'followup', followup: 'none', reason: 'Routine checkup.',
+                        vitals: { hr: 88, bp: '120/80', temp: '36.5', w: 54 },
+                        diagnoses: ['Healthy'], rx: ['Multivitamins'], notes: 'Patient is stable. No new complaints.',
+                        medRecords: ['Annual Physical Form'], labRecords: ['Urinalysis'],
+                        allergies: ['Penicillin (Severe Hives)', 'Peanuts (Mild Rash)'],
+                        soap: { s: 'Routine follow-up. No new complaints.', o: 'BP 120/80, HR 88. Stable.', a: 'Healthy adult.', p: 'Continue multivitamins. Annual review next year.' },
+                        immunization: [], serviceRequests: [], procedures: [], files: [], imaging: []
+                    }
+                ]
+            },
+            'P251SZQCL': {
+                id: 'P251SZQCL', name: 'Daniel Joseph Alonte', demo: 'Male, 30 years old', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
+                dob: 'Jan 10, 1996', bloodType: 'A-', phone: '+63 922 987 6543', email: 'daniel.alonte@email.com', address: '456 Acacia St, Mandaue City',
+                emergName: 'Sarah Alonte', emergRel: 'Spouse', emergPhone: '+63 999 111 2222', insProvider: 'IntelliCare', insPolicy: 'INT-88321-B', insGroup: 'GRP-1011',
+                visits: [
+                    { 
+                        dateId: 'current', dateLabel: 'Current', consultType: 'new', reason: 'Persistent cough for 2 weeks.', 
+                        vitals: { hr: 75, bp: '110/70', temp: '37.2', w: 70 },
+                        diagnoses: ['Acute Bronchitis'], rx: ['Amoxicillin 500mg', 'Cough Syrup'], notes: 'Prescribed antibiotics. Advised rest and hydration.',
+                        medRecords: ['Chest X-Ray'], labRecords: [],
+                        allergies: [], soap: { s: 'Persistent cough.', o: 'Wheezing on left lung.', a: 'Bronchitis.', p: 'Antibiotics 7 days.' },
+                        ophtha: { notes: 'Routine eye check. 20/20 vision bilaterally.' },
+                        immunization: [], serviceRequests: [], procedures: [], files: [], imaging: ['Chest X-Ray (Mild fluid)']
+                    }
+                ]
+            }
+        };
+
+        const tabsConfig = ['Summary', 'Consultation', 'Vitals', 'Allergies', 'SOAP Notes', 'Immunization', 'Diagnosis', 'Prescription', 'Service Request', 'Clinical Notes', 'Procedures', 'Medical Records', 'Laboratory Records', 'Files', 'Imaging', 'Ophthalmology'];
+
+        const state = { globalView: 'dashboard', patientId: 'P251AQWSO', mainTab: 'Summary', sidebarTab: 'patients', visitDateId: 'current', apptSubTab: 'today' };
+
+        window.onload = function() {
+            renderSidebar();
+            renderHeader();
+            renderMainTabs();
+            switchGlobalView(state.globalView);
+        };
+
+        function switchGlobalView(view) {
+            state.globalView = view;
+            const patientHeader = document.getElementById('patientHeader');
+            const patientNavTabs = document.getElementById('patientNavTabs');
+
+            if (view === 'dashboard') {
+                patientHeader.classList.add('hidden');
+                patientHeader.classList.remove('flex');
+                patientNavTabs.classList.add('hidden');
+                renderDashboard();
+            } else {
+                patientHeader.classList.remove('hidden');
+                patientHeader.classList.add('flex');
+                patientNavTabs.classList.remove('hidden');
+                renderContent();
+            }
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('appContent');
+            
+            container.innerHTML = `
+                <div class="max-w-7xl mx-auto space-y-6 pb-10">
+                    <!-- Welcome Header -->
+                    <div class="flex flex-col md:flex-row md:items-end justify-between bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Welcome back, Dr. Hernandez! 👋</h1>
+                            <p class="text-gray-500 text-sm font-medium"><i class="fa-regular fa-calendar mr-1"></i> Today is Saturday, October 10, 2026</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 flex space-x-3">
+                            <button onclick="toggleModal('addPatientModal')" class="px-4 py-2 bg-brand-primary text-white rounded-lg shadow-sm text-sm font-bold hover:bg-brand-primaryHover transition flex items-center space-x-2">
+                                <i class="fa-solid fa-user-plus"></i> <span>New Patient</span>
+                            </button>
+                            <button onclick="toggleModal('scheduleModal')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg shadow-sm text-sm font-bold hover:bg-emerald-600 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-calendar-plus"></i> <span>Book Visit</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer" onclick="switchSidebarTab('appointments')">
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Today's Appts</p>
+                                <h3 class="text-2xl font-black text-gray-900">12</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xl shadow-inner">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer" onclick="handleAddData('Pending Labs')">
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pending Labs</p>
+                                <h3 class="text-2xl font-black text-gray-900">5 <span class="text-xs text-red-500 ml-1 font-bold animate-pulse">!</span></h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xl shadow-inner">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer" onclick="toggleReferralComments()">
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">New Referrals</p>
+                                <h3 class="text-2xl font-black text-gray-900">3</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-brand-primary text-xl shadow-inner">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between hover:shadow-md transition cursor-pointer">
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total Patients</p>
+                                <h3 class="text-2xl font-black text-gray-900">1,248</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 text-xl shadow-inner">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Chart Section -->
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col overflow-hidden">
+                            <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-chart-simple text-brand-primary mr-2"></i> Patient Flow (This Week)</h3>
+                                <select class="text-xs border-gray-300 rounded font-medium text-gray-600 focus:ring-brand-primary"><option>This Week</option><option>Last Week</option></select>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-end min-h-[250px]">
+                                <svg viewBox="0 0 500 200" class="w-full h-full drop-shadow-sm overflow-visible">
+                                    <line x1="30" y1="20" x2="500" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                                    <line x1="30" y1="70" x2="500" y2="70" stroke="#f1f5f9" stroke-width="1"/>
+                                    <line x1="30" y1="120" x2="500" y2="120" stroke="#f1f5f9" stroke-width="1"/>
+                                    <line x1="30" y1="170" x2="500" y2="170" stroke="#e2e8f0" stroke-width="2"/>
+                                    
+                                    <text x="0" y="25" fill="#94a3b8" font-size="12">30</text>
+                                    <text x="0" y="75" fill="#94a3b8" font-size="12">20</text>
+                                    <text x="0" y="125" fill="#94a3b8" font-size="12">10</text>
+                                    <text x="0" y="175" fill="#94a3b8" font-size="12">0</text>
+
+                                    <!-- Bars -->
+                                    <rect x="60" y="70" width="35" height="100" fill="#3ea4f5" rx="4"/>
+                                    <rect x="130" y="50" width="35" height="120" fill="#3ea4f5" rx="4"/>
+                                    <rect x="200" y="30" width="35" height="140" fill="#3ea4f5" rx="4"/>
+                                    <rect x="270" y="90" width="35" height="80" fill="#3ea4f5" rx="4"/>
+                                    <rect x="340" y="60" width="35" height="110" fill="#3ea4f5" rx="4"/>
+                                    <rect x="410" y="140" width="35" height="30" fill="#bae6fd" rx="4"/>
+
+                                    <text x="77" y="190" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">Mon</text>
+                                    <text x="147" y="190" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">Tue</text>
+                                    <text x="217" y="190" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">Wed</text>
+                                    <text x="287" y="190" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">Thu</text>
+                                    <text x="357" y="190" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">Fri</text>
+                                    <text x="427" y="190" fill="#64748b" font-size="12" text-anchor="middle" font-weight="bold">Sat</text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Schedule / Tasks -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                            <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-list-check text-emerald-500 mr-2"></i> Priority Tasks</h3>
+                            </div>
+                            <div class="p-4 space-y-3 flex-1 overflow-y-auto">
+                                <div class="p-3 border border-red-100 bg-red-50 rounded-lg flex justify-between items-center cursor-pointer hover:bg-red-100 transition" onclick="switchPatient('P251AQWSO')">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fa-solid fa-file-signature text-red-500 text-lg"></i>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-red-900">Sign Prescriptions</h4>
+                                            <p class="text-xs text-red-700 mt-0.5">Caren Centino • Needs Auth</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border border-amber-100 bg-amber-50 rounded-lg flex justify-between items-center cursor-pointer hover:bg-amber-100 transition" onclick="handleLabPDF()">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fa-solid fa-vial-circle-check text-amber-500 text-lg"></i>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-amber-900">Review Lab Results</h4>
+                                            <p class="text-xs text-amber-700 mt-0.5">Daniel Alonte • CBC / Lipid</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 border border-gray-200 bg-gray-50 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-100 transition" onclick="toggleReferralComments()">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fa-solid fa-reply text-gray-500 text-lg"></i>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-gray-900">Reply to Specialist</h4>
+                                            <p class="text-xs text-gray-600 mt-0.5">Dr. Lina Villanueva • Endo</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('sidebarPatientList');
+            const btnPatients = document.getElementById('btnSidebarPatients');
+            const btnAppts = document.getElementById('btnSidebarAppts');
+            
+            if (state.sidebarTab === 'patients') {
+                btnPatients.className = "flex-1 py-1.5 bg-white rounded shadow-sm text-brand-primary";
+                btnAppts.className = "flex-1 py-1.5 text-gray-500 hover:text-gray-700";
+                
+                container.innerHTML = Object.values(patientsData).map(p => `
+                    <div onclick="switchPatient('${p.id}')" class="p-3 flex justify-between items-center cursor-pointer hover:bg-brand-50 transition border-l-4 ${state.patientId === p.id ? 'bg-brand-50 border-brand-primary' : 'border-transparent'}">
+                        <div class="flex items-center space-x-3">
+                            <img src="${p.avatar}" class="w-9 h-9 rounded-full object-cover shadow-sm">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">${p.name}</h4>
+                                <p class="text-[10px] text-gray-500 font-medium">PRN: ${p.id}</p>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-brand-primary p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    </div>
+                `).join('');
+            } else {
+                btnPatients.className = "flex-1 py-1.5 text-gray-500 hover:text-gray-700";
+                btnAppts.className = "flex-1 py-1.5 bg-white rounded shadow-sm text-brand-primary";
+                
+                const appointmentsList = [
+                    { patientId: 'P251AQWSO', time: '09:00 AM', type: 'Follow-up' },
+                    { patientId: 'P251SZQCL', time: '11:30 AM', type: 'New Consult' }
+                ];
+
+                let html = '<div class="px-4 py-2 bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Today\'s Schedule</div>';
+                
+                html += appointmentsList.map(appt => {
+                    const p = patientsData[appt.patientId];
+                    if(!p) return '';
+                    const isActive = state.patientId === p.id ? 'bg-brand-50 border-brand-primary' : 'border-transparent';
+                    return `
+                        <div onclick="switchPatient('${p.id}'); switchMainTab('Summary');" class="p-3 flex items-center justify-between cursor-pointer hover:bg-brand-50 transition border-l-4 ${isActive}">
+                            <div class="flex items-center space-x-3">
+                                <img src="${p.avatar}" class="w-9 h-9 rounded-full object-cover shadow-sm">
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-900">${p.name}</h4>
+                                    <p class="text-[10px] text-brand-primary font-medium mt-0.5"><i class="fa-regular fa-clock mr-1"></i> ${appt.time} • ${appt.type}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = html;
+            }
+        }
+
+        function switchSidebarTab(tab) {
+            state.sidebarTab = tab;
+            if (tab === 'appointments') {
+                state.mainTab = 'Appointments';
+                renderMainTabs();
+                renderContent();
+            }
+            renderSidebar();
+        }
+
+        function renderHeader() {
+            const p = patientsData[state.patientId];
+            document.getElementById('hdrAvatar').src = p.avatar;
+            document.getElementById('hdrName').innerText = p.name;
+            document.getElementById('hdrPRN').innerText = p.id;
+            document.getElementById('hdrDemo').innerText = p.demo;
+        }
+
+        function renderMainTabs() {
+            const container = document.getElementById('mainTabs');
+            container.innerHTML = tabsConfig.map(tab => `
+                <button onclick="switchMainTab('${tab}')" class="py-3 transition ${state.mainTab === tab ? 'tab-active border-brand-primary text-brand-primary' : 'hover:text-brand-primary'}">
+                    ${tab}
+                </button>
+            `).join('');
+        }
+
+        function renderDateSelector(p) {
+            return `
+                <div class="flex space-x-2 mb-4 bg-white p-1 rounded-lg border border-gray-200 inline-flex shadow-sm">
+                    ${p.visits.map(v => `
+                        <button onclick="switchDateTab('${v.dateId}')" class="px-3 py-1.5 text-xs font-medium rounded-md transition ${state.visitDateId === v.dateId ? 'bg-brand-primary text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'}">
+                            ${v.dateLabel}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function renderAddButton(category) {
+            return `
+                <button onclick="handleAddData('${category}')" class="px-3 py-1.5 bg-brand-50 text-brand-primary border border-brand-200 rounded shadow-sm text-xs font-semibold hover:bg-brand-100 transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-plus text-[10px]"></i> <span>Add ${category}</span>
+                </button>
+            `;
+        }
+
+        function renderContent() {
+            const p = patientsData[state.patientId];
+            const container = document.getElementById('appContent');
+            const activeVisit = p.visits.find(v => v.dateId === state.visitDateId) || p.visits[0];
+            const dateTabsHtml = renderDateSelector(p);
+
+            if (state.mainTab === 'Summary') {
+                container.innerHTML = `
+                    ${dateTabsHtml}
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-800">Visit Summary - ${activeVisit.dateLabel}</h2>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="bg-white border rounded-lg p-5 shadow-sm">
+                            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mb-3 flex items-center space-x-2"><i class="fa-solid fa-stethoscope text-brand-primary"></i> <span>Consultation Reason</span></h3>
+                            <p class="text-sm text-gray-700 mb-1"><strong>Type:</strong> ${activeVisit.consultType === 'new' ? 'New Problem' : 'Follow-up'}</p>
+                            <p class="text-sm text-gray-700"><strong>Details:</strong> ${activeVisit.reason}</p>
+                        </div>
+                        <div class="bg-white border rounded-lg p-5 shadow-sm">
+                            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mb-3 flex items-center space-x-2"><i class="fa-solid fa-heart-pulse text-red-500"></i> <span>Vitals Snapshot</span></h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                                <div><strong>BP:</strong> ${activeVisit.vitals.bp} mmHg</div>
+                                <div><strong>HR:</strong> ${activeVisit.vitals.hr} bpm</div>
+                                <div><strong>Temp:</strong> ${activeVisit.vitals.temp} °C</div>
+                                <div><strong>Weight:</strong> ${activeVisit.vitals.w} kg</div>
+                            </div>
+                        </div>
+                        <div class="bg-white border rounded-lg p-5 shadow-sm">
+                            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mb-3 flex items-center space-x-2"><i class="fa-solid fa-notes-medical text-amber-500"></i> <span>Diagnoses</span></h3>
+                            <ul class="list-disc pl-4 text-sm text-gray-700 space-y-1">${activeVisit.diagnoses.map(d=>`<li>${d}</li>`).join('')}</ul>
+                        </div>
+                        <div class="bg-white border rounded-lg p-5 shadow-sm">
+                            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mb-3 flex items-center space-x-2"><i class="fa-solid fa-pills text-emerald-500"></i> <span>Prescriptions</span></h3>
+                            <ul class="list-disc pl-4 text-sm text-gray-700 space-y-1">${activeVisit.rx.map(r=>`<li>${r}</li>`).join('')}</ul>
+                        </div>
+                        <div class="bg-white border rounded-lg p-5 shadow-sm lg:col-span-2">
+                            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 mb-3 flex items-center space-x-2"><i class="fa-solid fa-file-medical text-gray-500"></i> <span>Clinical Notes</span></h3>
+                            <p class="text-sm text-gray-700">${activeVisit.notes}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (state.mainTab === 'Consultation') {
+                container.innerHTML = `
+                    ${dateTabsHtml}
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm mb-4">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h2 class="text-lg font-bold text-gray-900">Consultation Form</h2>
+                            <div class="flex space-x-2">
+                                <button onclick="handlePrint()" class="px-3 py-1.5 bg-gray-100 text-gray-700 border border-gray-300 rounded shadow-sm text-xs font-semibold hover:bg-gray-200 transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-print text-[10px]"></i> <span>Print</span>
+                                </button>
+                                <button onclick="handleAddData('Consultation Note')" class="px-3 py-1.5 bg-brand-50 text-brand-primary border border-brand-200 rounded shadow-sm text-xs font-semibold hover:bg-brand-100 transition flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-floppy-disk text-[10px]"></i> <span>Save Draft</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Section -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-gray-800 mb-3">Reason for Consult</label>
+                            
+                            <div class="space-y-4">
+                                <!-- New Problem Option -->
+                                <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                                    <label class="flex items-center space-x-2 cursor-pointer mb-2">
+                                        <input type="radio" name="consultType" value="new" onchange="toggleConsultType(this.value)" class="accent-brand-primary w-4 h-4" ${activeVisit.consultType === 'new' ? 'checked' : ''}>
+                                        <span class="text-sm font-bold text-gray-700">New problem</span>
+                                    </label>
+                                    <div id="newProblemArea" class="${activeVisit.consultType === 'new' ? 'block' : 'hidden'} pl-6 mt-2">
+                                        <label class="block text-xs font-semibold text-gray-600 mb-1">Chief complaint</label>
+                                        <textarea class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-1 focus:ring-brand-primary outline-none resize-none bg-white" rows="2" placeholder="Describe chief complaint...">${activeVisit.consultType === 'new' ? activeVisit.reason : ''}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Follow-up Option -->
+                                <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                                    <label class="flex items-center space-x-2 cursor-pointer mb-2">
+                                        <input type="radio" name="consultType" value="followup" onchange="toggleConsultType(this.value)" class="accent-brand-primary w-4 h-4" ${activeVisit.consultType !== 'new' ? 'checked' : ''}>
+                                        <span class="text-sm font-bold text-gray-700">Follow-up</span>
+                                    </label>
+                                    <div id="followupArea" class="${activeVisit.consultType !== 'new' ? 'block' : 'hidden'} pl-6 mt-3 space-y-3">
+                                        
+                                        <div>
+                                            <label class="flex items-center space-x-2 cursor-pointer">
+                                                <input type="radio" name="fuType" value="new_complaint" onchange="toggleFUType(this.value)" class="accent-brand-primary w-4 h-4" ${activeVisit.followup === 'new' ? 'checked' : ''}>
+                                                <span class="text-sm text-gray-700">New complaint</span>
+                                            </label>
+                                            <div id="fuNewComplaintArea" class="${activeVisit.followup === 'new' ? 'block' : 'hidden'} pl-6 mt-2">
+                                                 <textarea class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-1 focus:ring-brand-primary outline-none resize-none bg-white" rows="2" placeholder="Describe new complaint...">${activeVisit.consultType !== 'new' && activeVisit.followup === 'new' ? activeVisit.reason : ''}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="flex items-center space-x-2 cursor-pointer">
+                                                <input type="radio" name="fuType" value="no_complaint" onchange="toggleFUType(this.value)" class="accent-brand-primary w-4 h-4" ${activeVisit.followup === 'none' ? 'checked' : ''}>
+                                                <span class="text-sm text-gray-700">No complaints</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (state.mainTab === 'Appointments') {
+                const isToday = state.apptSubTab === 'today';
+                container.innerHTML = `
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col max-w-4xl mx-auto h-[600px]">
+                        <div class="flex border-b border-gray-200 bg-gray-50 shrink-0">
+                            <button onclick="switchApptTab('today')" class="flex-1 py-4 text-sm font-semibold transition ${isToday ? 'bg-white text-brand-primary border-b-2 border-brand-primary' : 'text-gray-500 hover:text-gray-700'}">Today's Clients</button>
+                            <button onclick="switchApptTab('upcoming')" class="flex-1 py-4 text-sm font-semibold transition ${!isToday ? 'bg-white text-brand-primary border-b-2 border-brand-primary' : 'text-gray-500 hover:text-gray-700'}">Scheduled in Advance</button>
+                        </div>
+                        <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50">
+                            ${isToday ? `
+                                <h3 class="text-sm font-bold text-gray-700 mb-4">Appointments for October 9, 2026</h3>
+                                <ul class="space-y-3">
+                                    <li class="p-4 border rounded-xl flex justify-between items-center bg-white shadow-sm hover:shadow-md transition">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="bg-brand-50 text-brand-primary font-bold p-2 rounded-lg text-center min-w-[70px]">
+                                                <div class="text-xs uppercase">Oct 9</div>
+                                                <div class="text-sm">09:00</div>
+                                            </div>
+                                            <div><p class="font-bold text-gray-900">Caren Anne Rubia Centino</p><p class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-rotate mr-1"></i> Follow-up • Hypertension</p></div>
+                                        </div>
+                                        <button onclick="switchPatient('P251AQWSO'); switchMainTab('Summary');" class="text-brand-primary text-xs font-semibold px-4 py-2 bg-brand-50 rounded-lg hover:bg-brand-100 transition shadow-sm border border-brand-200">Open Chart</button>
+                                    </li>
+                                    <li class="p-4 border rounded-xl flex justify-between items-center bg-white shadow-sm hover:shadow-md transition">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="bg-brand-50 text-brand-primary font-bold p-2 rounded-lg text-center min-w-[70px]">
+                                                <div class="text-xs uppercase">Oct 9</div>
+                                                <div class="text-sm">11:30</div>
+                                            </div>
+                                            <div><p class="font-bold text-gray-900">Daniel Joseph Alonte</p><p class="text-xs text-gray-500 mt-1"><i class="fa-regular fa-calendar-plus mr-1"></i> New Consult • Physical</p></div>
+                                        </div>
+                                        <button onclick="switchPatient('P251SZQCL'); switchMainTab('Summary');" class="text-brand-primary text-xs font-semibold px-4 py-2 bg-brand-50 rounded-lg hover:bg-brand-100 transition shadow-sm border border-brand-200">Open Chart</button>
+                                    </li>
+                                </ul>
+                            ` : `
+                                <h3 class="text-sm font-bold text-gray-700 mb-4">Upcoming Schedule</h3>
+                                <ul class="space-y-3">
+                                    <li class="p-4 border border-amber-200 rounded-xl flex justify-between items-center bg-amber-50 shadow-sm">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="bg-amber-200 text-amber-800 font-bold p-2 rounded-lg text-center min-w-[70px]">
+                                                <div class="text-xs uppercase">Oct 12</div>
+                                                <div class="text-sm">10:00</div>
+                                            </div>
+                                            <div><p class="font-bold text-gray-900">Ren Louise Abadiano Cruz</p><p class="text-xs text-gray-600 mt-1">Lab Results Review</p></div>
+                                        </div>
+                                        <span class="text-xs bg-white text-amber-700 px-3 py-1 rounded-full font-bold shadow-sm border border-amber-200">Upcoming</span>
+                                    </li>
+                                </ul>
+                            `}
+                        </div>
+                    </div>
+                `;
+            } else {
+                const addBtnHtml = renderAddButton(state.mainTab);
+                const headerHtml = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-800">${state.mainTab}</h2>
+                        ${addBtnHtml}
+                    </div>
+                `;
+
+                let innerContent = '';
+                
+                if (state.mainTab === 'Vitals') {
+                    innerContent = `
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-white border rounded-lg p-4 text-center shadow-sm"><div class="text-gray-500 text-xs mb-1">Heart Rate</div><div class="text-2xl font-bold text-gray-800">${activeVisit.vitals.hr}</div></div>
+                            <div class="bg-white border rounded-lg p-4 text-center shadow-sm"><div class="text-gray-500 text-xs mb-1">Blood Pressure</div><div class="text-2xl font-bold text-gray-800">${activeVisit.vitals.bp}</div></div>
+                            <div class="bg-white border rounded-lg p-4 text-center shadow-sm"><div class="text-gray-500 text-xs mb-1">Temp (°C)</div><div class="text-2xl font-bold text-gray-800">${activeVisit.vitals.temp}</div></div>
+                            <div class="bg-white border rounded-lg p-4 text-center shadow-sm"><div class="text-gray-500 text-xs mb-1">Weight (kg)</div><div class="text-2xl font-bold text-gray-800">${activeVisit.vitals.w}</div></div>
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Diagnosis') {
+                     innerContent = `
+                        <div class="bg-white border rounded-lg p-4 shadow-sm space-y-2">
+                            ${(activeVisit.diagnoses || []).length > 0 ? activeVisit.diagnoses.map(d => `<div class="p-3 bg-gray-50 rounded border text-sm font-medium flex justify-between items-center text-gray-800"><span class="flex items-center"><i class="fa-solid fa-stethoscope text-brand-primary mr-2"></i>${d}</span> <button class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-trash-can text-xs"></i></button></div>`).join('') : '<p class="text-gray-500 text-sm italic">No diagnoses recorded.</p>'}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Prescription') {
+                     innerContent = `
+                        <div class="mb-4 flex justify-between items-center bg-blue-50 border border-brand-200 p-3 rounded-lg shadow-sm">
+                            <div>
+                                <h3 class="text-sm font-bold text-brand-primaryDark">Active Prescriptions</h3>
+                                <p class="text-xs text-gray-600">Review and print the current medication list.</p>
+                            </div>
+                            <button onclick="printPrescriptionA5()" class="px-4 py-2 bg-brand-primary text-white rounded shadow text-xs font-semibold hover:bg-brand-primaryHover transition flex items-center space-x-2">
+                                <i class="fa-solid fa-print"></i> <span>Print A5 Prescription</span>
+                            </button>
+                        </div>
+                        <div class="bg-white border rounded-lg p-4 shadow-sm space-y-2">
+                            ${(activeVisit.rx || []).length > 0 ? activeVisit.rx.map(r => `<div class="p-3 bg-gray-50 rounded border text-sm font-medium flex justify-between items-center text-gray-800"><span class="flex items-center"><i class="fa-solid fa-capsules text-emerald-500 mr-2"></i>${r}</span> <button class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-trash-can text-xs"></i></button></div>`).join('') : '<p class="text-gray-500 text-sm italic">No prescriptions recorded.</p>'}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Allergies') {
+                    innerContent = `
+                        <div class="bg-white border rounded-lg p-4 shadow-sm space-y-2">
+                            ${(activeVisit.allergies || []).length > 0 ? activeVisit.allergies.map(a => `<div class="p-3 bg-red-50 rounded border border-red-100 text-sm font-medium flex justify-between items-center text-red-800"><span class="flex items-center"><i class="fa-solid fa-triangle-exclamation mr-2"></i>${a}</span> <button class="text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-trash-can text-xs"></i></button></div>`).join('') : '<p class="text-gray-500 text-sm italic">No known allergies.</p>'}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'SOAP Notes') {
+                    const soap = activeVisit.soap || {s:'', o:'', a:'', p:''};
+                    innerContent = `
+                        <div class="bg-white border rounded-lg p-6 shadow-sm space-y-5">
+                            ${soap.s ? `
+                            <div><h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="bg-brand-primary text-white w-6 h-6 flex items-center justify-center rounded text-xs mr-2">S</span> Subjective</h4><p class="text-sm text-gray-700 bg-gray-50 border p-3 rounded whitespace-pre-line">${soap.s}</p></div>
+                            <div><h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="bg-brand-primary text-white w-6 h-6 flex items-center justify-center rounded text-xs mr-2">O</span> Objective</h4><p class="text-sm text-gray-700 bg-gray-50 border p-3 rounded whitespace-pre-line">${soap.o}</p></div>
+                            <div><h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="bg-brand-primary text-white w-6 h-6 flex items-center justify-center rounded text-xs mr-2">A</span> Assessment</h4><p class="text-sm text-gray-700 bg-gray-50 border p-3 rounded whitespace-pre-line">${soap.a}</p></div>
+                            <div><h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="bg-brand-primary text-white w-6 h-6 flex items-center justify-center rounded text-xs mr-2">P</span> Plan</h4><p class="text-sm text-gray-700 bg-gray-50 border p-3 rounded whitespace-pre-line">${soap.p}</p></div>
+                            ` : '<p class="text-gray-500 text-sm italic">No SOAP notes recorded for this visit.</p>'}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Immunization') {
+                    innerContent = `
+                        <div class="bg-white border rounded-lg p-4 shadow-sm space-y-2">
+                            ${(activeVisit.immunization || []).length > 0 ? activeVisit.immunization.map(i => `<div class="p-3 bg-gray-50 rounded border text-sm font-medium flex justify-between items-center text-gray-800"><span class="flex items-center"><i class="fa-solid fa-syringe text-brand-primary mr-2"></i>${i}</span> <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">Administered</span></div>`).join('') : '<p class="text-gray-500 text-sm italic">No immunizations recorded.</p>'}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Service Request' || state.mainTab === 'Procedures' || state.mainTab === 'Files' || state.mainTab === 'Imaging') {
+                    const dataArray = activeVisit[state.mainTab === 'Service Request' ? 'serviceRequests' : (state.mainTab === 'Procedures' ? 'procedures' : (state.mainTab === 'Files' ? 'files' : 'imaging'))] || [];
+                    const iconMap = { 'Service Request': 'fa-notes-medical', 'Procedures': 'fa-user-doctor', 'Files': 'fa-paperclip', 'Imaging': 'fa-x-ray' };
+                    const icon = iconMap[state.mainTab];
+                    
+                    innerContent = `
+                        <div class="bg-white border rounded-lg p-4 shadow-sm space-y-2">
+                            ${dataArray.length > 0 ? dataArray.map(item => `<div class="p-3 bg-gray-50 rounded border text-sm font-medium flex justify-between items-center text-gray-800"><span class="flex items-center"><i class="fa-solid ${icon} text-brand-primary mr-2"></i>${item}</span> <button class="text-brand-primary hover:underline text-xs font-semibold">View Details</button></div>`).join('') : `<p class="text-gray-500 text-sm italic">No ${state.mainTab.toLowerCase()} recorded.</p>`}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Medical Records') {
+                     innerContent = `
+                        <div class="bg-white border rounded-lg p-4 shadow-sm space-y-2">
+                            ${(activeVisit.medRecords || []).length > 0 ? activeVisit.medRecords.map(m => `<div class="p-3 bg-gray-50 rounded border text-sm font-medium flex justify-between items-center text-gray-800"><span class="flex items-center"><i class="fa-solid fa-file-medical text-brand-primary mr-2"></i>${m}</span> <button class="text-brand-primary hover:underline text-xs">View Document</button></div>`).join('') : '<p class="text-gray-500 text-sm italic">No medical records found for this visit.</p>'}
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Laboratory Records') {
+                     innerContent = `
+                        <div class="bg-white border rounded-lg overflow-hidden shadow-sm mb-4">
+                            <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-flask text-purple-500 mr-2"></i>Complete Blood Count (CBC)</h3>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-bold border border-emerald-200">Verified</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-gray-50/50 text-gray-500 border-b">
+                                        <tr><th class="py-2 px-4 font-semibold">Test Name</th><th class="py-2 px-4 font-semibold">Result</th><th class="py-2 px-4 font-semibold">Units</th><th class="py-2 px-4 font-semibold">Ref Range</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b"><td class="py-2.5 px-4 font-medium text-gray-800">White Blood Cells (WBC)</td><td class="py-2.5 px-4 text-red-600 font-bold bg-red-50/50 flex items-center">12.5 <i class="fa-solid fa-arrow-up text-[10px] ml-1"></i></td><td class="py-2.5 px-4 text-gray-600">x10^3/uL</td><td class="py-2.5 px-4 text-gray-500">4.5 - 11.0</td></tr>
+                                        <tr class="border-b"><td class="py-2.5 px-4 font-medium text-gray-800">Red Blood Cells (RBC)</td><td class="py-2.5 px-4 text-gray-800">4.8</td><td class="py-2.5 px-4 text-gray-600">x10^6/uL</td><td class="py-2.5 px-4 text-gray-500">4.0 - 5.2</td></tr>
+                                        <tr class="border-b"><td class="py-2.5 px-4 font-medium text-gray-800">Hemoglobin (HGB)</td><td class="py-2.5 px-4 text-gray-800">13.2</td><td class="py-2.5 px-4 text-gray-600">g/dL</td><td class="py-2.5 px-4 text-gray-500">12.0 - 16.0</td></tr>
+                                        <tr class="border-b"><td class="py-2.5 px-4 font-medium text-gray-800">Platelet Count</td><td class="py-2.5 px-4 text-gray-800">250</td><td class="py-2.5 px-4 text-gray-600">x10^3/uL</td><td class="py-2.5 px-4 text-gray-500">150 - 400</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Clinical Notes') {
+                     innerContent = `
+                        <div class="bg-white border rounded-lg p-5 shadow-sm">
+                            <p class="text-sm text-gray-700 leading-relaxed">${activeVisit.notes}</p>
+                        </div>
+                    `;
+                } else if (state.mainTab === 'Ophthalmology') {
+                    const ophtha = activeVisit.ophtha || { notes: '' };
+                    
+                    innerContent = `
+                        <div class="bg-white border rounded-lg p-5 shadow-sm mb-4">
+                            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                                <h2 class="text-lg font-bold text-gray-900">Ophthalmology Assessment</h2>
+                                <div class="flex space-x-2">
+                                    <button onclick="handleAddData('Ophthalmology Data')" class="px-3 py-1.5 bg-brand-50 text-brand-primary border border-brand-200 rounded shadow-sm text-xs font-semibold hover:bg-brand-100 transition flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-floppy-disk"></i> <span>Save Assessment</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-5">
+                                <label class="block text-sm font-semibold text-gray-800 mb-2">Summary Notes</label>
+                                <textarea class="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-1 focus:ring-brand-primary outline-none resize-none bg-gray-50" rows="3" placeholder="Enter ophthalmology summary notes...">${ophtha.notes}</textarea>
+                            </div>
+                            
+                            <div class="mb-3 flex justify-between items-center">
+                                <label class="block text-sm font-semibold text-gray-800">Eye Diagrams (Draw to Annotate)</label>
+                                <div class="flex space-x-2 items-center">
+                                    <span class="text-xs text-gray-500 mr-2">Ink Color:</span>
+                                    <button class="w-5 h-5 rounded-full bg-red-500 ophtha-color-btn ring-2 ring-offset-2 ring-gray-400" data-color="#ef4444" onclick="setOphthaColor('#ef4444')"></button>
+                                    <button class="w-5 h-5 rounded-full bg-blue-500 ophtha-color-btn" data-color="#3ea4f5" onclick="setOphthaColor('#3ea4f5')"></button>
+                                    <button class="w-5 h-5 rounded-full bg-emerald-500 ophtha-color-btn" data-color="#10b981" onclick="setOphthaColor('#10b981')"></button>
+                                    <button class="w-5 h-5 rounded-full bg-gray-900 ophtha-color-btn" data-color="#111827" onclick="setOphthaColor('#111827')"></button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="border border-gray-200 rounded-lg overflow-hidden flex flex-col bg-white shadow-inner">
+                                    <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center shrink-0">
+                                        <span class="font-bold text-sm text-gray-700">OD - Right Eye</span>
+                                        <button onclick="clearOphthaCanvas('eyeCanvasRight')" class="text-xs text-gray-500 hover:text-red-500"><i class="fa-solid fa-eraser"></i> Clear</button>
+                                    </div>
+                                    <canvas id="eyeCanvasRight" width="400" height="250" class="w-full h-auto cursor-crosshair bg-white flex-1"></canvas>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg overflow-hidden flex flex-col bg-white shadow-inner">
+                                    <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center shrink-0">
+                                        <span class="font-bold text-sm text-gray-700">OS - Left Eye</span>
+                                        <button onclick="clearOphthaCanvas('eyeCanvasLeft')" class="text-xs text-gray-500 hover:text-red-500"><i class="fa-solid fa-eraser"></i> Clear</button>
+                                    </div>
+                                    <canvas id="eyeCanvasLeft" width="400" height="250" class="w-full h-auto cursor-crosshair bg-white flex-1"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    // Initialize the canvases immediately after injecting the HTML
+                    setTimeout(() => window.initOphthaCanvases(), 10);
+                } else {
+                    innerContent = `
+                        <div class="flex flex-col items-center justify-center py-20 text-gray-400 bg-white border border-dashed border-gray-300 rounded-lg">
+                            <i class="fa-regular fa-folder-open text-5xl mb-4 text-gray-300"></i>
+                            <p>No records found for ${state.mainTab} on ${activeVisit.dateLabel}.</p>
+                            <button onclick="handleAddData('${state.mainTab}')" class="mt-4 text-brand-primary text-sm font-semibold hover:underline">Click to add new entry</button>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML = dateTabsHtml + headerHtml + innerContent;
+            }
+        }
+
+        function switchPatient(id) {
+            state.patientId = id;
+            state.visitDateId = 'current'; 
+            switchGlobalView('patient');
+            renderSidebar();
+            renderHeader();
+            renderContent();
+        }
+
+        function switchMainTab(tab) {
+            state.mainTab = tab;
+            if (tab === 'Appointments') {
+                state.sidebarTab = 'appointments';
+                renderSidebar();
+            } else if (state.sidebarTab === 'appointments') {
+                state.sidebarTab = 'patients';
+                renderSidebar();
+            }
+            renderMainTabs();
+            renderContent();
+        }
+
+        function switchDateTab(dateId) {
+            state.visitDateId = dateId;
+            renderContent();
+        }
+
+        function switchApptTab(tabId) {
+            state.apptSubTab = tabId;
+            renderContent();
+        }
+
+        function handleAddData(category) {
+            document.getElementById('infoModalIcon').className = "fa-solid fa-plus-circle text-4xl text-brand-primary mb-3";
+            document.getElementById('infoModalTitle').innerText = `Add ${category}`;
+            document.getElementById('infoModalText').innerText = `Opening data entry form for ${category}...`;
+            toggleModal('infoModal');
+        }
+
+        function handleSuccessAction(sourceModalId, title, message) {
+            toggleModal(sourceModalId);
+            document.getElementById('infoModalIcon').className = "fa-solid fa-circle-check text-4xl text-emerald-500 mb-3";
+            document.getElementById('infoModalTitle').innerText = title;
+            document.getElementById('infoModalText').innerText = message;
+            toggleModal('infoModal');
+        }
+
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+            el.classList.toggle('flex');
+        }
+
+        function handlePrint() {
+            document.getElementById('infoModalIcon').className = "fa-solid fa-print text-4xl text-emerald-500 mb-3";
+            document.getElementById('infoModalTitle').innerText = "Print Started";
+            document.getElementById('infoModalText').innerText = "Generating consultation summary for printing...";
+            toggleModal('infoModal');
+            setTimeout(() => { toggleModal('infoModal'); window.print(); }, 1500);
+        }
+
+        function handleLabPDF() {
+            const container = document.getElementById('labFilesContainer');
+            const p = patientsData[state.patientId];
+            
+            container.innerHTML = '';
+            
+            // Filter visits that actually have lab records
+            const visitsWithLabs = p.visits.filter(v => v.labRecords && v.labRecords.length > 0);
+
+            if (visitsWithLabs.length === 0) {
+                container.innerHTML = `
+                    <div class="m-auto flex flex-col items-center justify-center text-white/50 h-full w-full">
+                        <i class="fa-solid fa-folder-open text-6xl mb-4"></i>
+                        <p class="text-xl font-medium text-center">No laboratory records found for ${p.name}.</p>
+                    </div>
+                `;
+            } else {
+                visitsWithLabs.forEach(visit => {
+                    const recordsHtml = visit.labRecords.map(r => `
+                        <div class="mb-5 shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="flex justify-between items-center bg-brand-50 p-3 border-b border-gray-200">
+                                <span class="font-bold text-gray-800 text-sm flex items-center"><i class="fa-solid fa-flask text-brand-primary mr-2"></i>${r}</span>
+                                <span class="text-xs bg-white px-2 py-1 rounded shadow-sm border border-gray-200 text-brand-primary font-bold">Finalized</span>
+                            </div>
+                            <div class="bg-white text-sm overflow-x-auto">
+                                <table class="w-full text-left border-collapse min-w-[300px]">
+                                    <tr class="border-b bg-gray-50"><th class="py-2 px-3 text-gray-600 font-semibold text-xs uppercase">Test Parameter</th><th class="py-2 px-3 text-gray-600 font-semibold text-xs uppercase">Result</th><th class="py-2 px-3 text-gray-600 font-semibold text-xs uppercase">Ref. Range</th></tr>
+                                    <tr class="border-b"><td class="py-2 px-3 font-medium text-gray-800">Sample Metric A</td><td class="px-3 text-emerald-600 font-bold">Normal</td><td class="px-3 text-gray-500">10-20</td></tr>
+                                    <tr class="border-b bg-gray-50"><td class="py-2 px-3 font-medium text-gray-800">Sample Metric B</td><td class="px-3 text-emerald-600 font-bold">Normal</td><td class="px-3 text-gray-500">5-15</td></tr>
+                                </table>
+                                <div class="p-4 space-y-2 opacity-30 mt-2">
+                                    <div class="h-2.5 bg-gray-400 rounded w-full"></div>
+                                    <div class="h-2.5 bg-gray-400 rounded w-5/6"></div>
+                                    <div class="h-2.5 bg-gray-400 rounded w-4/6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    container.innerHTML += `
+                        <div class="w-[85vw] md:w-[600px] flex-shrink-0 bg-white rounded shadow-2xl h-full flex flex-col relative overflow-hidden">
+                            <!-- Paper Header -->
+                            <div class="bg-white border-b-4 border-brand-primary p-4 md:p-6 shrink-0 flex flex-col md:flex-row justify-between items-start gap-4">
+                                <div>
+                                    <h3 class="font-black text-xl md:text-2xl text-gray-900 uppercase tracking-wider flex items-center"><i class="fa-solid fa-file-medical text-brand-primary mr-2"></i> Lab Report</h3>
+                                    <p class="text-gray-500 font-medium text-sm mt-1 uppercase font-bold tracking-wide">Oasis Diagnostic and Laboratory Center</p>
+                                </div>
+                                <div class="text-left md:text-right">
+                                    <div class="text-brand-primary font-bold text-lg">${visit.dateLabel}</div>
+                                    <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider font-bold">ID: ${p.id}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Patient Info Block -->
+                            <div class="px-4 md:px-6 py-4 bg-gray-50 border-b border-gray-200 shrink-0 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm shadow-inner">
+                                <div><span class="text-gray-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Patient Name</span><strong class="text-gray-900 text-base">\${p.name}</strong></div>
+                                <div><span class="text-gray-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Demographics</span><strong class="text-gray-800">\${p.demo}</strong></div>
+                                <div><span class="text-gray-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Requesting Doc</span><strong class="text-gray-800">Dr. Daniel Hernandez</strong></div>
+                                <div><span class="text-gray-400 block text-[10px] uppercase font-bold tracking-wider mb-0.5">Validation</span><strong class="text-emerald-600"><i class="fa-solid fa-certificate mr-1"></i> Digitally Signed</strong></div>
+                            </div>
+
+                            <!-- Results body -->
+                            <div class="p-4 md:p-6 flex-1 overflow-y-auto bg-gray-50/30">
+                                ${recordsHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            toggleModal('labFilesModal');
+        }
+
+        function toggleAnalytics() {
+            toggleModal('analyticsScreen');
+        }
+
+        function toggleDoctorProfilePanel() {
+            const panel = document.getElementById('doctorProfilePanel');
+            panel.classList.toggle('translate-x-full');
+        }
+
+        function toggleReferralComments() {
+            const panel = document.getElementById('referralsPanel');
+            if (panel.classList.contains('translate-x-full')) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+                closeRefThread(); 
+            }
+        }
+
+        function openRefThread(id) {
+            document.getElementById('refListView').classList.add('hidden');
+            document.getElementById('refThreadView').classList.remove('hidden');
+            document.getElementById('refThreadView').classList.add('flex');
+        }
+
+        function closeRefThread() {
+            document.getElementById('refListView').classList.remove('hidden');
+            document.getElementById('refThreadView').classList.add('hidden');
+            document.getElementById('refThreadView').classList.remove('flex');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            // Applying negative left margin slides the sidebar out of view 
+            // and allows the main content to smoothly expand to full width.
+            sidebar.classList.toggle('-ml-72');
+        }
+
+        function toggleProfileModal() {
+            const modal = document.getElementById('profileModal');
+            if (modal.classList.contains('hidden')) {
+                const p = patientsData[state.patientId];
+                document.getElementById('profAvatar').src = p.avatar;
+                document.getElementById('profName').innerText = p.name;
+                document.getElementById('profId').innerText = p.id;
+                document.getElementById('profDob').innerText = p.dob || 'N/A';
+                document.getElementById('profBlood').innerText = p.bloodType || 'N/A';
+                document.getElementById('profPhone').innerText = p.phone || 'N/A';
+                document.getElementById('profEmail').innerText = p.email || 'N/A';
+                document.getElementById('profAddress').innerText = p.address || 'N/A';
+                document.getElementById('profEmergName').innerText = p.emergName || 'N/A';
+                document.getElementById('profEmergRel').innerText = p.emergRel || 'N/A';
+                document.getElementById('profEmergPhone').innerText = p.emergPhone || 'N/A';
+                document.getElementById('profInsProvider').innerText = p.insProvider || 'N/A';
+                document.getElementById('profInsPolicy').innerText = p.insPolicy || 'N/A';
+                document.getElementById('profInsGroup').innerText = p.insGroup || 'N/A';
+            }
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        window.toggleConsultType = function(value) {
+            document.getElementById('newProblemArea').classList.toggle('hidden', value !== 'new');
+            document.getElementById('newProblemArea').classList.toggle('block', value === 'new');
+            
+            document.getElementById('followupArea').classList.toggle('hidden', value !== 'followup');
+            document.getElementById('followupArea').classList.toggle('block', value === 'followup');
+        }
+
+        window.toggleFUType = function(value) {
+            document.getElementById('fuNewComplaintArea').classList.toggle('hidden', value !== 'new_complaint');
+            document.getElementById('fuNewComplaintArea').classList.toggle('block', value === 'new_complaint');
+        }
+
+        window.printPrescriptionA5 = function() {
+            const p = patientsData[state.patientId];
+            const activeVisit = p.visits.find(v => v.dateId === state.visitDateId) || p.visits[0];
+
+            if (!activeVisit.rx || activeVisit.rx.length === 0) {
+                handleSuccessAction('infoModal', 'No Prescriptions', 'There are no active prescriptions to print for this visit.');
+                return;
+            }
+
+            const printWindow = window.open('', '_blank', 'width=700,height=800');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Prescription - ${p.name}</title>
+                    <style>
+                        @page { size: A5 portrait; margin: 10mm; }
+                        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11pt; color: #111; margin: 0; padding: 15px; }
+                        .header { text-align: center; border-bottom: 2px solid #3ea4f5; padding-bottom: 10px; margin-bottom: 15px; }
+                        .header h1 { margin: 0; font-size: 16pt; color: #1a6ba8; text-transform: uppercase; letter-spacing: 1px; }
+                        .header p { margin: 2px 0; font-size: 9pt; color: #555; }
+                        .rx-symbol { font-size: 44pt; font-family: serif; font-weight: bold; margin-bottom: 15px; color: #222; }
+                        .patient-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 10pt; border-bottom: 1px dashed #ccc; padding-bottom: 12px; }
+                        .medications { margin-bottom: 40px; min-height: 250px; }
+                        .med-item { margin-bottom: 20px; padding-left: 15px; }
+                        .med-name { font-weight: bold; font-size: 12pt; }
+                        .med-sig { font-style: italic; color: #555; font-size: 10pt; margin-top: 4px; }
+                        .signature-area { margin-top: auto; display: flex; justify-content: flex-end; }
+                        .signature-box { text-align: center; width: 220px; }
+                        .signature-line { border-bottom: 1px solid #000; margin-bottom: 5px; height: 50px; }
+                        .signature-label { font-size: 10pt; font-weight: bold; }
+                        .footer { margin-top: 25px; text-align: center; font-size: 8pt; color: #777; border-top: 1px solid #eee; padding-top: 10px; }
+                        @media print { body { -webkit-print-color-adjust: exact; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Oasis Diagnostic and Laboratory Center</h1>
+                        <p>123 Health Ave, Medical District | Phone: +63 917 888 1234</p>
+                        <p><strong>Dr. Daniel Hernandez, MD</strong> - Cardiology</p>
+                    </div>
+                    <div class="patient-info">
+                        <div>
+                            <strong>Patient Name:</strong> ${p.name}<br>
+                            <strong>DOB / Age:</strong> ${p.dob}
+                        </div>
+                        <div style="text-align: right;">
+                            <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+                            <strong>Patient ID:</strong> ${p.id}
+                        </div>
+                    </div>
+                    <div class="rx-symbol">Rx</div>
+                    <div class="medications">
+                        ${activeVisit.rx.map(r => `
+                            <div class="med-item">
+                                <div class="med-name">${r}</div>
+                                <div class="med-sig">Sig: Take 1 tablet daily as directed by physician.</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="signature-area">
+                        <div class="signature-box">
+                            <div class="signature-line"></div>
+                            <div class="signature-label">Dr. Daniel Hernandez, MD</div>
+                            <div style="font-size: 8pt; color: #555; margin-top: 2px;">Lic No: 894021</div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        This prescription is digitally generated and valid only for the patient named above.
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => { printWindow.print(); }, 500);
+        }
+
+        const analyticsTemplates = {
+            vitals: `
+                <div class="w-full h-full p-4 flex flex-col items-center justify-center bg-white text-sm min-h-[250px]">
+                    <svg viewBox="0 0 400 150" class="w-full h-full drop-shadow-sm overflow-visible">
+                        <line x1="0" y1="20" x2="400" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                        <line x1="0" y1="75" x2="400" y2="75" stroke="#f1f5f9" stroke-width="1"/>
+                        <line x1="0" y1="130" x2="400" y2="130" stroke="#e2e8f0" stroke-width="1"/>
+                        <text x="0" y="15" fill="#94a3b8" font-size="10">140</text>
+                        <text x="0" y="70" fill="#94a3b8" font-size="10">100</text>
+                        <text x="0" y="125" fill="#94a3b8" font-size="10">60</text>
+                        <polyline points="40,50 150,30 260,60 370,40" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="40" cy="50" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                        <circle cx="150" cy="30" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                        <circle cx="260" cy="60" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                        <circle cx="370" cy="40" r="4" fill="#ef4444" stroke="white" stroke-width="2"/>
+                        <text x="370" y="25" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="middle">130</text>
+                        <polyline points="40,110 150,90 260,115 370,100" fill="none" stroke="#3ea4f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="40" cy="110" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                        <circle cx="150" cy="90" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                        <circle cx="260" cy="115" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                        <circle cx="370" cy="100" r="4" fill="#3ea4f5" stroke="white" stroke-width="2"/>
+                        <text x="370" y="85" fill="#3ea4f5" font-size="10" font-weight="bold" text-anchor="middle">85</text>
+                        <text x="40" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Jan</text>
+                        <text x="150" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Mar</text>
+                        <text x="260" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Jun</text>
+                        <text x="370" y="145" fill="#94a3b8" font-size="10" text-anchor="middle">Current</text>
+                    </svg>
+                    <div class="flex justify-center space-x-6 mt-3 shrink-0">
+                        <span class="text-[11px] text-gray-600 font-medium flex items-center"><span class="w-3 h-3 rounded-full bg-red-500 mr-1.5 shadow-sm"></span> Systolic BP</span>
+                        <span class="text-[11px] text-gray-600 font-medium flex items-center"><span class="w-3 h-3 rounded-full bg-brand-primary mr-1.5 shadow-sm"></span> Diastolic BP</span>
+                    </div>
+                </div>
+            `,
+            labs: `
+                <div class="p-4 text-sm w-full">
+                    <h4 class="font-bold text-gray-800 mb-2">Recent Complete Blood Count</h4>
+                    <table class="w-full text-left border-collapse">
+                        <tr class="border-b bg-gray-50"><th class="py-2 px-1">Test</th><th>Result</th><th>Ref</th></tr>
+                        <tr class="border-b text-red-600"><td class="py-2 px-1 font-medium">WBC</td><td>12.5 H</td><td>4.5-11.0</td></tr>
+                        <tr class="border-b"><td class="py-2 px-1 font-medium">RBC</td><td>4.8</td><td>4.0-5.2</td></tr>
+                        <tr class="border-b"><td class="py-2 px-1 font-medium">HGB</td><td>13.2</td><td>12.0-16.0</td></tr>
+                    </table>
+                </div>
+            `,
+            rx: `
+                <div class="p-4 text-sm space-y-3 w-full">
+                     <div class="p-3 border rounded bg-gray-50 flex items-start space-x-3">
+                        <i class="fa-solid fa-capsules text-emerald-500 mt-0.5"></i>
+                        <div><strong>Lisinopril 10mg</strong><div class="text-xs text-gray-500">1 tab daily (Active)</div></div>
+                     </div>
+                     <div class="p-3 border rounded bg-gray-50 flex items-start space-x-3">
+                        <i class="fa-solid fa-capsules text-emerald-500 mt-0.5"></i>
+                        <div><strong>Metformin 500mg</strong><div class="text-xs text-gray-500">BID (Active)</div></div>
+                     </div>
+                </div>
+            `,
+            dx: `
+                <div class="p-4 text-sm space-y-2 w-full">
+                    <div class="p-3 bg-gray-50 rounded border text-sm font-medium flex items-center text-gray-800"><i class="fa-solid fa-stethoscope text-brand-primary mr-2"></i> Essential hypertension</div>
+                    <div class="p-3 bg-gray-50 rounded border text-sm font-medium flex items-center text-gray-800"><i class="fa-solid fa-stethoscope text-brand-primary mr-2"></i> Anxiety</div>
+                </div>
+            `,
+            notes: `
+                <div class="p-4 text-sm w-full">
+                    <p class="text-gray-700 bg-yellow-50 p-3 rounded border border-yellow-100">Patient shows mild improvement in BP management. Continue current medication regimen. Next follow up in 3 months.</p>
+                </div>
+            `,
+            imaging: `
+                <div class="p-4 flex flex-col items-center justify-center text-gray-400 bg-gray-50 h-full min-h-[200px] w-full">
+                    <i class="fa-solid fa-x-ray text-4xl mb-2 text-gray-300"></i>
+                    <p>No recent imaging available</p>
+                </div>
+            `,
+            meds: `
+                <div class="p-4 text-sm space-y-2 w-full">
+                    <div class="p-3 bg-gray-50 rounded border text-sm font-medium flex items-center text-gray-800"><i class="fa-solid fa-file-medical text-brand-primary mr-2"></i> ECG Report (Pending)</div>
+                    <div class="p-3 bg-gray-50 rounded border text-sm font-medium flex items-center text-gray-800"><i class="fa-solid fa-file-medical text-brand-primary mr-2"></i> Annual Physical Form (2023)</div>
+                </div>
+            `
+        };
+
+        window.changeAnalyticsView = function(selectElem) {
+            const panelContent = selectElem.closest('.bg-white.rounded-xl').querySelector('.analytics-panel-content');
+            if (panelContent && analyticsTemplates[selectElem.value]) {
+                panelContent.innerHTML = analyticsTemplates[selectElem.value];
+            }
+        };
+
+        // --- OPHTHALMOLOGY CANVAS LOGIC ---
+        window.currentOphthaColor = '#ef4444'; // Default to red
+
+        window.initOphthaCanvases = function() {
+            const canvases = ['eyeCanvasRight', 'eyeCanvasLeft'];
+            
+            canvases.forEach(id => {
+                const canvas = document.getElementById(id);
+                if (!canvas) return;
+                
+                // Draw template background
+                clearOphthaCanvas(id);
+                
+                const ctx = canvas.getContext('2d');
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+                
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                
+                function draw(e) {
+                    if (!isDrawing) return;
+                    const rect = canvas.getBoundingClientRect();
+                    // Calculate scale to match internal 400x250 resolution vs responsive CSS size
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    const x = (e.clientX - rect.left) * scaleX;
+                    const y = (e.clientY - rect.top) * scaleY;
+                    
+                    ctx.strokeStyle = window.currentOphthaColor;
+                    ctx.lineWidth = 4;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    
+                    [lastX, lastY] = [x, y];
+                }
+                
+                // Mouse Events
+                canvas.addEventListener('mousedown', (e) => {
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    lastX = (e.clientX - rect.left) * scaleX;
+                    lastY = (e.clientY - rect.top) * scaleY;
+                });
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', () => isDrawing = false);
+                canvas.addEventListener('mouseout', () => isDrawing = false);
+                
+                // Touch Events for Tablets/Mobile
+                canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    lastX = (touch.clientX - rect.left) * scaleX;
+                    lastY = (touch.clientY - rect.top) * scaleY;
+                }, { passive: false });
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (!isDrawing) return;
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    const x = (touch.clientX - rect.left) * scaleX;
+                    const y = (touch.clientY - rect.top) * scaleY;
+                    
+                    ctx.strokeStyle = window.currentOphthaColor;
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    
+                    [lastX, lastY] = [x, y];
+                }, { passive: false });
+                canvas.addEventListener('touchend', () => isDrawing = false);
+            });
+        };
+
+        window.setOphthaColor = function(color) {
+            window.currentOphthaColor = color;
+            document.querySelectorAll('.ophtha-color-btn').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-offset-2', 'ring-gray-400');
+                if (btn.dataset.color === color) {
+                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-gray-400');
+                }
+            });
+        };
+
+        window.clearOphthaCanvas = function(id) {
+            const canvas = document.getElementById(id);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Clear to white
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw default eye template
+            ctx.strokeStyle = '#cbd5e1'; // Slate 300
+            ctx.fillStyle = '#cbd5e1';
+            ctx.lineWidth = 3;
+            
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            // Sclera
+            ctx.beginPath();
+            ctx.ellipse(cx, cy, 140, 70, 0, 0, 2*Math.PI);
+            ctx.stroke();
+            
+            // Iris
+            ctx.beginPath();
+            ctx.arc(cx, cy, 65, 0, 2*Math.PI);
+            ctx.stroke();
+            
+            // Pupil
+            ctx.beginPath();
+            ctx.arc(cx, cy, 25, 0, 2*Math.PI);
+            ctx.fill();
+        };
+
+    </script>
+</body>
+</html>
