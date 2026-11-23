@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Assets Management Module</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind Configuration & Custom Utilities -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Hide horizontal scrollbar on category tabs while retaining scroll functionality */
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Smooth toast entrance animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in-up {
+      animation: fadeInUp 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased overflow-hidden">
+
+  <div class="flex h-screen w-full overflow-hidden">
+
+    <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+    <div
+      id="sidebar-backdrop"
+      onclick="toggleSidebar(false)"
+      class="fixed inset-0 bg-black/30 z-20 hidden md:hidden transition-opacity"
+    ></div>
+
+    <!-- ==================== SIDEBAR NAVIGATION ==================== -->
+    <aside
+      id="sidebar"
+      class="-translate-x-full md:translate-x-0 fixed md:relative z-30 transition-transform duration-300 ease-in-out w-64 h-full bg-[#f8f9fa] border-r border-gray-200 flex flex-col shrink-0"
+    >
+      <!-- Company Brand Logo -->
+      <div class="h-16 flex items-center justify-between px-6 border-b border-gray-200">
+        <img
+          src="https://cdn11.bigcommerce.com/s-vsgqhdo3pb/images/stencil/200x57/signature_1776187124__86876.original.png"
+          alt="Surplus Logo"
+          onerror="this.onerror=null;this.src='https://placehold.co/200x57/f8f9fa/2a3042?text=Surplus';"
+          class="h-8 object-contain"
+        />
+        <button
+          onclick="toggleSidebar(false)"
+          class="md:hidden p-1.5 text-gray-500 hover:bg-gray-200 rounded-lg"
+          aria-label="Close navigation"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex-1 overflow-y-auto py-4 space-y-1">
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="clock" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Timeclock</span>
+          </div>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="user" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Operator</span>
+          </div>
+          <span class="text-xs opacity-50 transform -rotate-90">▼</span>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="monitor" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Lister's Monitoring</span>
+          </div>
+          <span class="text-xs opacity-50 transform -rotate-90">▼</span>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-text" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Articles</span>
+          </div>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="wrench" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Service Request</span>
+          </div>
+          <span class="text-xs opacity-50 transform -rotate-90">▼</span>
+        </a>
+
+        <!-- Active Module: Digital Assets -->
+        <div class="bg-[#2a3042] text-white px-6 py-3 flex items-center gap-3 cursor-pointer">
+          <i data-lucide="layout" class="w-[18px] h-[18px] opacity-90"></i>
+          <span class="font-medium text-sm">Digital Assets</span>
+        </div>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="layout-template" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">News Letter</span>
+          </div>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-badge" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Work Orders</span>
+          </div>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="map" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Competitors Map</span>
+          </div>
+        </a>
+
+        <a href="#" onclick="event.preventDefault()" class="px-6 py-2.5 flex items-center justify-between text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors group">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-badge" class="w-[18px] h-[18px] opacity-70 group-hover:opacity-100"></i>
+            <span class="text-sm font-medium">Work Orders - Old</span>
+          </div>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT WRAPPER ==================== -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden w-full relative">
+
+      <!-- Top Header -->
+      <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 shrink-0 z-10">
+        <div class="flex items-center gap-4">
+          <button
+            onclick="toggleSidebar(true)"
+            class="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+            aria-label="Open navigation"
+          >
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <span class="text-sm text-gray-500 hidden sm:block">Monday, November 23, 2026 2:35:26 PM</span>
+        </div>
+
+        <div class="flex items-center gap-4 sm:gap-6">
+          <button
+            onclick="showToast('Bug report form opened.', 'success')"
+            class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <i data-lucide="bug" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Submit a Bug</span>
+          </button>
+
+          <div class="relative cursor-pointer p-1">
+            <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+            <span class="absolute -top-1 -right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              1500
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2 cursor-pointer border-l pl-4 sm:pl-6 border-gray-200">
+            <div class="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-sm">
+              M
+            </div>
+            <span class="text-sm font-medium hidden sm:block">Miguel Alvarina</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dashboard Scrollable Area -->
+      <main class="flex-1 overflow-y-auto p-4 lg:p-8 bg-[#f4f5f8]">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+          <!-- Page Title & Description -->
+          <div>
+            <h1 class="text-2xl font-bold text-gray-800">Digital Assets</h1>
+            <p class="text-gray-500 text-sm mt-1">
+              Manage and organize marketing and communication materials across email campaigns, signatures, and videos.
+            </p>
+          </div>
+
+          <!-- Controls Bar: Search, Category Filter Tabs, Upload CTA -->
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
+            <div class="flex-1 flex flex-col xl:flex-row gap-4">
+              <!-- Search Input -->
+              <div class="flex items-center w-full xl:max-w-md">
+                <div class="bg-[#2a3042] text-white px-4 py-2 rounded-l-lg text-sm font-medium select-none">
+                  Search
+                </div>
+                <div class="relative flex-1">
+                  <input
+                    id="search-input"
+                    type="text"
+                    placeholder="Search assets..."
+                    oninput="handleSearch(this.value)"
+                    class="w-full border-t border-b border-r border-gray-300 rounded-r-lg py-2 pl-3 pr-9 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  <i data-lucide="search" class="w-4 h-4 absolute right-3 top-2.5 text-gray-400 pointer-events-none"></i>
+                </div>
+              </div>
+
+              <!-- Category Filter Tabs -->
+              <div id="category-tabs" class="flex overflow-x-auto pb-1 xl:pb-0 scrollbar-hide gap-1.5">
+                <!-- Populated dynamically via JS -->
+              </div>
+            </div>
+
+            <!-- Upload New Asset Button -->
+            <button
+              onclick="openUploadModal()"
+              class="bg-[#2a3042] hover:bg-[#1a1e29] text-white px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors whitespace-nowrap shadow-sm justify-center cursor-pointer"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              Upload New Asset
+            </button>
+          </div>
+
+          <!-- Assets Container (Grouped by Category or Filtered Grid) -->
+          <div id="assets-container">
+            <!-- Populated dynamically via JS -->
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: UPLOAD NEW ASSET ==================== -->
+  <div
+    id="upload-modal"
+    onclick="if(event.target === this) closeUploadModal()"
+    class="fixed inset-0 bg-black/60 z-40 hidden items-center justify-center p-4 backdrop-blur-sm"
+  >
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center p-5 border-b border-gray-100">
+        <h2 class="text-xl font-semibold text-gray-800">Upload New Asset</h2>
+        <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Form -->
+      <form id="upload-form" onsubmit="handleUploadSubmit(event)" class="p-6 flex flex-col gap-5 overflow-y-auto">
+        <!-- Drag & Drop Zone -->
+        <div
+          id="upload-dropzone"
+          onclick="document.getElementById('upload-file-input').click()"
+          class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          <input
+            type="file"
+            id="upload-file-input"
+            class="hidden"
+            accept="image/*,video/*"
+            onchange="handleFileSelected(this.files[0])"
+          />
+          <i data-lucide="upload-cloud" class="w-8 h-8 mx-auto text-gray-400 mb-3"></i>
+          <p class="text-sm text-gray-600 font-medium">Click to browse or drag and drop files here</p>
+          <p class="text-xs text-gray-400 mt-1">Supports MP4, WebM, PNG, JPG, SVG, WebP up to 50MB</p>
+
+          <div
+            id="upload-selected-file"
+            class="hidden mt-4 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-700 font-medium inline-block"
+          ></div>
+        </div>
+
+        <!-- Form Inputs -->
+        <div class="space-y-4">
+          <div>
+            <label for="upload-name" class="block text-sm font-medium text-gray-700 mb-1">
+              Asset Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="upload-name"
+              required
+              placeholder="e.g., Summer Campaign Banner"
+              class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label for="upload-category" class="block text-sm font-medium text-gray-700 mb-1">
+              Category <span class="text-red-500">*</span>
+            </label>
+            <select
+              id="upload-category"
+              class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+            >
+              <option value="Videos">Videos (Any size)</option>
+              <option value="Email Banners">Email Banners (801x91 px)</option>
+              <option value="Signature Logos">Signature Logos (200x57 px)</option>
+              <option value="Signature Icons">Signature Icons (64x64 px / Any size)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="upload-description" class="block text-sm font-medium text-gray-700 mb-1">
+              Description (Optional)
+            </label>
+            <textarea
+              id="upload-description"
+              rows="2"
+              placeholder="Brief usage notes or campaign details..."
+              class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="flex justify-end gap-3 mt-2 pt-4 border-t border-gray-100">
+          <button
+            type="button"
+            onclick="closeUploadModal()"
+            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-6 py-2 bg-[#2a3042] hover:bg-[#1a1e29] text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
+          >
+            Save Asset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: EDIT / REPLACE ASSET ==================== -->
+  <div
+    id="edit-modal"
+    onclick="if(event.target === this) closeEditModal()"
+    class="fixed inset-0 bg-black/60 z-40 hidden items-center justify-center p-4 backdrop-blur-sm"
+  >
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center p-5 border-b border-gray-100">
+        <h2 class="text-xl font-semibold text-gray-800">Edit Asset Details</h2>
+        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Form -->
+      <form id="edit-form" onsubmit="handleEditSubmit(event)" class="p-6 flex flex-col gap-5 overflow-y-auto">
+        <div class="space-y-4">
+          <div>
+            <label for="edit-name" class="block text-sm font-medium text-gray-700 mb-1">
+              Asset Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="edit-name"
+              required
+              placeholder="e.g., Summer Campaign Banner"
+              class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label for="edit-category" class="block text-sm font-medium text-gray-700 mb-1">
+              Category <span class="text-red-500">*</span>
+            </label>
+            <select
+              id="edit-category"
+              class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+            >
+              <option value="Videos">Videos</option>
+              <option value="Email Banners">Email Banners</option>
+              <option value="Signature Logos">Signature Logos</option>
+              <option value="Signature Icons">Signature Icons</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="edit-description" class="block text-sm font-medium text-gray-700 mb-1">
+              Description (Optional)
+            </label>
+            <textarea
+              id="edit-description"
+              rows="3"
+              placeholder="Add some details about this asset..."
+              class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Optional File Replacement -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Replace File (Optional)
+            </label>
+            <div class="flex items-center gap-3">
+              <label class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                Choose Replacement File
+                <input
+                  type="file"
+                  id="edit-file-input"
+                  accept="image/*,video/*"
+                  class="hidden"
+                  onchange="document.getElementById('edit-file-label').textContent = this.files[0] ? this.files[0].name : 'No new file selected'"
+                />
+              </label>
+              <span id="edit-file-label" class="text-xs text-gray-500 truncate">No new file selected</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="flex justify-end gap-3 mt-2 pt-4 border-t border-gray-100">
+          <button
+            type="button"
+            onclick="closeEditModal()"
+            class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-6 py-2 bg-[#2a3042] hover:bg-[#1a1e29] text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ASSET PREVIEW ==================== -->
+  <div
+    id="preview-modal"
+    onclick="if(event.target === this) closePreviewModal()"
+    class="fixed inset-0 bg-black/60 z-40 hidden items-center justify-center p-4 backdrop-blur-sm"
+  >
+    <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center p-4 border-b border-gray-100 bg-gray-50">
+        <h2 id="preview-title" class="font-semibold text-gray-800 line-clamp-1 pr-4">Asset Preview</h2>
+        <button
+          onclick="closePreviewModal()"
+          class="text-gray-500 hover:text-gray-800 bg-gray-200 hover:bg-gray-300 rounded-full p-1.5 transition-colors shrink-0"
+          aria-label="Close preview"
+        >
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Media Stage -->
+      <div id="preview-media-container" class="bg-black/5 flex-1 relative min-h-[280px] flex items-center justify-center overflow-hidden p-4">
+        <!-- Populated dynamically with either <video> or <img> -->
+      </div>
+
+      <!-- Metadata & Copy Action Footer -->
+      <div class="p-5 bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-gray-100">
+        <div class="space-y-1">
+          <p class="text-sm font-medium text-gray-800">File Details</p>
+          <div id="preview-metadata" class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+            <!-- Populated dynamically -->
+          </div>
+          <p id="preview-description" class="text-xs text-gray-500 italic pt-1 hidden"></p>
+        </div>
+
+        <button
+          id="preview-copy-btn"
+          class="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm font-medium text-gray-700 transition-colors whitespace-nowrap w-full sm:w-auto justify-center"
+        >
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          Copy Direct URL
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: DELETE CONFIRMATION ==================== -->
+  <div
+    id="delete-modal"
+    onclick="if(event.target === this) closeDeleteModal()"
+    class="fixed inset-0 bg-black/60 z-40 hidden items-center justify-center p-4 backdrop-blur-sm"
+  >
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden flex flex-col p-6">
+      <div class="flex items-center gap-3 text-red-600 mb-3">
+        <div class="p-2 bg-red-50 rounded-lg">
+          <i data-lucide="trash-2" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800">Delete Asset</h3>
+      </div>
+      <p class="text-sm text-gray-600 mb-6">
+        Are you sure you want to delete <span id="delete-asset-name" class="font-semibold text-gray-800">this asset</span>? This action cannot be undone.
+      </p>
+      <div class="flex justify-end gap-3">
+        <button
+          onclick="closeDeleteModal()"
+          class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors text-sm"
+        >
+          Cancel
+        </button>
+        <button
+          onclick="confirmDelete()"
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors text-sm shadow-sm"
+        >
+          Delete Asset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div
+    id="toast"
+    class="fixed bottom-4 right-4 hidden items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white z-50 animate-fade-in-up"
+  >
+    <i id="toast-icon" data-lucide="check-circle-2" class="w-[18px] h-[18px]"></i>
+    <span id="toast-message" class="text-sm font-medium"></span>
+  </div>
+
+  <!-- ==================== APPLICATION JAVASCRIPT ==================== -->
+  <script>
+    /**
+     * Initial Mock Dataset
+     * Preserves all required asset categories and proper dimension specifications:
+     * - Email Banners: 801x91 px
+     * - Signature Logos: 200x57 px
+     * - Videos: Any size
+     * - Signature Icons: 64x64 px / Any size
+     */
+    const initialAssets = [
+      {
+        id: '1',
+        name: 'ITAD Summit Promo Video',
+        category: 'Videos',
+        type: 'video/mp4',
+        size: '24.5 MB',
+        dimensions: 'Any size',
+        date: '2026-11-20',
+        description: 'Promotional highlight reel for the upcoming Las Vegas ITAD Summit.',
+        url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=500&q=60'
+      },
+      {
+        id: '2',
+        name: 'Las Vegas Summit Banner',
+        category: 'Email Banners',
+        type: 'image/png',
+        size: '1.2 MB',
+        dimensions: '801x91 px',
+        date: '2026-11-22',
+        description: 'Standard email signature promotional banner for trade show booth outreach.',
+        url: 'https://placehold.co/801x91/2a3042/ffffff/png?text=Email+Signature+Banner+(801x91+px)',
+        thumbnailUrl: 'https://placehold.co/801x91/2a3042/ffffff/png?text=Email+Signature+Banner+(801x91+px)'
+      },
+      {
+        id: '3',
+        name: 'UNIX Surplus 25 Years Banner',
+        category: 'Email Banners',
+        type: 'image/jpeg',
+        size: '850 KB',
+        dimensions: '801x91 px',
+        date: '2026-11-23',
+        description: '25 Years of Experience celebratory email signature banner.',
+        url: 'https://placehold.co/801x91/fde4cf/1e293b/png?text=UNIXSurplus+-+25+YEARS+OF+EXPERIENCE+(801x91+px)',
+        thumbnailUrl: 'https://placehold.co/801x91/fde4cf/1e293b/png?text=UNIXSurplus+-+25+YEARS+OF+EXPERIENCE+(801x91+px)'
+      },
+      {
+        id: '4',
+        name: 'Company Logo Primary',
+        category: 'Signature Logos',
+        type: 'image/png',
+        size: '45 KB',
+        dimensions: '200x57 px',
+        date: '2026-11-01',
+        description: 'Official primary Surplus logo formatted specifically for employee email signatures.',
+        url: 'https://cdn11.bigcommerce.com/s-vsgqhdo3pb/images/stencil/200x57/signature_1776187124__86876.original.png',
+        thumbnailUrl: 'https://cdn11.bigcommerce.com/s-vsgqhdo3pb/images/stencil/200x57/signature_1776187124__86876.original.png'
+      },
+      {
+        id: '5',
+        name: 'LinkedIn Icon Blue',
+        category: 'Signature Icons',
+        type: 'image/png',
+        size: '12 KB',
+        dimensions: 'Any size',
+        date: '2026-11-15',
+        description: 'High-resolution social badge for executive email signatures.',
+        url: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=200&q=80',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=200&q=80'
+      },
+      {
+        id: '6',
+        name: 'Facebook Icon',
+        category: 'Signature Icons',
+        type: 'image/png',
+        size: '5 KB',
+        dimensions: '64x64 px',
+        date: '2026-11-24',
+        description: 'Standard Facebook icon for email signature social links.',
+        url: 'https://placehold.co/64x64/1877F2/FFFFFF/png?text=f',
+        thumbnailUrl: 'https://placehold.co/64x64/1877F2/FFFFFF/png?text=f'
+      },
+      {
+        id: '7',
+        name: 'X (Twitter) Icon',
+        category: 'Signature Icons',
+        type: 'image/png',
+        size: '4 KB',
+        dimensions: '64x64 px',
+        date: '2026-11-24',
+        description: 'Standard X social media icon for email signatures.',
+        url: 'https://placehold.co/64x64/000000/FFFFFF/png?text=X',
+        thumbnailUrl: 'https://placehold.co/64x64/000000/FFFFFF/png?text=X'
+      },
+      {
+        id: '8',
+        name: 'LinkedIn Icon Official',
+        category: 'Signature Icons',
+        type: 'image/png',
+        size: '5 KB',
+        dimensions: '64x64 px',
+        date: '2026-11-24',
+        description: 'Standard LinkedIn icon for email signature social links.',
+        url: 'https://placehold.co/64x64/0A66C2/FFFFFF/png?text=in',
+        thumbnailUrl: 'https://placehold.co/64x64/0A66C2/FFFFFF/png?text=in'
+      },
+      {
+        id: '9',
+        name: 'Instagram Icon',
+        category: 'Signature Icons',
+        type: 'image/png',
+        size: '6 KB',
+        dimensions: '64x64 px',
+        date: '2026-11-24',
+        description: 'Standard Instagram icon for email signature social links.',
+        url: 'https://placehold.co/64x64/E4405F/FFFFFF/png?text=ig',
+        thumbnailUrl: 'https://placehold.co/64x64/E4405F/FFFFFF/png?text=ig'
+      }
+    ];
+
+    const categories = ['All', 'Videos', 'Email Banners', 'Signature Logos', 'Signature Icons'];
+
+    // Application State
+    const state = {
+      assets: [...initialAssets],
+      searchQuery: '',
+      activeCategory: 'All',
+      editingAssetId: null,
+      deleteAssetId: null,
+      selectedUploadFile: null,
+      toastTimer: null
+    };
+
+    /**
+     * Escapes HTML special characters to prevent XSS when injecting user-entered strings.
+     */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /**
+     * Returns default dimension label based on asset category.
+     */
+    function getDefaultDimensionsForCategory(category) {
+      if (category === 'Email Banners') return '801x91 px';
+      if (category === 'Signature Logos') return '200x57 px';
+      if (category === 'Signature Icons') return '64x64 px';
+      return 'Any size';
+    }
+
+    /**
+     * Renders the category filter tabs and highlights the active category.
+     */
+    function renderCategoryTabs() {
+      const container = document.getElementById('category-tabs');
+      container.innerHTML = categories
+        .map(cat => {
+          const isActive = state.activeCategory === cat;
+          const activeClasses = isActive
+            ? 'bg-blue-50 text-blue-700 font-medium'
+            : 'text-gray-600 hover:bg-gray-100';
+          return `
+            <button
+              onclick="selectCategory('${escapeHTML(cat)}')"
+              class="px-4 py-2 text-sm whitespace-nowrap rounded-lg transition-colors cursor-pointer ${activeClasses}"
+            >
+              ${escapeHTML(cat)}
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    /**
+     * Generates HTML markup for a single asset card.
+     */
+    function createAssetCardHTML(asset) {
+      const fileExt = asset.type.split('/')[1]?.toUpperCase() || 'FILE';
+      const isVideo = asset.category === 'Videos' || asset.type.startsWith('video/');
+
+      return `
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
+          <!-- Thumbnail Area -->
+          <div
+            onclick="openPreviewModal('${escapeHTML(asset.id)}')"
+            class="relative h-48 bg-[#f8f9fa] border-b border-gray-100 overflow-hidden flex items-center justify-center p-4 cursor-pointer"
+          >
+            <img
+              src="${escapeHTML(asset.thumbnailUrl)}"
+              alt="${escapeHTML(asset.name)}"
+              onerror="this.onerror=null;this.src='https://placehold.co/400x200/e2e8f0/475569?text=Asset+Preview';"
+              class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+
+            ${isVideo ? `
+              <div class="absolute inset-0 bg-black/20 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+                <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                  <i data-lucide="video" class="w-6 h-6 text-gray-800"></i>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Quick Copy Overlay Button -->
+            <button
+              onclick="event.stopPropagation(); copyAssetUrl('${escapeHTML(asset.id)}')"
+              class="absolute top-3 right-3 bg-[#2a3042] hover:bg-[#1a1e29] text-white text-xs px-3 py-1.5 rounded-md shadow flex items-center gap-1 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity cursor-pointer"
+              title="Copy URL"
+            >
+              copy
+            </button>
+          </div>
+
+          <!-- Details Area -->
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-semibold text-gray-800 text-sm line-clamp-1" title="${escapeHTML(asset.name)}">
+                ${escapeHTML(asset.name)}
+              </h3>
+              <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                <span class="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 text-[11px] font-medium rounded">
+                  ${escapeHTML(asset.category)}
+                </span>
+                <span class="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-[11px] font-medium rounded">
+                  ${escapeHTML(asset.dimensions)}
+                </span>
+              </div>
+              <p class="text-xs text-gray-500 flex justify-between pt-2.5">
+                <span>${escapeHTML(fileExt)}</span>
+                <span>${escapeHTML(asset.size)}</span>
+              </p>
+              <p class="text-xs text-gray-400 mt-1">
+                Uploaded: ${escapeHTML(asset.date)}
+              </p>
+            </div>
+
+            <!-- Card Footer Actions -->
+            <div class="flex items-center justify-between pt-3 border-t border-gray-100 mt-3">
+              <div class="flex gap-1.5">
+                <button
+                  onclick="openPreviewModal('${escapeHTML(asset.id)}')"
+                  class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                  title="Preview"
+                >
+                  <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+                <button
+                  onclick="copyAssetUrl('${escapeHTML(asset.id)}')"
+                  class="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors cursor-pointer"
+                  title="Copy Link"
+                >
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <div class="flex gap-1.5">
+                <button
+                  onclick="openEditModal('${escapeHTML(asset.id)}')"
+                  class="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
+                  title="Edit / Replace"
+                >
+                  <i data-lucide="edit" class="w-4 h-4"></i>
+                </button>
+                <button
+                  onclick="openDeleteModal('${escapeHTML(asset.id)}')"
+                  class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                  title="Delete"
+                >
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * Renders the asset dashboard grid, grouped by category when 'All' is selected.
+     */
+    function renderAssets() {
+      const container = document.getElementById('assets-container');
+
+      const filtered = state.assets.filter(asset => {
+        const matchesSearch =
+          asset.name.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+          (asset.description && asset.description.toLowerCase().includes(state.searchQuery.toLowerCase()));
+        const matchesCategory = state.activeCategory === 'All' || asset.category === state.activeCategory;
+        return matchesSearch && matchesCategory;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
+            <i data-lucide="file-badge" class="w-12 h-12 mx-auto text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-700">No assets found</h3>
+            <p class="text-gray-500 text-sm mt-1">Try adjusting your search query or category filter, or upload a new asset.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      const displayCategories = categories.filter(c => c !== 'All');
+      const sectionsHTML = displayCategories
+        .map(cat => {
+          const catAssets = filtered.filter(a => a.category === cat);
+          if (catAssets.length === 0) return '';
+
+          const headerHTML =
+            state.activeCategory === 'All'
+              ? `<div class="flex items-center justify-between border-b border-gray-200 pb-2">
+                   <h2 class="text-lg font-bold text-gray-800">${escapeHTML(cat)}</h2>
+                   <span class="text-xs font-medium text-gray-500 bg-gray-200/70 px-2.5 py-0.5 rounded-full">${catAssets.length}</span>
+                 </div>`
+              : '';
+
+          return `
+            <section class="space-y-4">
+              ${headerHTML}
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                ${catAssets.map(createAssetCardHTML).join('')}
+              </div>
+            </section>
+          `;
+        })
+        .join('');
+
+      container.innerHTML = `<div class="space-y-8">${sectionsHTML}</div>`;
+      lucide.createIcons();
+    }
+
+    // ==================== FILTER & NAVIGATION HANDLERS ====================
+
+    function handleSearch(value) {
+      state.searchQuery = value;
+      renderAssets();
+    }
+
+    function selectCategory(category) {
+      state.activeCategory = category;
+      renderCategoryTabs();
+      renderAssets();
+    }
+
+    function toggleSidebar(open) {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (open) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    // ==================== CLIPBOARD & TOAST NOTIFICATIONS ====================
+
+    function copyAssetUrl(assetId) {
+      const asset = state.assets.find(a => a.id === assetId);
+      if (!asset) return;
+
+      try {
+        // Use temporary textarea + document.execCommand('copy') for reliable iFrame/sandbox compatibility
+        const tempInput = document.createElement('textarea');
+        tempInput.value = asset.url;
+        tempInput.style.position = 'fixed';
+        tempInput.style.opacity = '0';
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        if (successful) {
+          showToast('Link copied to clipboard!', 'success');
+        } else {
+          showToast('Failed to copy link.', 'error');
+        }
+      } catch (err) {
+        showToast('Failed to copy link.', 'error');
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      if (state.toastTimer) {
+        clearTimeout(state.toastTimer);
+      }
+
+      toast.className = `fixed bottom-4 right-4 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white z-50 animate-fade-in-up ${
+        type === 'success' ? 'bg-green-600' : 'bg-red-600'
+      }`;
+      toastMessage.textContent = message;
+      toastIcon.setAttribute('data-lucide', type === 'success' ? 'check-circle-2' : 'alert-circle');
+      lucide.createIcons();
+
+      state.toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3000);
+    }
+
+    // ==================== UPLOAD MODAL LOGIC ====================
+
+    function openUploadModal() {
+      state.selectedUploadFile = null;
+      document.getElementById('upload-form').reset();
+      const fileBadge = document.getElementById('upload-selected-file');
+      fileBadge.classList.add('hidden');
+      fileBadge.textContent = '';
+
+      // Preselect active category if user is currently viewing a specific category tab
+      if (state.activeCategory !== 'All') {
+        document.getElementById('upload-category').value = state.activeCategory;
+      }
+
+      const modal = document.getElementById('upload-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeUploadModal() {
+      const modal = document.getElementById('upload-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleFileSelected(file) {
+      if (!file) return;
+
+      // Validate max file size (50MB)
+      if (file.size > 50 * 1024 * 1024) {
+        showToast('File size exceeds the 50MB limit.', 'error');
+        return;
+      }
+
+      state.selectedUploadFile = file;
+      const nameInput = document.getElementById('upload-name');
+      if (!nameInput.value.trim()) {
+        nameInput.value = file.name.replace(/\.[^/.]+$/, '');
+      }
+
+      const fileBadge = document.getElementById('upload-selected-file');
+      fileBadge.textContent = `Selected: ${file.name} (${formatBytes(file.size)})`;
+      fileBadge.classList.remove('hidden');
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function handleUploadSubmit(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('upload-name').value.trim();
+      const category = document.getElementById('upload-category').value;
+      const description = document.getElementById('upload-description').value.trim();
+      const file = state.selectedUploadFile;
+
+      if (!name || !category) return;
+
+      const dimensions = getDefaultDimensionsForCategory(category);
+      const isVideoCategory = category === 'Videos';
+
+      let assetUrl = '';
+      let thumbUrl = '';
+      let mimeType = isVideoCategory ? 'video/mp4' : 'image/png';
+      let fileSize = isVideoCategory ? '12.4 MB' : '120 KB';
+
+      if (file) {
+        const objectUrl = URL.createObjectURL(file);
+        assetUrl = objectUrl;
+        mimeType = file.type || mimeType;
+        fileSize = formatBytes(file.size);
+        thumbUrl = file.type.startsWith('video/')
+          ? 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=500&q=60'
+          : objectUrl;
+      } else {
+        // Fallback placeholder if user saves metadata without attaching a local file
+        if (isVideoCategory) {
+          assetUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+          thumbUrl = 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=500&q=60';
+        } else if (category === 'Email Banners') {
+          assetUrl = 'https://placehold.co/801x91/2a3042/ffffff/png?text=' + encodeURIComponent(name);
+          thumbUrl = assetUrl;
+        } else if (category === 'Signature Logos') {
+          assetUrl = 'https://placehold.co/200x57/2a3042/ffffff/png?text=' + encodeURIComponent(name);
+          thumbUrl = assetUrl;
+        } else {
+          assetUrl = 'https://placehold.co/64x64/2a3042/ffffff/png?text=' + encodeURIComponent(name.slice(0, 2));
+          thumbUrl = assetUrl;
+        }
+      }
+
+      const newAsset = {
+        id: Date.now().toString(),
+        name,
+        category,
+        type: mimeType,
+        size: fileSize,
+        dimensions,
+        date: new Date().toISOString().split('T')[0],
+        description,
+        url: assetUrl,
+        thumbnailUrl: thumbUrl
+      };
+
+      state.assets.unshift(newAsset);
+      closeUploadModal();
+      renderAssets();
+      showToast('Asset uploaded successfully.', 'success');
+    }
+
+    // Drag and drop listeners for Upload Dropzone
+    const dropzone = document.getElementById('upload-dropzone');
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('border-blue-500', 'bg-blue-50/50');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-blue-500', 'bg-blue-50/50');
+    });
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropzone.classList.remove('border-blue-500', 'bg-blue-50/50');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFileSelected(e.dataTransfer.files[0]);
+      }
+    });
+
+    // ==================== EDIT / REPLACE MODAL LOGIC ====================
+
+    function openEditModal(assetId) {
+      const asset = state.assets.find(a => a.id === assetId);
+      if (!asset) return;
+
+      state.editingAssetId = assetId;
+      document.getElementById('edit-name').value = asset.name;
+      document.getElementById('edit-category').value = asset.category;
+      document.getElementById('edit-description').value = asset.description || '';
+      document.getElementById('edit-file-input').value = '';
+      document.getElementById('edit-file-label').textContent = 'No new file selected';
+
+      const modal = document.getElementById('edit-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeEditModal() {
+      state.editingAssetId = null;
+      const modal = document.getElementById('edit-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleEditSubmit(event) {
+      event.preventDefault();
+      const assetIndex = state.assets.findIndex(a => a.id === state.editingAssetId);
+      if (assetIndex === -1) return;
+
+      const existingAsset = state.assets[assetIndex];
+      const updatedName = document.getElementById('edit-name').value.trim();
+      const updatedCategory = document.getElementById('edit-category').value;
+      const updatedDescription = document.getElementById('edit-description').value.trim();
+      const replacementFile = document.getElementById('edit-file-input').files[0];
+
+      if (!updatedName || !updatedCategory) return;
+
+      let updatedDimensions = existingAsset.dimensions;
+      if (updatedCategory !== existingAsset.category) {
+        updatedDimensions = getDefaultDimensionsForCategory(updatedCategory);
+      }
+
+      let updatedUrl = existingAsset.url;
+      let updatedThumbUrl = existingAsset.thumbnailUrl;
+      let updatedType = existingAsset.type;
+      let updatedSize = existingAsset.size;
+
+      if (replacementFile) {
+        const objectUrl = URL.createObjectURL(replacementFile);
+        updatedUrl = objectUrl;
+        updatedType = replacementFile.type || existingAsset.type;
+        updatedSize = formatBytes(replacementFile.size);
+        updatedThumbUrl = replacementFile.type.startsWith('video/')
+          ? 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=500&q=60'
+          : objectUrl;
+      }
+
+      state.assets[assetIndex] = {
+        ...existingAsset,
+        name: updatedName,
+        category: updatedCategory,
+        description: updatedDescription,
+        dimensions: updatedDimensions,
+        url: updatedUrl,
+        thumbnailUrl: updatedThumbUrl,
+        type: updatedType,
+        size: updatedSize
+      };
+
+      closeEditModal();
+      renderAssets();
+      showToast('Asset updated successfully.', 'success');
+    }
+
+    // ==================== PREVIEW MODAL LOGIC ====================
+
+    function openPreviewModal(assetId) {
+      const asset = state.assets.find(a => a.id === assetId);
+      if (!asset) return;
+
+      document.getElementById('preview-title').textContent = asset.name;
+
+      const mediaContainer = document.getElementById('preview-media-container');
+      const isVideo = asset.category === 'Videos' || asset.type.startsWith('video/');
+
+      if (isVideo) {
+        mediaContainer.innerHTML = `
+          <video
+            id="preview-video-player"
+            src="${escapeHTML(asset.url)}"
+            controls
+            autoplay
+            class="max-w-full max-h-[60vh] rounded-lg shadow-sm"
+          >
+            Your browser does not support the video tag.
+          </video>
+        `;
+      } else {
+        mediaContainer.innerHTML = `
+          <img
+            src="${escapeHTML(asset.url)}"
+            alt="${escapeHTML(asset.name)}"
+            onerror="this.onerror=null;this.src='https://placehold.co/600x300/e2e8f0/475569?text=Image+Preview';"
+            class="max-w-full max-h-[60vh] object-contain rounded shadow-sm"
+          />
+        `;
+      }
+
+      document.getElementById('preview-metadata').innerHTML = `
+        <span><strong class="font-medium text-gray-700">Category:</strong> ${escapeHTML(asset.category)}</span>
+        <span><strong class="font-medium text-gray-700">Type:</strong> ${escapeHTML(asset.type)}</span>
+        <span><strong class="font-medium text-gray-700">Size:</strong> ${escapeHTML(asset.size)}</span>
+        <span><strong class="font-medium text-gray-700">Dimensions:</strong> ${escapeHTML(asset.dimensions)}</span>
+        <span><strong class="font-medium text-gray-700">Uploaded:</strong> ${escapeHTML(asset.date)}</span>
+      `;
+
+      const descEl = document.getElementById('preview-description');
+      if (asset.description) {
+        descEl.textContent = asset.description;
+        descEl.classList.remove('hidden');
+      } else {
+        descEl.classList.add('hidden');
+      }
+
+      const copyBtn = document.getElementById('preview-copy-btn');
+      copyBtn.onclick = () => copyAssetUrl(asset.id);
+
+      const modal = document.getElementById('preview-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closePreviewModal() {
+      const videoPlayer = document.getElementById('preview-video-player');
+      if (videoPlayer) {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+      }
+      const modal = document.getElementById('preview-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // ==================== DELETE MODAL LOGIC ====================
+
+    function openDeleteModal(assetId) {
+      const asset = state.assets.find(a => a.id === assetId);
+      if (!asset) return;
+
+      state.deleteAssetId = assetId;
+      document.getElementById('delete-asset-name').textContent = `"${asset.name}"`;
+
+      const modal = document.getElementById('delete-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+      state.deleteAssetId = null;
+      const modal = document.getElementById('delete-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmDelete() {
+      if (!state.deleteAssetId) return;
+      state.assets = state.assets.filter(a => a.id !== state.deleteAssetId);
+      closeDeleteModal();
+      renderAssets();
+      showToast('Asset deleted successfully.', 'success');
+    }
+
+    // Close open modals on Escape key press
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeUploadModal();
+        closeEditModal();
+        closePreviewModal();
+        closeDeleteModal();
+      }
+    });
+
+    // ==================== INITIALIZE APPLICATION ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCategoryTabs();
+      renderAssets();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
