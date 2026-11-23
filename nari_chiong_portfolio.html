@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth bg-[#050505]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nari Chiong | Creative Director & Designer</title>
+    
+    <!-- Google Fonts: Syne for massive display, Inter for clean body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: '#050505',
+                        surface: '#111111',
+                        surface2: '#1a1a1a',
+                        primary: '#ffffff',
+                        muted: '#666666',
+                        accent: '#ccff00' // Acid Green
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --cursor-size: 20px;
+        }
+
+        body {
+            background-color: theme('colors.bg');
+            color: theme('colors.primary');
+            overflow-x: hidden;
+            cursor: none; /* Hide default cursor */
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            body { cursor: auto; }
+            .custom-cursor { display: none !important; }
+        }
+
+        /* Lenis Smooth Scroll */
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Custom Fluid Cursor */
+        .custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            background-color: theme('colors.primary');
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: exclusion; /* Premium blend mode effect */
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease;
+        }
+
+        .custom-cursor.hover-link {
+            width: 80px;
+            height: 80px;
+            background-color: theme('colors.primary');
+        }
+        
+        .custom-cursor.hover-img {
+            width: 100px;
+            height: 100px;
+            background-color: theme('colors.accent');
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background-color: theme('colors.bg');
+            z-index: 10001;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+        #preloader-text {
+            font-size: 10vw;
+            line-height: 0.8;
+            color: theme('colors.accent');
+        }
+
+        /* Kinetic Typography Splitting */
+        .split-parent { overflow: hidden; display: inline-block; vertical-align: top; }
+        .split-child { display: inline-block; transform: translateY(110%); }
+
+        /* Infinite Marquee */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+            width: 100vw;
+            margin-left: -50vw;
+            left: 50%;
+            position: relative;
+        }
+        .marquee-inner {
+            display: flex;
+            width: max-content;
+        }
+        .marquee-inner.left { animation: scrollLeft 30s linear infinite; }
+        .marquee-inner.right { animation: scrollRight 30s linear infinite; }
+        
+        @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+
+        /* Project Cards */
+        .project-card {
+            overflow: hidden;
+            position: relative;
+            background: theme('colors.surface');
+        }
+        .project-img-wrapper {
+            overflow: hidden;
+            transform-origin: center;
+        }
+        .project-card img {
+            transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+            filter: grayscale(100%) contrast(1.2);
+            transform: scale(1.05);
+        }
+        .project-card:hover img {
+            transform: scale(1);
+            filter: grayscale(0%) contrast(1);
+        }
+        .project-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(5,5,5,0.9) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+        
+        .project-title {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+        }
+        .project-card:hover .project-title {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Magnetic Button Container */
+        .magnetic-wrap {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem; /* creates area to detect mouse */
+            cursor: pointer;
+        }
+        .magnetic-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: theme('colors.accent');
+            color: theme('colors.bg');
+            width: 180px;
+            height: 180px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: background-color 0.3s;
+        }
+        .magnetic-btn:hover { background-color: theme('colors.primary'); }
+
+        /* Typography sizing */
+        .text-massive {
+            font-size: clamp(4rem, 12vw, 15rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-accent selection:text-bg text-primary">
+
+    <!-- Ambient Noise -->
+    <div class="noise"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="cursor"></div>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="preloader-text" class="font-display font-bold">0%</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-8 flex justify-between items-center mix-blend-exclusion text-white pointer-events-none">
+        <div class="font-display font-bold text-xl pointer-events-auto cursor-hover">
+            <a href="#home">NC<span class="text-accent">.</span></a>
+        </div>
+        <div class="hidden md:flex space-x-12 font-sans text-xs tracking-[0.2em] uppercase pointer-events-auto">
+            <a href="#about" class="hover:text-accent transition-colors cursor-hover">About</a>
+            <a href="#work" class="hover:text-accent transition-colors cursor-hover">Work</a>
+            <a href="#contact" class="hover:text-accent transition-colors cursor-hover">Contact</a>
+        </div>
+    </nav>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <!-- Hero Section -->
+            <section id="home" class="min-h-screen flex flex-col justify-end px-6 md:px-12 pb-24 relative pt-32">
+                <div class="w-full">
+                    <div class="mb-8 md:mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-surface2 pb-8 reveal-elem opacity-0">
+                        <p class="font-display text-accent text-sm md:text-xl font-semibold tracking-widest uppercase">
+                            Portfolio (26)
+                        </p>
+                        <p class="font-sans text-muted max-w-sm text-sm leading-relaxed text-right md:text-left uppercase tracking-widest">
+                            Creative Director <br>& Multidisciplinary Designer
+                        </p>
+                    </div>
+                    
+                    <h1 class="font-display font-extrabold text-massive uppercase">
+                        <div class="split-parent"><div class="split-child hero-char">N</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">A</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">R</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">I</div></div>
+                        <br>
+                        <div class="split-parent"><div class="split-child hero-char">C</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">H</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">I</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">O</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">N</div></div>
+                        <div class="split-parent"><div class="split-child hero-char">G</div></div>
+                    </h1>
+                </div>
+            </section>
+
+            <!-- Marquees -->
+            <section class="py-20 md:py-32 overflow-hidden bg-accent text-bg flex flex-col gap-4 relative z-10">
+                <div class="marquee font-display font-bold text-5xl md:text-8xl uppercase">
+                    <div class="marquee-inner left">
+                        <span>Brand Identity &nbsp; • &nbsp; Motion Graphics &nbsp; • &nbsp; UI/UX Design &nbsp; • &nbsp; 3D Art &nbsp; • &nbsp; </span>
+                        <span>Brand Identity &nbsp; • &nbsp; Motion Graphics &nbsp; • &nbsp; UI/UX Design &nbsp; • &nbsp; 3D Art &nbsp; • &nbsp; </span>
+                    </div>
+                </div>
+                <div class="marquee font-display font-bold text-5xl md:text-8xl uppercase text-bg/50">
+                    <div class="marquee-inner right">
+                        <span>Art Direction &nbsp; • &nbsp; Web Design &nbsp; • &nbsp; Editorial &nbsp; • &nbsp; Photography &nbsp; • &nbsp; </span>
+                        <span>Art Direction &nbsp; • &nbsp; Web Design &nbsp; • &nbsp; Editorial &nbsp; • &nbsp; Photography &nbsp; • &nbsp; </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="py-32 px-6 md:px-12">
+                <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-32 items-center">
+                    
+                    <!-- Portrait -->
+                    <div class="w-full lg:w-5/12 reveal-up">
+                        <div class="relative overflow-hidden w-full aspect-[4/5] bg-surface2 img-mask rounded-sm cursor-img">
+                            <img src="image_6c2c49.jpg" alt="Nari Chiong" class="w-full h-[120%] object-cover parallax-img" onerror="this.src='https://placehold.co/800x1000/1a1a1a/ccff00?text=Nari'">
+                            <!-- Brutalist corners -->
+                            <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-accent"></div>
+                            <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-accent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Text -->
+                    <div class="w-full lg:w-7/12">
+                        <h2 class="font-display font-bold text-4xl md:text-6xl lg:text-7xl leading-[1.1] mb-12 reveal-up">
+                            Designing at the intersection of <span class="text-accent italic font-light">logic</span> and <span class="text-accent italic font-light">emotion</span>.
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 font-sans text-muted text-base md:text-lg leading-relaxed reveal-up">
+                            <div>
+                                <p class="mb-6">
+                                    I am a multidisciplinary designer pushing boundaries in digital and physical spaces. For over a decade, I've transformed complex business challenges into visceral, engaging visual systems.
+                                </p>
+                                <p>
+                                    My methodology rejects the ordinary, blending brutalist typography, kinetic motion, and meticulous layout design to create unforgettable brand experiences.
+                                </p>
+                            </div>
+                            <div class="flex flex-col justify-between">
+                                <div>
+                                    <h4 class="text-white font-display uppercase tracking-widest text-xs mb-2">Focus</h4>
+                                    <p class="text-sm">Art Direction, Identity Systems, Digital Experiences, Motion Design.</p>
+                                </div>
+                                <div class="mt-8">
+                                    <h4 class="text-white font-display uppercase tracking-widest text-xs mb-2">Location</h4>
+                                    <p class="text-sm">Global // Remote</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Selected Work Grid -->
+            <section id="work" class="py-32 px-6 md:px-12 bg-surface">
+                <div class="max-w-[1400px] mx-auto">
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-end mb-20 reveal-up">
+                        <h2 class="font-display font-extrabold text-6xl md:text-8xl uppercase tracking-tighter">
+                            Selected<br><span class="text-accent">Archive</span>
+                        </h2>
+                        <p class="font-sans text-muted text-sm tracking-widest uppercase pb-4">
+                            [ 2022 — 2026 ]
+                        </p>
+                    </div>
+
+                    <!-- Staggered Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+                        
+                        <!-- Item 1 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop" alt="Neon Void Branding" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Branding / Identity</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Neon Void</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop" alt="Cybernetic Dreams 3D" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Motion / 3D</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Cybernetic Dreams</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=1200&auto=format&fit=crop" alt="Aura Platform UI UX" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">UI/UX / Web Design</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Aura Platform</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 4 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1200&auto=format&fit=crop" alt="Vanguard Issue 04 Print" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Editorial / Print</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Vanguard Issue 04</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 5 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop" alt="Social Media Campaign" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Social Media / Advertising</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Prism Grid</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 6 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1596526131083-e8c633c948d2?q=80&w=1200&auto=format&fit=crop" alt="Email Marketing" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Newsletters / Banners</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Flux CRM Comms</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 7 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=1200&auto=format&fit=crop" alt="Video Editing" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Video Editing / Motion</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Echoes Reel</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 8 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1200&auto=format&fit=crop" alt="Presentations" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Presentations / Pitch</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Stellar Series B</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 9 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1554046920-90dc5f3ac26b?q=80&w=1200&auto=format&fit=crop" alt="Photography" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Photography / Lookbook</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Urban Decay</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 10 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1200&auto=format&fit=crop" alt="Illustration" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Illustration / Art</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Chromatica</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 11 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop" alt="Creative Experiments" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Creative Experiments</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Generative Void</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 12 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1634942537034-2531766767d1?q=80&w=1200&auto=format&fit=crop" alt="Logos and Graphic Design" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Graphic Design / Logos</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Vertex Guidelines</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 13 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop" alt="E-Commerce Interface" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Web Design / E-Comm</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Kinetics Store</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 14 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1607344645866-eea3f25c7e0f?q=80&w=1200&auto=format&fit=crop" alt="Packaging Design" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Packaging / Print</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Botanica Label</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 15 -->
+                        <div class="project-card cursor-img reveal-up rounded-md">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1633511090164-b443b71561f5?q=80&w=1200&auto=format&fit=crop" alt="3D Product Design" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">3D / Product Animation</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Oasis Hardware</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 16 (Offset) -->
+                        <div class="project-card cursor-img reveal-up rounded-md md:mt-32">
+                            <div class="project-img-wrapper aspect-square md:aspect-[4/5]">
+                                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1200&auto=format&fit=crop" alt="Email Signatures" class="w-full h-full object-cover">
+                            </div>
+                            <div class="project-overlay">
+                                <div class="project-title">
+                                    <span class="font-sans text-xs tracking-[0.2em] text-accent uppercase block mb-3">Email Signatures / Assets</span>
+                                    <h3 class="font-display font-bold text-4xl text-white">Corp Identity Kit</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Massive Footer / Contact -->
+            <section id="contact" class="py-32 px-6 md:px-12 bg-bg relative min-h-screen flex flex-col justify-center items-center text-center overflow-hidden">
+                <!-- Background large text -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full font-display font-extrabold text-[15vw] leading-none text-surface whitespace-nowrap z-0 pointer-events-none select-none">
+                    LET'S TALK
+                </div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <p class="font-sans text-accent tracking-[0.3em] uppercase text-sm mb-12 reveal-up">Ready to initiate?</p>
+                    
+                    <!-- Magnetic Button -->
+                    <div class="magnetic-wrap reveal-up">
+                        <a href="mailto:hello@narichiong.com" class="magnetic-btn cursor-hover">
+                            <span class="magnetic-text">Email Me</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Footer Bottom -->
+                <div class="absolute bottom-8 left-0 w-full px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-sans uppercase tracking-widest text-muted z-10">
+                    <p>&copy; 2026 Nari Chiong</p>
+                    <div class="flex gap-8">
+                        <a href="#" class="hover:text-accent transition-colors cursor-hover">Behance</a>
+                        <a href="#" class="hover:text-accent transition-colors cursor-hover">Instagram</a>
+                        <a href="#" class="hover:text-accent transition-colors cursor-hover">Twitter</a>
+                    </div>
+                    <p>Designed in the Future</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // 1. Lenis Smooth Scrolling
+            const lenis = new Lenis({
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+            });
+
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+
+            // 2. Custom Fluid Cursor
+            const cursor = document.getElementById('cursor');
+            let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+            let cursorX = mouseX, cursorY = mouseY;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function updateCursor() {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+                requestAnimationFrame(updateCursor);
+            }
+            requestAnimationFrame(updateCursor);
+
+            // Cursor Hover States
+            const hoverLinks = document.querySelectorAll('.cursor-hover, a');
+            const hoverImgs = document.querySelectorAll('.cursor-img');
+
+            hoverLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => cursor.classList.add('hover-link'));
+                link.addEventListener('mouseleave', () => cursor.classList.remove('hover-link'));
+            });
+
+            hoverImgs.forEach(img => {
+                img.addEventListener('mouseenter', () => cursor.classList.add('hover-img'));
+                img.addEventListener('mouseleave', () => cursor.classList.remove('hover-img'));
+            });
+
+            // 3. Preloader Sequence
+            const preloaderText = document.getElementById('preloader-text');
+            let progress = 0;
+            
+            // Simulate loading
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 1;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    startEntranceAnimation();
+                }
+                preloaderText.innerText = progress + '%';
+            }, 50);
+
+            function startEntranceAnimation() {
+                const tl = gsap.timeline({ defaults: { ease: "expo.inOut" } });
+
+                tl.to("#preloader-text", { yPercent: -100, opacity: 0, duration: 0.8, delay: 0.2 })
+                  .to("#preloader", { yPercent: -100, duration: 1.2 }, "-=0.4")
+                  // Hero text characters animate up
+                  .to(".hero-char", { 
+                      y: "0%", 
+                      duration: 1.2, 
+                      stagger: 0.05, 
+                      ease: "power4.out" 
+                  }, "-=0.6")
+                  // Fade in subtext
+                  .to(".reveal-elem", {
+                      opacity: 1,
+                      y: 0,
+                      duration: 1
+                  }, "-=1");
+            }
+
+            // 4. Scroll Reveal (Fade Up)
+            const revealElements = document.querySelectorAll('.reveal-up');
+            revealElements.forEach((el) => {
+                gsap.fromTo(el, 
+                    { opacity: 0, y: 60 },
+                    {
+                        scrollTrigger: { trigger: el, start: "top 85%" },
+                        opacity: 1, y: 0, duration: 1.2, ease: "power3.out"
+                    }
+                );
+            });
+
+            // 5. Parallax Image
+            const parallaxImg = document.querySelector('.parallax-img');
+            if (parallaxImg) {
+                gsap.to(parallaxImg, {
+                    yPercent: 20,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: ".img-mask",
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: true
+                    }
+                });
+            }
+
+            // 6. Magnetic Button Logic
+            const magnetWraps = document.querySelectorAll('.magnetic-wrap');
+            
+            magnetWraps.forEach(wrap => {
+                const btn = wrap.querySelector('.magnetic-btn');
+                const text = wrap.querySelector('.magnetic-text');
+
+                wrap.addEventListener('mousemove', (e) => {
+                    const rect = wrap.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+
+                    // Move button
+                    gsap.to(btn, { x: x * 0.4, y: y * 0.4, duration: 0.5, ease: 'power2.out' });
+                    // Parallax text inside slightly more
+                    if(text) gsap.to(text, { x: x * 0.2, y: y * 0.2, duration: 0.5, ease: 'power2.out' });
+                });
+
+                wrap.addEventListener('mouseleave', () => {
+                    // Snap back
+                    gsap.to(btn, { x: 0, y: 0, duration: 1, ease: 'elastic.out(1, 0.3)' });
+                    if(text) gsap.to(text, { x: 0, y: 0, duration: 1, ease: 'elastic.out(1, 0.3)' });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
