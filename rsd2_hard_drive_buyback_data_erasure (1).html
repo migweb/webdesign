@@ -1,0 +1,3067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSD2 | Ship Us Your Drives. We Erase Them. You See the Proof.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================================
+       1. BRAND DESIGN TOKENS & GLOBAL RESET
+    ========================================================= */
+    :root {
+      --rsd-blue: #0066B2;
+      --rsd-blue-hover: #005291;
+      --rsd-navy: #081633;
+      --rsd-navy-deep: #050E22;
+      --rsd-navy-strip: #0B1D42;
+      --rsd-cyan: #00D2FF;
+      --rsd-lime: #8CC63F;
+      --rsd-lime-hover: #7AB332;
+      --rsd-green: #65A30D;
+      --rsd-green-hover: #4D7C0F;
+      --rsd-gray-bg: #F4F7FA;
+      --rsd-footer-bg: #F8FAFC;
+      --rsd-white: #FFFFFF;
+      --rsd-text-dark: #1A2436;
+      --rsd-text-slate: #334155;
+      --rsd-text-muted: #4A5568;
+      --rsd-text-light: #CBD5E1;
+      --rsd-border: #E2E8F0;
+      --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: var(--font-main);
+      background-color: var(--rsd-white);
+      color: var(--rsd-text-dark);
+      overflow-x: hidden;
+      max-width: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      line-height: 1.6;
+      background-color: var(--rsd-white);
+      color: var(--rsd-text-dark);
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select, textarea {
+      font-family: var(--font-main);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Core Layout Container - Horizontal padding is strictly preserved */
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    /* =========================================================
+       2. TWO-TIER HEADER & NAVIGATION
+    ========================================================= */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(8, 22, 51, 0.08);
+    }
+
+    /* Top Utility Bar */
+    .utility-bar {
+      background-color: var(--rsd-white);
+      border-bottom: 1px solid var(--rsd-border);
+    }
+
+    .utility-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 74px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .brand-logo-img {
+      height: 44px;
+      width: auto;
+      max-width: 200px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-fallback {
+      display: none;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-wordmark {
+      font-weight: 900;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: baseline;
+    }
+
+    .brand-wordmark .r-blue { color: var(--rsd-blue); }
+    .brand-wordmark .sd2-lime { color: var(--rsd-lime); }
+
+    .utility-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .utility-phone {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--rsd-green);
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+
+    .utility-phone:hover {
+      color: var(--rsd-green-hover);
+    }
+
+    .utility-phone svg {
+      color: var(--rsd-green);
+      flex-shrink: 0;
+    }
+
+    .btn-quote-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--rsd-lime);
+      color: var(--rsd-white);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 9px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(140, 198, 63, 0.35);
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-quote-pill:hover {
+      background-color: var(--rsd-lime-hover);
+      transform: translateY(-1px);
+    }
+
+    .utility-account {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: transparent;
+      border: none;
+      color: var(--rsd-text-dark);
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 7px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .utility-account:hover {
+      background-color: var(--rsd-gray-bg);
+      color: var(--rsd-blue);
+    }
+
+    /* Primary Royal Blue Navigation Bar */
+    .primary-nav-bar {
+      background-color: var(--rsd-blue);
+      color: var(--rsd-white);
+    }
+
+    .mobile-menu-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 48px;
+      padding: 6px 0;
+    }
+
+    .mobile-menu-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: var(--rsd-white);
+      font-weight: 700;
+      font-size: 13.5px;
+      min-height: 40px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .mobile-login-btn {
+      background: none;
+      border: none;
+      color: var(--rsd-lime);
+      font-weight: 800;
+      font-size: 13.5px;
+      min-height: 40px;
+      padding: 6px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 50px;
+      padding: 6px 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-links a,
+    .nav-login-item {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.92);
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active,
+    .nav-login-item:hover {
+      color: var(--rsd-white);
+      border-bottom-color: var(--rsd-lime);
+      font-weight: 700;
+    }
+
+    .nav-login-item {
+      color: var(--rsd-lime);
+      font-weight: 800;
+    }
+
+    .nav-search-form {
+      display: flex;
+      align-items: center;
+      background-color: var(--rsd-white);
+      border-radius: 999px;
+      padding: 3px 6px 3px 14px;
+      width: 100%;
+      max-width: 280px;
+      height: 34px;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-search-input {
+      border: none;
+      background: transparent;
+      font-size: 12.5px;
+      color: var(--rsd-text-dark);
+      width: 100%;
+      outline: none;
+    }
+
+    .nav-search-input::placeholder {
+      color: #64748B;
+    }
+
+    .nav-search-btn {
+      border: none;
+      background: transparent;
+      color: var(--rsd-blue);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       3. HERO SECTION (Deep Navy + Cyan PCB Circuit Traces)
+    ========================================================= */
+    .hero-section {
+      position: relative;
+      background: radial-gradient(circle at 75% 25%, #0F295E 0%, #081633 56%, #050E22 100%);
+      color: var(--rsd-white);
+      overflow: hidden;
+    }
+
+    .pcb-trace-tl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 460px;
+      max-width: 60vw;
+      height: auto;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    .pcb-trace-br {
+      position: absolute;
+      bottom: 48px;
+      right: 0;
+      width: 500px;
+      max-width: 65vw;
+      height: auto;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .hero-body {
+      position: relative;
+      z-index: 2;
+      padding-top: 64px;
+      padding-bottom: 58px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 42px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-grid > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .hero-title {
+      font-weight: 900;
+      font-size: clamp(1.65rem, 4.5vw, 3.1rem);
+      line-height: 1.13;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+
+    .hero-title-white {
+      display: block;
+      color: var(--rsd-white);
+    }
+
+    .hero-title-lime {
+      display: block;
+      color: var(--rsd-lime);
+      margin-top: 4px;
+    }
+
+    .hero-subhead {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--rsd-text-light);
+      max-width: 580px;
+      margin-bottom: 28px;
+      overflow-wrap: break-word;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .hero-btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      max-width: 100%;
+    }
+
+    .btn-hero-blue {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(180deg, #0D7FD4 0%, #0066B2 100%);
+      color: var(--rsd-white);
+      font-weight: 800;
+      font-size: 15px;
+      min-height: 48px;
+      padding: 12px 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      box-shadow: 0 6px 20px rgba(0, 102, 178, 0.45);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-hero-blue:hover {
+      background: linear-gradient(180deg, #168CE4 0%, #005291 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(0, 102, 178, 0.58);
+    }
+
+    .btn-hero-lime {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: var(--rsd-lime);
+      color: var(--rsd-navy);
+      font-weight: 800;
+      font-size: 15px;
+      min-height: 48px;
+      padding: 12px 26px;
+      border-radius: 999px;
+      border: none;
+      box-shadow: 0 6px 18px rgba(140, 198, 63, 0.3);
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+
+    .btn-hero-lime:hover {
+      background-color: #9BD44C;
+      transform: translateY(-2px);
+    }
+
+    .hero-login-link {
+      font-size: 14.5px;
+      color: var(--rsd-text-light);
+    }
+
+    .hero-login-link button {
+      background: none;
+      border: none;
+      color: var(--rsd-lime);
+      font-weight: 800;
+      font-size: 14.5px;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      cursor: pointer;
+      margin-left: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .hero-login-link button:hover {
+      color: var(--rsd-cyan);
+    }
+
+    /* Serialized Portal Proof Card */
+    .hero-proof-card {
+      background: rgba(11, 29, 66, 0.86);
+      border: 1px solid rgba(0, 210, 255, 0.28);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.38);
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .proof-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .proof-badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--rsd-cyan);
+    }
+
+    .proof-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--rsd-lime);
+      box-shadow: 0 0 8px var(--rsd-lime);
+      flex-shrink: 0;
+    }
+
+    .proof-nist-tag {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--rsd-lime);
+      background: rgba(140, 198, 63, 0.15);
+      border: 1px solid rgba(140, 198, 63, 0.35);
+      padding: 3px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .proof-drive-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      background: rgba(5, 14, 34, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 11px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .proof-drive-row:hover {
+      border-color: var(--rsd-cyan);
+      background: rgba(12, 34, 78, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .proof-drive-info {
+      min-width: 0;
+      flex: 1 1 170px;
+    }
+
+    .proof-drive-serial {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rsd-white);
+      overflow-wrap: anywhere;
+    }
+
+    .proof-drive-meta {
+      font-size: 12px;
+      color: var(--rsd-text-light);
+      margin-top: 2px;
+    }
+
+    .proof-grade-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pill-grade-a {
+      background-color: var(--rsd-lime);
+      color: var(--rsd-navy);
+    }
+
+    .pill-grade-b {
+      background-color: #38BDF8;
+      color: var(--rsd-navy);
+    }
+
+    .pill-grade-fail {
+      background-color: #F59E0B;
+      color: var(--rsd-navy);
+    }
+
+    .proof-card-footer {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--rsd-text-light);
+    }
+
+    .proof-card-footer button {
+      background-color: var(--rsd-blue);
+      color: var(--rsd-white);
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .proof-card-footer button:hover {
+      background-color: var(--rsd-blue-hover);
+    }
+
+    /* Trust Strip at bottom of Hero */
+    .trust-strip {
+      position: relative;
+      z-index: 2;
+      background-color: var(--rsd-navy-strip);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 16px 0;
+    }
+
+    .trust-strip-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px 28px;
+    }
+
+    .trust-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--rsd-white);
+    }
+
+    .trust-item svg {
+      color: var(--rsd-lime);
+      flex-shrink: 0;
+    }
+
+    .trust-divider {
+      color: rgba(255, 255, 255, 0.28);
+      user-select: none;
+    }
+
+    /* =========================================================
+       4. HOW IT WORKS SECTION (Pure White #FFFFFF)
+    ========================================================= */
+    .how-section {
+      background-color: var(--rsd-white);
+      padding: 76px 0 82px;
+      border-bottom: 1px solid var(--rsd-border);
+    }
+
+    .how-heading {
+      font-weight: 900;
+      font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+      color: var(--rsd-navy);
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .step-card {
+      background-color: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-top: 3px solid #D8E2EE;
+      border-radius: 14px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 14px rgba(8, 22, 51, 0.04);
+      transition: transform 0.18s ease, box-shadow 0.2s ease, border-top-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .step-card:hover {
+      background-color: #F8FAFC;
+      border-top-color: var(--rsd-blue);
+      box-shadow: 0 10px 24px rgba(0, 102, 178, 0.09);
+      transform: translateY(-2px);
+    }
+
+    .step-num {
+      display: inline-block;
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--rsd-lime);
+      background-color: #F3FAE8;
+      border: 1px solid rgba(140, 198, 63, 0.35);
+      border-radius: 6px;
+      padding: 2px 9px;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+
+    .step-title {
+      font-weight: 800;
+      font-size: 17px;
+      color: var(--rsd-blue);
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      line-height: 1.62;
+      color: var(--rsd-text-slate);
+    }
+
+    /* =========================================================
+       5. GET STARTED & FORM SECTION (Light Cool Gray #F4F7FA)
+    ========================================================= */
+    .intake-section {
+      background-color: var(--rsd-gray-bg);
+      padding: 80px 0 86px;
+    }
+
+    .intake-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      gap: 44px;
+      align-items: start;
+    }
+
+    .intake-heading {
+      font-weight: 900;
+      font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+      color: var(--rsd-blue);
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      margin-bottom: 18px;
+    }
+
+    .intake-intro {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--rsd-text-dark);
+      margin-bottom: 18px;
+    }
+
+    .promise-box {
+      background-color: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-left: 4px solid var(--rsd-lime);
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--rsd-text-dark);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(8, 22, 51, 0.04);
+    }
+
+    .promise-box strong {
+      color: var(--rsd-navy);
+      font-weight: 800;
+    }
+
+    .intake-contact-note {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: var(--rsd-text-muted);
+      margin-bottom: 24px;
+    }
+
+    .intake-contact-note a {
+      color: var(--rsd-green);
+      font-weight: 800;
+    }
+
+    .intake-contact-note a:hover {
+      color: var(--rsd-green-hover);
+      text-decoration: underline;
+    }
+
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .highlight-card {
+      background-color: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 12px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(8, 22, 51, 0.03);
+    }
+
+    .highlight-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background-color: #F3FAE8;
+      color: var(--rsd-green);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .highlight-title {
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--rsd-navy);
+      line-height: 1.25;
+    }
+
+    .highlight-sub {
+      font-size: 11.5px;
+      color: var(--rsd-text-muted);
+      line-height: 1.4;
+    }
+
+    /* Deep Navy Intake Form Card */
+    .navy-form-card {
+      background-color: var(--rsd-navy);
+      color: var(--rsd-white);
+      border-radius: 18px;
+      padding: 32px 30px;
+      box-shadow: 0 20px 44px rgba(8, 22, 51, 0.22);
+      border: 1px solid rgba(0, 210, 255, 0.16);
+    }
+
+    .form-card-title {
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--rsd-white);
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--rsd-white);
+      margin-bottom: 6px;
+    }
+
+    .form-label .req {
+      color: var(--rsd-lime);
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      background-color: var(--rsd-white);
+      color: var(--rsd-text-dark);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 10px 13px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--rsd-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 88px;
+    }
+
+    /* Multi-Select Drive Type Pills */
+    .drive-types-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .drive-pill-label {
+      position: relative;
+      cursor: pointer;
+      display: block;
+    }
+
+    .drive-pill-label input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .drive-pill-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.24);
+      color: var(--rsd-white);
+      border-radius: 8px;
+      padding: 8px 6px;
+      font-size: 12.5px;
+      font-weight: 800;
+      text-align: center;
+      user-select: none;
+      transition: all 0.18s ease;
+    }
+
+    .drive-pill-label input:checked + .drive-pill-box {
+      background-color: var(--rsd-lime);
+      border-color: var(--rsd-lime);
+      color: var(--rsd-navy);
+      box-shadow: 0 2px 8px rgba(140, 198, 63, 0.35);
+    }
+
+    .drive-pill-label:hover .drive-pill-box {
+      border-color: var(--rsd-cyan);
+    }
+
+    /* File Drop Bar */
+    .file-drop-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background-color: var(--rsd-white);
+      color: var(--rsd-text-muted);
+      border-radius: 8px;
+      padding: 10px 13px;
+      min-height: 44px;
+      cursor: pointer;
+      border: 2px dashed transparent;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .file-drop-bar:hover,
+    .file-drop-bar.drag-over {
+      border-color: var(--rsd-lime);
+      background-color: #F7FCEB;
+    }
+
+    .file-drop-bar input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-drop-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      font-size: 13.5px;
+    }
+
+    .file-name-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-name-text.has-file {
+      color: var(--rsd-blue);
+      font-weight: 700;
+    }
+
+    .btn-clear-file {
+      position: relative;
+      z-index: 2;
+      background: #FEE2E2;
+      color: #B91C1C;
+      border: none;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 9px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .btn-clear-file.visible {
+      display: inline-block;
+    }
+
+    .btn-submit-pill {
+      margin-top: 6px;
+      background: linear-gradient(180deg, #0D82D8 0%, #0066B2 100%);
+      color: var(--rsd-white);
+      font-weight: 800;
+      font-size: 15px;
+      min-height: 46px;
+      padding: 12px 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 210, 255, 0.32);
+      box-shadow: 0 6px 18px rgba(0, 102, 178, 0.45);
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    .btn-submit-pill:hover {
+      background: linear-gradient(180deg, #1790E8 0%, #005291 100%);
+      transform: translateY(-1px);
+    }
+
+    /* Dynamic Confirmation Card */
+    .confirmation-box {
+      display: none;
+      padding: 10px 2px;
+    }
+
+    .confirmation-box.active {
+      display: block;
+    }
+
+    .confirm-check-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(140, 198, 63, 0.18);
+      border: 2px solid var(--rsd-lime);
+      color: var(--rsd-lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .confirm-message {
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: var(--rsd-white);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(140, 198, 63, 0.4);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .confirm-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .confirm-tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(0, 210, 255, 0.15);
+      color: var(--rsd-cyan);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+    }
+
+    .btn-reset-form {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      color: var(--rsd-white);
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .btn-reset-form:hover {
+      border-color: var(--rsd-lime);
+      color: var(--rsd-lime);
+    }
+
+    /* =========================================================
+       6. COMBINED DEEP NAVY SECTION: VALUE CARDS + R2v3 CERTIFIED
+    ========================================================= */
+    .r2v3-section {
+      background-color: var(--rsd-navy);
+      color: var(--rsd-white);
+      padding: 78px 0 84px;
+      border-top: 1px solid rgba(0, 210, 255, 0.15);
+    }
+
+    /* Top Part: 3 Value Cards */
+    .navy-value-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      margin-bottom: 54px;
+    }
+
+    .navy-value-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .navy-value-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.075);
+      border-color: rgba(140, 198, 63, 0.5);
+    }
+
+    .navy-value-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(140, 198, 63, 0.15);
+      border: 1px solid rgba(140, 198, 63, 0.35);
+      color: var(--rsd-lime);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navy-value-icon.icon-cyan {
+      background: rgba(0, 210, 255, 0.13);
+      border-color: rgba(0, 210, 255, 0.32);
+      color: var(--rsd-cyan);
+    }
+
+    .navy-value-title {
+      font-weight: 800;
+      font-size: 19px;
+      line-height: 1.3;
+      color: var(--rsd-white);
+    }
+
+    .navy-value-text {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: var(--rsd-text-light);
+    }
+
+    .navy-portal-link {
+      margin-top: auto;
+      padding-top: 6px;
+      align-self: flex-start;
+      background: none;
+      border: none;
+      color: var(--rsd-lime);
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease, transform 0.15s ease;
+    }
+
+    .navy-portal-link:hover {
+      color: var(--rsd-cyan);
+      transform: translateX(2px);
+    }
+
+    .navy-divider {
+      border: none;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.12);
+      margin-bottom: 54px;
+    }
+
+    /* Bottom Part: R2v3 Certification */
+    .r2v3-header-wrap {
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto 42px;
+    }
+
+    .r2v3-heading {
+      font-weight: 900;
+      font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+      color: var(--rsd-lime);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .r2v3-copy {
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: var(--rsd-text-light);
+    }
+
+    .r2v3-badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+
+    .cert-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 24px 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .cert-card.featured-r2 {
+      background: rgba(140, 198, 63, 0.12);
+      border-color: rgba(140, 198, 63, 0.48);
+    }
+
+    .cert-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--rsd-lime);
+    }
+
+    .cert-img-box {
+      background-color: var(--rsd-white);
+      border-radius: 12px;
+      padding: 10px 14px;
+      min-height: 76px;
+      min-width: 98px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+    }
+
+    .cert-img-box img {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .cert-card-title {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--rsd-white);
+    }
+
+    .cert-card-sub {
+      font-size: 12.5px;
+      color: var(--rsd-text-light);
+      line-height: 1.45;
+    }
+
+    /* =========================================================
+       7. TWO-TIER FOOTER
+    ========================================================= */
+    .footer-top {
+      background-color: var(--rsd-footer-bg);
+      border-top: 1px solid var(--rsd-border);
+      padding: 54px 0 46px;
+      color: var(--rsd-text-dark);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) minmax(0, 1.5fr);
+      gap: 36px;
+      align-items: start;
+    }
+
+    .footer-col-title {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--rsd-navy);
+      margin-bottom: 14px;
+    }
+
+    .footer-contact-list {
+      list-style: none;
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      font-size: 14px;
+      color: var(--rsd-text-muted);
+    }
+
+    .footer-contact-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-contact-list svg {
+      color: var(--rsd-blue);
+      flex-shrink: 0;
+    }
+
+    .footer-contact-list a:hover {
+      color: var(--rsd-blue);
+      text-decoration: underline;
+    }
+
+    .footer-links-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      font-size: 14px;
+      color: var(--rsd-text-muted);
+    }
+
+    .footer-links-list a:hover {
+      color: var(--rsd-blue);
+    }
+
+    .footer-login-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--rsd-blue);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-login-btn:hover {
+      color: var(--rsd-green);
+      text-decoration: underline;
+    }
+
+    .footer-cert-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-cert-pill {
+      background-color: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(8, 22, 51, 0.05);
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .footer-cert-pill:hover {
+      transform: translateY(-2px);
+      border-color: var(--rsd-blue);
+    }
+
+    .footer-cert-pill img {
+      height: 50px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .footer-cert-fallback {
+      display: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--rsd-blue);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    /* Bottom Royal Blue Copyright Bar */
+    .footer-bottom {
+      background-color: var(--rsd-blue);
+      color: var(--rsd-white);
+      font-size: 13px;
+      padding: 15px 0;
+    }
+
+    .footer-bottom-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .footer-legal-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .footer-legal-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================================================
+       8. INTERACTIVE CUSTOMER SERIAL LOOKUP PORTAL MODAL
+    ========================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(5, 11, 26, 0.78);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-window {
+      width: 100%;
+      max-width: 680px;
+      background-color: var(--rsd-white);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      background: linear-gradient(90deg, var(--rsd-navy) 0%, #0E2758 100%);
+      color: var(--rsd-white);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid var(--rsd-lime);
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-r2-chip {
+      background-color: var(--rsd-lime);
+      color: var(--rsd-navy);
+      font-weight: 900;
+      font-size: 13px;
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    .modal-title {
+      font-weight: 800;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .modal-subtitle {
+      font-size: 12.5px;
+      color: var(--rsd-text-light);
+      margin-top: 2px;
+    }
+
+    .modal-close-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: var(--rsd-white);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .serial-search-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .serial-search-input {
+      flex: 1;
+      border: 2px solid var(--rsd-border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--rsd-navy);
+      outline: none;
+    }
+
+    .serial-search-input:focus {
+      border-color: var(--rsd-blue);
+    }
+
+    .btn-lookup-serial {
+      background-color: var(--rsd-blue);
+      color: var(--rsd-white);
+      font-weight: 800;
+      font-size: 14px;
+      padding: 0 22px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-lookup-serial:hover {
+      background-color: var(--rsd-blue-hover);
+    }
+
+    .sample-serials-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      font-size: 12.5px;
+      color: var(--rsd-text-muted);
+    }
+
+    .sample-chip {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      background-color: var(--rsd-gray-bg);
+      color: var(--rsd-navy);
+      border: 1px solid var(--rsd-border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sample-chip:hover {
+      background-color: var(--rsd-navy);
+      color: var(--rsd-lime);
+      border-color: var(--rsd-navy);
+    }
+
+    .cert-report-box {
+      background-color: var(--rsd-gray-bg);
+      border: 1px solid var(--rsd-border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .cert-report-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--rsd-border);
+    }
+
+    .cert-serial-title {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+    }
+
+    .cert-model-sub {
+      font-size: 13px;
+      color: var(--rsd-text-muted);
+      margin-top: 2px;
+    }
+
+    .grade-pill {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+
+    .grade-a {
+      background-color: #E7F6D5;
+      color: #3F6B11;
+      border: 1px solid #8CC63F;
+    }
+
+    .grade-b {
+      background-color: #E0F2FE;
+      color: #0369A1;
+      border: 1px solid #38BDF8;
+    }
+
+    .grade-fail {
+      background-color: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #F59E0B;
+    }
+
+    .cert-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .cert-spec-cell {
+      background-color: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .cert-spec-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--rsd-text-muted);
+      margin-bottom: 4px;
+    }
+
+    .cert-spec-value {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--rsd-navy);
+    }
+
+    .cert-spec-value.green { color: #3F6B11; }
+    .cert-spec-value.amber { color: #B45309; }
+
+    .cert-audit-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--rsd-text-muted);
+      padding-top: 4px;
+    }
+
+    /* =========================================================
+       9. RESPONSIVE BREAKPOINTS
+    ========================================================= */
+    @media (max-width: 1024px) {
+      .steps-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .r2v3-badges-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid,
+      .intake-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 32px;
+      }
+
+      .navy-value-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        margin-bottom: 42px;
+      }
+
+      .navy-divider {
+        margin-bottom: 42px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .mobile-menu-bar {
+        display: flex;
+      }
+
+      .nav-inner {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 0 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .nav-inner.mobile-open {
+        display: flex;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+      }
+
+      .nav-links a,
+      .nav-login-item {
+        display: flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 6px 4px;
+        font-size: 14.5px;
+      }
+
+      .nav-search-form {
+        max-width: 100%;
+        height: 42px;
+      }
+
+      .nav-search-input {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .hero-body {
+        padding-top: 38px;
+        padding-bottom: 42px;
+      }
+
+      .how-section,
+      .intake-section,
+      .r2v3-section {
+        padding: 52px 0 58px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .utility-inner {
+        gap: 8px;
+        min-height: 62px;
+      }
+
+      .brand-logo-img {
+        height: 32px;
+        max-width: 124px;
+      }
+
+      .utility-actions {
+        gap: 8px;
+      }
+
+      .utility-phone {
+        font-size: 13px;
+        gap: 4px;
+      }
+
+      .utility-phone svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .btn-quote-pill {
+        padding: 8px 12px;
+        font-size: 10.5px;
+      }
+
+      .utility-account span {
+        display: none;
+      }
+
+      .utility-account {
+        padding: 6px;
+      }
+
+      .hero-subhead {
+        font-size: 0.96rem;
+        margin-bottom: 24px;
+      }
+
+      .hero-btn-row {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+      }
+
+      .btn-hero-blue,
+      .btn-hero-lime {
+        width: 100%;
+      }
+
+      .hero-proof-card {
+        padding: 18px;
+      }
+
+      .proof-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .proof-card-footer button {
+        width: 100%;
+        min-height: 42px;
+      }
+
+      .trust-divider {
+        display: none;
+      }
+
+      .trust-item {
+        font-size: 14px;
+      }
+
+      .steps-grid,
+      .highlights-grid,
+      .r2v3-badges-grid,
+      .footer-grid,
+      .form-row-2,
+      .cert-specs-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .drive-types-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .navy-form-card {
+        padding: 24px 18px;
+      }
+
+      .form-input,
+      .form-textarea,
+      .serial-search-input {
+        font-size: 16px;
+      }
+
+      .btn-submit-pill {
+        width: 100%;
+      }
+
+      .serial-search-form {
+        flex-direction: column;
+      }
+
+      .btn-lookup-serial {
+        min-height: 46px;
+      }
+
+      .footer-bottom-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .utility-phone svg {
+        display: none;
+      }
+
+      .utility-phone {
+        font-size: 12px;
+      }
+
+      .btn-quote-pill {
+        padding: 7px 10px;
+        font-size: 10px;
+      }
+
+      .brand-logo-img {
+        height: 28px;
+        max-width: 104px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       1. TWO-TIER HEADER
+  ========================================================= -->
+  <header class="site-header">
+    <!-- Top Utility Bar -->
+    <div class="utility-bar">
+      <div class="container utility-inner">
+        <!-- Official RSD2 Logo + Inline SVG Fallback -->
+        <a href="#" class="brand-logo" aria-label="RSD2 Home">
+          <img
+            src="https://rsd2.com/build/assets/logo-Cl2ju9WF.png"
+            alt="RSD2 Logo"
+            class="brand-logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
+          />
+          <div class="brand-fallback">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect width="36" height="36" rx="7" fill="#8CC63F"/>
+              <rect x="4" y="4" width="28" height="28" rx="4" fill="#FFFFFF"/>
+              <circle cx="18" cy="18" r="9" stroke="#0066B2" stroke-width="2.2" stroke-dasharray="3 2"/>
+              <circle cx="18" cy="18" r="3.5" fill="#0066B2"/>
+            </svg>
+            <div class="brand-wordmark">
+              <span class="r-blue">R</span><span class="sd2-lime">SD2</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Utility Right Controls -->
+        <div class="utility-actions">
+          <a href="tel:8883331330" class="utility-phone">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+            <span>888-333-1330</span>
+          </a>
+
+          <a href="#get-started" class="btn-quote-pill">REQUEST A QUOTE</a>
+
+          <button type="button" class="utility-account" onclick="openPortalModal()" aria-label="My Account">
+            <svg width="18" height="18" fill="none" stroke="#0066B2" stroke-width="2.1" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            <span>My Account</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Primary Royal Blue Navigation Bar -->
+    <div class="primary-nav-bar">
+      <div class="container">
+        <!-- Mobile Toggle Bar -->
+        <div class="mobile-menu-bar">
+          <button
+            type="button"
+            id="mobileMenuBtn"
+            class="mobile-menu-toggle"
+            aria-expanded="false"
+            aria-controls="primaryNavDrawer"
+            onclick="toggleMobileMenu()"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <span>Menu &amp; Search</span>
+          </button>
+
+          <button type="button" class="mobile-login-btn" onclick="openPortalModal()">
+            Customer Login
+          </button>
+        </div>
+
+        <!-- Desktop Nav / Mobile Expandable Drawer -->
+        <div id="primaryNavDrawer" class="nav-inner">
+          <ul class="nav-links">
+            <li><a href="#" onclick="closeMobileMenu()">Home</a></li>
+            <li><a href="#r2v3-certified" onclick="closeMobileMenu()">About Us</a></li>
+            <li><a href="#how-it-works" class="active" onclick="closeMobileMenu()">Services</a></li>
+            <li><a href="#get-started" onclick="closeMobileMenu()">Our Products</a></li>
+            <li><a href="#how-it-works" onclick="closeMobileMenu()">Articles</a></li>
+            <li><a href="#get-started" onclick="closeMobileMenu()">Contact Us</a></li>
+            <li>
+              <button type="button" class="nav-login-item" onclick="closeMobileMenu(); openPortalModal();">
+                Customer Login
+              </button>
+            </li>
+          </ul>
+
+          <form class="nav-search-form" onsubmit="handleNavSerialSearch(event)">
+            <input
+              id="navSerialInput"
+              type="text"
+              class="nav-search-input"
+              placeholder="Search serial or products..."
+              aria-label="Search serial or products"
+            />
+            <button type="submit" class="nav-search-btn" aria-label="Search">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       2. HERO SECTION (Deep Navy + Glowing Cyan PCB Traces)
+  ========================================================= -->
+  <section class="hero-section">
+    <!-- Top-Left Glowing Cyan PCB Circuit Traces -->
+    <svg class="pcb-trace-tl" viewBox="0 0 460 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g stroke="#00D2FF" stroke-width="1.5" stroke-opacity="0.48">
+        <path d="M-10 24H115L150 59H275"/>
+        <path d="M-10 50H90L130 90H225L250 115H330"/>
+        <path d="M-10 80H68L108 120H190"/>
+        <path d="M160 0V30L185 55H310"/>
+      </g>
+      <g fill="#00D2FF" fill-opacity="0.8">
+        <circle cx="275" cy="59" r="3.5"/>
+        <circle cx="330" cy="115" r="3.5"/>
+        <circle cx="190" cy="120" r="3.5"/>
+        <circle cx="310" cy="55" r="3"/>
+      </g>
+    </svg>
+
+    <!-- Bottom-Right Glowing Cyan PCB Circuit Traces -->
+    <svg class="pcb-trace-br" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g stroke="#00D2FF" stroke-width="1.5" stroke-opacity="0.48">
+        <path d="M510 195H365L325 155H190"/>
+        <path d="M510 165H395L350 120H245L215 90H125"/>
+        <path d="M510 135H425L380 90H285"/>
+      </g>
+      <g fill="#00D2FF" fill-opacity="0.8">
+        <circle cx="190" cy="155" r="3.5"/>
+        <circle cx="125" cy="90" r="3.5"/>
+        <circle cx="285" cy="90" r="3.5"/>
+      </g>
+    </svg>
+
+    <div class="hero-body">
+      <div class="container">
+        <div class="hero-grid">
+          <!-- Left Column -->
+          <div>
+            <h1 class="hero-title">
+              <span class="hero-title-white">Ship Us Your Drives. We Erase Them.</span>
+              <span class="hero-title-lime">You See the Proof.</span>
+            </h1>
+
+            <p class="hero-subhead">
+              Old hard drives sitting on a shelf aren’t doing anything for you. Send them to us, and we’ll securely erase every one. Then log in and look up each drive’s test report by serial number.
+            </p>
+
+            <div class="hero-cta-group">
+              <div class="hero-btn-row">
+                <a href="#get-started" class="btn-hero-blue">
+                  <span>Get Started</span>
+                  <span aria-hidden="true">&rarr;</span>
+                </a>
+               
+              </div>
+
+            
+            </div>
+          </div>
+
+          <!-- Right Column: Serialized Portal Proof Card -->
+          <div class="hero-proof-card">
+            <div class="proof-card-top">
+              <span class="proof-badge-live">
+                <span class="proof-dot"></span>
+                SERIALIZED PORTAL PROOF
+              </span>
+              <span class="proof-nist-tag">R2v3 &bull; NIST 800-88</span>
+            </div>
+
+            <button type="button" class="proof-drive-row" onclick="openPortalModal('WD-WMC4N098123')">
+              <div class="proof-drive-info">
+                <div class="proof-drive-serial">WD-WMC4N098123</div>
+                <div class="proof-drive-meta">14TB Enterprise HDD &bull; Grade A / Erased</div>
+              </div>
+              <span class="proof-grade-pill pill-grade-a">Grade A</span>
+            </button>
+
+            <button type="button" class="proof-drive-row" onclick="openPortalModal('SAM-S4EVNX0R441')">
+              <div class="proof-drive-info">
+                <div class="proof-drive-serial">SAM-S4EVNX0R441</div>
+                <div class="proof-drive-meta">3.84TB NVMe SSD &bull; Grade B / Erased</div>
+              </div>
+              <span class="proof-grade-pill pill-grade-b">Grade B</span>
+            </button>
+
+            <button type="button" class="proof-drive-row" onclick="openPortalModal('ST8000NM0055-FAIL')">
+              <div class="proof-drive-info">
+                <div class="proof-drive-serial">ST8000NM0055-FAIL</div>
+                <div class="proof-drive-meta">8TB Enterprise HDD &bull; Failed / Action Needed</div>
+              </div>
+              <span class="proof-grade-pill pill-grade-fail">Failed</span>
+            </button>
+
+            <div class="proof-card-footer">
+              <span>Click any serial to view its full test report</span>
+              <button type="button" onclick="openPortalModal('WD-WMC4N098123')">Open Portal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust Strip at bottom of Hero -->
+    <div class="trust-strip" aria-label="Trust Strip">
+      <div class="container trust-strip-inner">
+        <div class="trust-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+          <span>R2v3 Certified</span>
+        </div>
+
+        <span class="trust-divider" aria-hidden="true">|</span>
+
+        <div class="trust-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+          <span>Every Drive Tracked</span>
+        </div>
+
+        <span class="trust-divider" aria-hidden="true">|</span>
+
+        <div class="trust-item">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+          <span>Every Drive Erased</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       3. HOW IT WORKS SECTION (Pure White #FFFFFF)
+  ========================================================= -->
+  <section id="how-it-works" class="how-section">
+    <div class="container">
+      <h2 class="how-heading">How It Works</h2>
+
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-num">01</span>
+          <h3 class="step-title">Tell us what you have</h3>
+          <p class="step-desc">
+            Fill out the short form below. Let us know what types of drives you have and about how many.
+          </p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-num">02</span>
+          <h3 class="step-title">We get back to you</h3>
+          <p class="step-desc">
+            Our team will contact you, confirm the details, and send you shipping instructions.
+          </p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-num">03</span>
+          <h3 class="step-title">Ship us your drives</h3>
+          <p class="step-desc">
+            Pack up your drives and send them in. We’ll let you know when they arrive.
+          </p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-num">04</span>
+          <h3 class="step-title">We test and erase every drive</h3>
+          <p class="step-desc">
+            Each drive is scanned by serial number, tested, and securely erased.
+          </p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-num">05</span>
+          <h3 class="step-title">Get your login</h3>
+          <p class="step-desc">
+            We’ll set up your portal account and email you your login.
+          </p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-num">06</span>
+          <h3 class="step-title">Look up your drives</h3>
+          <p class="step-desc">
+            Log in, search any serial number, and see the test report for that drive, including its health and what happened to it.
+          </p>
+        </article>
+
+        <article class="step-card">
+          <span class="step-num">07</span>
+          <h3 class="step-title">Get your batch report and get paid</h3>
+          <p class="step-desc">
+            You’ll receive a report showing how many drives you sent, how many were Grade A, Grade B, or failed, and confirmation that they were erased. [Payment sentence to be confirmed.]
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       4. GET STARTED: TELL US ABOUT YOUR DRIVES & FORM (#F4F7FA)
+  ========================================================= -->
+  <section id="get-started" class="intake-section">
+    <div class="container">
+      <div class="intake-grid">
+        <!-- Left Column -->
+        <div>
+          <h2 class="intake-heading">Get Started: Tell Us About Your Drives</h2>
+
+          <p class="intake-intro">
+            Just the basics for now—enough for us to confirm your drive details and send shipping instructions. No lengthy forms.
+          </p>
+
+          <div class="promise-box">
+            <strong>Our promise:</strong> Every drive is tracked by serial number and securely erased with verifiable proof in your online customer portal.
+          </div>
+
+          <p class="intake-contact-note">
+            Questions? Reach us via email at
+            <a href="mailto:info@rsd2.com">info@rsd2.com</a>
+            or by phone at
+            <a href="tel:8883331330">888-333-1330</a>.
+          </p>
+
+          <div class="highlights-grid">
+            <div class="highlight-card">
+              <span class="highlight-icon" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </span>
+              <span class="highlight-title">1 Business Day Response</span>
+              <span class="highlight-sub">Fast confirmation &amp; shipping steps</span>
+            </div>
+
+            <div class="highlight-card">
+              <span class="highlight-icon" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </span>
+              <span class="highlight-title">Serial-Level Test Reports</span>
+              <span class="highlight-sub">Online portal lookup per drive</span>
+            </div>
+
+            <div class="highlight-card">
+              <span class="highlight-icon" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </span>
+              <span class="highlight-title">R2v3 Audited Process</span>
+              <span class="highlight-sub">Verified NIST 800-88 erasure</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Deep Navy Intake Form Card -->
+        <div class="navy-form-card">
+          <h3 class="form-card-title">Request Shipping Instructions</h3>
+
+          <form id="driveRequestForm" onsubmit="handleDriveFormSubmit(event)">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="reqName">Name <span class="req">*</span></label>
+                <input id="reqName" name="name" type="text" class="form-input" placeholder="Your full name" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reqCompany">Company</label>
+                <input id="reqCompany" name="company" type="text" class="form-input" placeholder="Company name" />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="reqEmail">Email <span class="req">*</span></label>
+                <input id="reqEmail" name="email" type="email" class="form-input" placeholder="you@company.com" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reqPhone">Phone</label>
+                <input id="reqPhone" name="phone" type="tel" class="form-input" placeholder="(888) 333-1330" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <span class="form-label">Types of drives</span>
+              <div class="drive-types-grid" role="group" aria-label="Types of drives">
+                <label class="drive-pill-label">
+                  <input type="checkbox" name="driveTypes" value="HDD" checked />
+                  <span class="drive-pill-box">HDD</span>
+                </label>
+                <label class="drive-pill-label">
+                  <input type="checkbox" name="driveTypes" value="SATA SSD" />
+                  <span class="drive-pill-box">SATA SSD</span>
+                </label>
+                <label class="drive-pill-label">
+                  <input type="checkbox" name="driveTypes" value="NVMe" />
+                  <span class="drive-pill-box">NVMe</span>
+                </label>
+                <label class="drive-pill-label">
+                  <input type="checkbox" name="driveTypes" value="Other" />
+                  <span class="drive-pill-box">Other</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reqQuantity">Approximate quantity</label>
+              <input id="reqQuantity" name="quantity" type="text" class="form-input" placeholder="e.g., 50 drives" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reqNotes">Anything we should know (damaged, encrypted, etc.)</label>
+              <textarea
+                id="reqNotes"
+                name="notes"
+                class="form-textarea"
+                placeholder="Let us know if drives are damaged, encrypted, mixed capacities, or in caddies..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reqFile">Attach file</label>
+              <div id="fileDropZone" class="file-drop-bar">
+                <input id="reqFile" name="attachment" type="file" onchange="handleFileChange(this)" />
+                <div class="file-drop-left">
+                  <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                  </svg>
+                  <span id="fileNameDisplay" class="file-name-text">Click to choose file or drag &amp; drop</span>
+                </div>
+                <button id="clearFileBtn" type="button" class="btn-clear-file" onclick="clearAttachment(event)">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit-pill">Send My Request</button>
+          </form>
+
+          <!-- Dynamic Confirmation State -->
+          <div id="formConfirmation" class="confirmation-box" aria-live="polite">
+            <div class="confirm-check-circle">
+              <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+
+            <p id="confirmationText" class="confirm-message"></p>
+            <div id="confirmationTags" class="confirm-tags"></div>
+
+            <button type="button" class="btn-reset-form" onclick="resetDriveForm()">
+              Submit Another Request
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       5. COMBINED DEEP NAVY SECTION: VALUE CARDS + R2v3 CERTIFIED
+  ========================================================= -->
+  <section id="r2v3-certified" class="r2v3-section">
+    <div class="container">
+      <!-- Top Part: 3 Value Cards ABOVE R2v3 Certified -->
+      <div class="navy-value-grid">
+        <article class="navy-value-card">
+          <div class="navy-value-icon icon-cyan" aria-hidden="true">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
+          <h3 class="navy-value-title">See Exactly What Happened to Your Drives</h3>
+          <p class="navy-value-text">
+            Most companies take your drives and that’s the last you hear. We show you everything. Log into your portal, enter a serial number, and see the test report for that drive. No guessing, no waiting on an email.
+          </p>
+          <button type="button" class="navy-portal-link" onclick="openPortalModal()">
+            <span>Preview Serial Portal &rarr;</span>
+          </button>
+        </article>
+
+        <article class="navy-value-card">
+          <div class="navy-value-icon" aria-hidden="true">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="navy-value-title">Money Sitting in Your Drawer</h3>
+          <p class="navy-value-text">
+            Old drives lose value the longer they sit. If you have hard drives from upgrades, retired servers, or a clean-out, they may be worth more than you think. Ship them to us and turn unused hardware into cash.
+          </p>
+        </article>
+
+        <article class="navy-value-card">
+          <div class="navy-value-icon icon-cyan" aria-hidden="true">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+            </svg>
+          </div>
+          <h3 class="navy-value-title">What About Drives That Fail?</h3>
+          <p class="navy-value-text">
+            Not every drive passes. If one fails testing, your batch report lists it and we ask what you’d like us to do with it. You decide, and nothing gets lost.
+          </p>
+        </article>
+      </div>
+
+      <hr class="navy-divider" />
+
+      <!-- Bottom Part: R2v3 Certified -->
+      <div class="r2v3-header-wrap">
+        <h2 class="r2v3-heading">R2v3 Certified. Your Data Is in Responsible Hands.</h2>
+        <p class="r2v3-copy">
+          Handing over hard drives means handing over trust. That’s why we’re R2v3 certified, the industry standard for responsible electronics reuse, recycling, and data security. It means our processes for handling, erasing, and tracking your drives have been independently audited, not just promised.
+        </p>
+      </div>
+
+      <div class="r2v3-badges-grid">
+        <!-- 1. R2v3 Certified Facility -->
+        <div class="cert-card featured-r2">
+          <div class="cert-img-box">
+            <img
+              src="https://rsd2.com/build/assets/isor2v30-Dml1lLkl.webp"
+              alt="R2v3 Certified Logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <svg style="display:none;" width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="36" r="33" fill="#0B1D42" stroke="#8CC63F" stroke-width="3"/>
+              <text x="36" y="37" text-anchor="middle" fill="#8CC63F" font-family="Arial, sans-serif" font-weight="800" font-size="18">R2v3</text>
+              <text x="36" y="50" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="700" font-size="9">CERTIFIED</text>
+            </svg>
+          </div>
+          <div class="cert-card-title">R2v3 Certified Facility</div>
+          <div class="cert-card-sub">Independently Audited Electronics Reuse &amp; Data Security</div>
+        </div>
+
+        <!-- 2. NIST SP 800-88 Certified -->
+        <div class="cert-card">
+          <div class="cert-img-box">
+            <img
+              src="https://rsd2.com/build/assets/nistsp80088certified-BJJ27kbE.webp"
+              alt="NIST SP 800-88 Certified Logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <svg style="display:none;" width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="36" r="33" fill="#0B1D42" stroke="#00D2FF" stroke-width="2.5"/>
+              <text x="36" y="34" text-anchor="middle" fill="#00D2FF" font-family="Arial, sans-serif" font-weight="800" font-size="13">NIST</text>
+              <text x="36" y="48" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="700" font-size="11">800-88</text>
+            </svg>
+          </div>
+          <div class="cert-card-title">NIST SP 800-88 Certified</div>
+          <div class="cert-card-sub">Cryptographic &amp; Block-Level Drive Sanitization</div>
+        </div>
+
+        <!-- 3. IEEE 2883 Standard -->
+        <div class="cert-card">
+          <div class="cert-img-box">
+            <img
+              src="https://rsd2.com/build/assets/ieee2883certified-DCc-ID8n.webp"
+              alt="IEEE 2883 Certified Logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <svg style="display:none;" width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="36" r="33" fill="#0B1D42" stroke="#0066B2" stroke-width="2.5"/>
+              <text x="36" y="34" text-anchor="middle" fill="#8CC63F" font-family="Arial, sans-serif" font-weight="800" font-size="13">IEEE</text>
+              <text x="36" y="48" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="700" font-size="11">2883</text>
+            </svg>
+          </div>
+          <div class="cert-card-title">IEEE 2883 Standard</div>
+          <div class="cert-card-sub">Modern Storage Media Sanitization Compliance</div>
+        </div>
+
+        <!-- 4. ISO 9001:2015 Certified -->
+        <div class="cert-card">
+          <div class="cert-img-box">
+            <img
+              src="https://rsd2.com/build/assets/iso20150-BKNt7hjF.webp"
+              alt="ISO 9001:2015 Certified Logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <svg style="display:none;" width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="36" r="33" fill="#0B1D42" stroke="#0066B2" stroke-width="2.5"/>
+              <text x="36" y="34" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800" font-size="13">ISO</text>
+              <text x="36" y="48" text-anchor="middle" fill="#00D2FF" font-family="Arial, sans-serif" font-weight="700" font-size="10">9001:2015</text>
+            </svg>
+          </div>
+          <div class="cert-card-title">ISO 9001:2015 Certified</div>
+          <div class="cert-card-sub">Quality Management &amp; Chain-of-Custody Controls</div>
+        </div>
+
+        <!-- 5. ISO 14001:2015 Certified -->
+        <div class="cert-card">
+          <div class="cert-img-box">
+            <img
+              src="https://rsd2.com/build/assets/iso1400120150-DF-w862j.webp"
+              alt="ISO 14001:2015 Certified Logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <svg style="display:none;" width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="36" r="33" fill="#0B1D42" stroke="#8CC63F" stroke-width="2.5"/>
+              <text x="36" y="34" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800" font-size="13">ISO</text>
+              <text x="36" y="48" text-anchor="middle" fill="#8CC63F" font-family="Arial, sans-serif" font-weight="700" font-size="9.5">14001:2015</text>
+            </svg>
+          </div>
+          <div class="cert-card-title">ISO 14001:2015 Certified</div>
+          <div class="cert-card-sub">Certified Environmental Management Systems</div>
+        </div>
+
+        <!-- 6. ISO 45001:2018 Certified -->
+        <div class="cert-card">
+          <div class="cert-img-box">
+            <img
+              src="https://rsd2.com/build/assets/iso1400120180-6TVqDhck.webp"
+              alt="ISO 45001:2018 Certified Logo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <svg style="display:none;" width="56" height="56" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="36" cy="36" r="33" fill="#0B1D42" stroke="#0066B2" stroke-width="2.5"/>
+              <text x="36" y="34" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800" font-size="13">ISO</text>
+              <text x="36" y="48" text-anchor="middle" fill="#00D2FF" font-family="Arial, sans-serif" font-weight="700" font-size="9.5">45001:2018</text>
+            </svg>
+          </div>
+          <div class="cert-card-title">ISO 45001:2018 Certified</div>
+          <div class="cert-card-sub">Occupational Health &amp; Workplace Safety Standards</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       6. TWO-TIER FOOTER
+  ========================================================= -->
+  <footer>
+    <div class="footer-top">
+      <div class="container footer-grid">
+        <!-- Column 1: Logo & Contact -->
+        <div>
+          <a href="#" class="brand-logo" aria-label="RSD2 Home">
+            <img
+              src="https://rsd2.com/build/assets/logo-Cl2ju9WF.png"
+              alt="RSD2 Logo"
+              class="brand-logo-img"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
+            />
+            <div class="brand-fallback">
+              <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect width="36" height="36" rx="7" fill="#8CC63F"/>
+                <rect x="4" y="4" width="28" height="28" rx="4" fill="#FFFFFF"/>
+                <circle cx="18" cy="18" r="9" stroke="#0066B2" stroke-width="2.2" stroke-dasharray="3 2"/>
+                <circle cx="18" cy="18" r="3.5" fill="#0066B2"/>
+              </svg>
+              <div class="brand-wordmark">
+                <span class="r-blue">R</span><span class="sd2-lime">SD2</span>
+              </div>
+            </div>
+          </a>
+
+          <ul class="footer-contact-list">
+            <li>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+              </svg>
+              <span>5 West Avenue</span>
+            </li>
+            <li>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              <a href="mailto:info@rsd2.com">info@rsd2.com</a>
+            </li>
+            <li>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+              <a href="tel:8883331330">888-333-1330</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Quick Links + Customer Login -->
+        <div>
+          <h4 class="footer-col-title">Quick Links</h4>
+          <ul class="footer-links-list">
+            <li>
+              <button type="button" class="footer-login-btn" onclick="openPortalModal()">
+                <span>Customer Login</span>
+                <span aria-hidden="true">&rarr;</span>
+              </button>
+            </li>
+            <li><a href="#how-it-works">Services</a></li>
+            <li><a href="#r2v3-certified">About Us</a></li>
+            <li><a href="#get-started">Contact Us</a></li>
+            <li><a href="#r2v3-certified">Executive Team</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Official 6 Certification Badges -->
+        <div>
+          <h4 class="footer-col-title">Certifications &amp; Compliance</h4>
+          <div class="footer-cert-strip">
+            <div class="footer-cert-pill">
+              <img
+                src="https://rsd2.com/build/assets/iso20150-BKNt7hjF.webp"
+                alt="ISO 9001:2015 Certified"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="footer-cert-fallback">ISO<br/>9001</div>
+            </div>
+
+            <div class="footer-cert-pill">
+              <img
+                src="https://rsd2.com/build/assets/iso1400120180-6TVqDhck.webp"
+                alt="ISO 45001:2018 Certified"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="footer-cert-fallback">ISO<br/>45001</div>
+            </div>
+
+            <div class="footer-cert-pill">
+              <img
+                src="https://rsd2.com/build/assets/iso1400120150-DF-w862j.webp"
+                alt="ISO 14001:2015 Certified"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="footer-cert-fallback">ISO<br/>14001</div>
+            </div>
+
+            <div class="footer-cert-pill">
+              <img
+                src="https://rsd2.com/build/assets/isor2v30-Dml1lLkl.webp"
+                alt="R2v3 Certified"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="footer-cert-fallback">R2v3</div>
+            </div>
+
+            <div class="footer-cert-pill">
+              <img
+                src="https://rsd2.com/build/assets/ieee2883certified-DCc-ID8n.webp"
+                alt="IEEE 2883 Certified"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="footer-cert-fallback">IEEE<br/>2883</div>
+            </div>
+
+            <div class="footer-cert-pill">
+              <img
+                src="https://rsd2.com/build/assets/nistsp80088certified-BJJ27kbE.webp"
+                alt="NIST SP 800-88 Certified"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+              <div class="footer-cert-fallback">NIST<br/>800-88</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Royal Blue Copyright Bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 RSD2. All rights reserved.</p>
+        <div class="footer-legal-links">
+          <a href="#portalModal" onclick="event.preventDefault(); openPortalModal();">Customer Login</a>
+          <span aria-hidden="true">|</span>
+          <a href="#r2v3-certified">Privacy Policy</a>
+          <span aria-hidden="true">|</span>
+          <a href="#r2v3-certified">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       7. INTERACTIVE CUSTOMER SERIAL NUMBER PORTAL MODAL
+  ========================================================= -->
+  <div
+    id="portalModal"
+    class="modal-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="portalModalHeading"
+  >
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-r2-chip">R2v3</span>
+          <div>
+            <h3 id="portalModalHeading" class="modal-title">Customer Serial Number Portal</h3>
+            <p class="modal-subtitle">Look up any drive's test report, SMART health &amp; erasure certificate</p>
+          </div>
+        </div>
+
+        <button type="button" class="modal-close-btn" aria-label="Close modal" onclick="closePortalModal()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form class="serial-search-form" onsubmit="handleModalSerialSubmit(event)">
+          <input
+            id="modalSerialInput"
+            type="text"
+            class="serial-search-input"
+            placeholder="Enter serial number (e.g., WD-WMC4N098123)"
+            aria-label="Drive serial number"
+          />
+          <button type="submit" class="btn-lookup-serial">Look Up Serial</button>
+        </form>
+
+        <div class="sample-serials-bar">
+          <span>Try sample serials:</span>
+          <button type="button" class="sample-chip" onclick="renderSerialCertificate('WD-WMC4N098123')">WD-WMC4N098123</button>
+          <button type="button" class="sample-chip" onclick="renderSerialCertificate('SAM-S4EVNX0R441')">SAM-S4EVNX0R441</button>
+          <button type="button" class="sample-chip" onclick="renderSerialCertificate('ST8000NM0055-FAIL')">ST8000NM0055-FAIL</button>
+        </div>
+
+        <div id="certReportContainer" class="cert-report-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       8. VANILLA JAVASCRIPT INTERACTIVITY
+  ========================================================= -->
+  <script>
+    // Mobile Menu Drawer Controls
+    function toggleMobileMenu() {
+      var nav = document.getElementById('primaryNavDrawer');
+      var btn = document.getElementById('mobileMenuBtn');
+      if (!nav) return;
+      var isOpen = nav.classList.toggle('mobile-open');
+      if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
+    function closeMobileMenu() {
+      var nav = document.getElementById('primaryNavDrawer');
+      var btn = document.getElementById('mobileMenuBtn');
+      if (nav) nav.classList.remove('mobile-open');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+
+    // Sample Serial Database for Customer Portal Lookup
+    var SERIAL_DATABASE = {
+      'WD-WMC4N098123': {
+        serial: 'WD-WMC4N098123',
+        model: 'Western Digital Ultrastar DC HC530 (3.5" SATA HDD)',
+        capacity: '14.0 TB',
+        grade: 'Grade A — Erased',
+        gradeClass: 'grade-a',
+        smartHealth: '100% Healthy · 0 Reallocated Sectors · Passed Extended Self-Test',
+        wipeMethod: 'NIST SP 800-88 Rev. 1 Purge (Cryptographic & Full Overwrite)',
+        timestamp: '2026-11-25 09:42:18 UTC',
+        techId: 'TECH-R2-014 (Station #04)',
+        outcome: 'Erased & Verified — Batch Payout Approved',
+        outcomeTone: 'green'
+      },
+      'SAM-S4EVNX0R441': {
+        serial: 'SAM-S4EVNX0R441',
+        model: 'Samsung PM9A3 U.2 Enterprise NVMe SSD',
+        capacity: '3.84 TB',
+        grade: 'Grade B — Erased',
+        gradeClass: 'grade-b',
+        smartHealth: '88% Drive Life Remaining · 0 Media Errors · Passed Full Verification',
+        wipeMethod: 'NIST SP 800-88 Rev. 1 Purge (NVMe Sanitize Block Erase)',
+        timestamp: '2026-11-25 10:05:44 UTC',
+        techId: 'TECH-R2-009 (Station #02)',
+        outcome: 'Erased & Verified — Batch Payout Approved',
+        outcomeTone: 'green'
+      },
+      'ST8000NM0055-FAIL': {
+        serial: 'ST8000NM0055-FAIL',
+        model: 'Seagate Exos 7E8 Enterprise 3.5" HDD',
+        capacity: '8.0 TB',
+        grade: 'Failed — Action Needed',
+        gradeClass: 'grade-fail',
+        smartHealth: 'SMART Read/Write Head Fault · Unrecoverable Sector Errors',
+        wipeMethod: 'Queued for R2v3 Physical Shredding Upon Customer Disposition',
+        timestamp: '2026-11-25 10:19:03 UTC',
+        techId: 'TECH-R2-014 (Station #04)',
+        outcome: 'Listed on Batch Report — Awaiting Your Disposition Choice',
+        outcomeTone: 'amber'
+      }
+    };
+
+    function openPortalModal(serialQuery) {
+      var modal = document.getElementById('portalModal');
+      var input = document.getElementById('modalSerialInput');
+      if (!modal || !input) return;
+
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      var target = (serialQuery && serialQuery.trim()) ? serialQuery.trim() : 'WD-WMC4N098123';
+      input.value = target;
+      renderSerialCertificate(target);
+    }
+
+    function closePortalModal() {
+      var modal = document.getElementById('portalModal');
+      if (!modal) return;
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('portalModal').addEventListener('click', function (e) {
+      if (e.target === this) closePortalModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePortalModal();
+    });
+
+    function handleNavSerialSearch(e) {
+      e.preventDefault();
+      var input = document.getElementById('navSerialInput');
+      var val = input ? input.value.trim() : '';
+      closeMobileMenu();
+      openPortalModal(val || 'WD-WMC4N098123');
+    }
+
+    function handleModalSerialSubmit(e) {
+      e.preventDefault();
+      var input = document.getElementById('modalSerialInput');
+      var val = input ? input.value.trim() : '';
+      if (val) renderSerialCertificate(val);
+    }
+
+    function renderSerialCertificate(rawSerial) {
+      var normalized = rawSerial.trim().toUpperCase();
+      var input = document.getElementById('modalSerialInput');
+      if (input) input.value = normalized;
+
+      var container = document.getElementById('certReportContainer');
+      if (!container) return;
+
+      var record = SERIAL_DATABASE[normalized] || {
+        serial: normalized,
+        model: 'Enterprise Storage Drive (Serialized Audit Preview)',
+        capacity: 'Verified Capacity',
+        grade: 'Grade A — Erased',
+        gradeClass: 'grade-a',
+        smartHealth: '100% Healthy · Passed Full Sector Read/Write Test',
+        wipeMethod: 'NIST SP 800-88 Rev. 1 Purge (Verified)',
+        timestamp: '2026-11-25 10:30:00 UTC',
+        techId: 'TECH-R2-014 (Station #04)',
+        outcome: 'Erased & Verified — Included on Batch Report',
+        outcomeTone: 'green'
+      };
+
+      container.innerHTML =
+        '<div class="cert-report-header">' +
+          '<div>' +
+            '<div class="cert-serial-title">' + escapeHtml(record.serial) + '</div>' +
+            '<div class="cert-model-sub">' + escapeHtml(record.model) + ' &bull; <strong>' + escapeHtml(record.capacity) + '</strong></div>' +
+          '</div>' +
+          '<span class="grade-pill ' + record.gradeClass + '">' + escapeHtml(record.grade) + '</span>' +
+        '</div>' +
+        '<div class="cert-specs-grid">' +
+          '<div class="cert-spec-cell">' +
+            '<div class="cert-spec-label">SMART Health &amp; Diagnostics</div>' +
+            '<div class="cert-spec-value">' + escapeHtml(record.smartHealth) + '</div>' +
+          '</div>' +
+          '<div class="cert-spec-cell">' +
+            '<div class="cert-spec-label">Erasure Method</div>' +
+            '<div class="cert-spec-value">' + escapeHtml(record.wipeMethod) + '</div>' +
+          '</div>' +
+          '<div class="cert-spec-cell">' +
+            '<div class="cert-spec-label">Completion Timestamp</div>' +
+            '<div class="cert-spec-value">' + escapeHtml(record.timestamp) + '</div>' +
+          '</div>' +
+          '<div class="cert-spec-cell">' +
+            '<div class="cert-spec-label">Outcome / Disposition</div>' +
+            '<div class="cert-spec-value ' + record.outcomeTone + '">' + escapeHtml(record.outcome) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cert-audit-footer">' +
+          '<span>Verified by: <strong>' + escapeHtml(record.techId) + '</strong></span>' +
+          '<span>R2v3 Certified Chain-of-Custody Log</span>' +
+        '</div>';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // File Attachment & Drag-and-Drop Handlers
+    var dropZone = document.getElementById('fileDropZone');
+    if (dropZone) {
+      dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+      dropZone.addEventListener('dragleave', function () {
+        dropZone.classList.remove('drag-over');
+      });
+      dropZone.addEventListener('drop', function () {
+        dropZone.classList.remove('drag-over');
+      });
+    }
+
+    function handleFileChange(input) {
+      var display = document.getElementById('fileNameDisplay');
+      var clearBtn = document.getElementById('clearFileBtn');
+      if (input.files && input.files.length > 0) {
+        display.textContent = input.files[0].name;
+        display.classList.add('has-file');
+        clearBtn.classList.add('visible');
+      }
+    }
+
+    function clearAttachment(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var input = document.getElementById('reqFile');
+      var display = document.getElementById('fileNameDisplay');
+      var clearBtn = document.getElementById('clearFileBtn');
+      if (input) input.value = '';
+      if (display) {
+        display.textContent = 'Click to choose file or drag & drop';
+        display.classList.remove('has-file');
+      }
+      if (clearBtn) clearBtn.classList.remove('visible');
+    }
+
+    // Intake Form Submission & Confirmation
+    function handleDriveFormSubmit(e) {
+      e.preventDefault();
+      var nameInput = document.getElementById('reqName');
+      var qtyInput = document.getElementById('reqQuantity');
+      var fullName = nameInput ? nameInput.value.trim() : '';
+      var firstName = fullName ? fullName.split(/\s+/)[0] : 'there';
+      var quantity = qtyInput ? qtyInput.value.trim() : '';
+
+      var checkedBoxes = document.querySelectorAll('input[name="driveTypes"]:checked');
+      var selectedDrives = [];
+      for (var i = 0; i < checkedBoxes.length; i++) {
+        selectedDrives.push(checkedBoxes[i].value);
+      }
+
+      var confirmText = document.getElementById('confirmationText');
+      if (confirmText) {
+        confirmText.textContent =
+          'Thanks, ' + firstName + '! We got your request and will contact you within one business day with shipping instructions. Questions in the meantime? Reach us at info@rsd2.com or 888-333-1330.';
+      }
+
+      var tagsEl = document.getElementById('confirmationTags');
+      if (tagsEl) {
+        tagsEl.innerHTML = '';
+        if (selectedDrives.length > 0) {
+          var driveTag = document.createElement('span');
+          driveTag.className = 'confirm-tag';
+          driveTag.textContent = 'Drives: ' + selectedDrives.join(', ');
+          tagsEl.appendChild(driveTag);
+        }
+        if (quantity) {
+          var qtyTag = document.createElement('span');
+          qtyTag.className = 'confirm-tag';
+          qtyTag.textContent = 'Quantity: ' + quantity;
+          tagsEl.appendChild(qtyTag);
+        }
+      }
+
+      document.getElementById('driveRequestForm').style.display = 'none';
+      document.getElementById('formConfirmation').classList.add('active');
+    }
+
+    function resetDriveForm() {
+      var form = document.getElementById('driveRequestForm');
+      if (form) form.reset();
+
+      var display = document.getElementById('fileNameDisplay');
+      if (display) {
+        display.textContent = 'Click to choose file or drag & drop';
+        display.classList.remove('has-file');
+      }
+      var clearBtn = document.getElementById('clearFileBtn');
+      if (clearBtn) clearBtn.classList.remove('visible');
+
+      document.getElementById('formConfirmation').classList.remove('active');
+      if (form) form.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
