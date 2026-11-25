@@ -1,0 +1,4285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSD2 Customer Portal | R2v3 Certified Drive Erasure &amp; Buyback</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================================
+       1. RSD2 BRAND DESIGN TOKENS & GLOBAL RESET
+    ========================================================= */
+    :root {
+      --rsd-navy: #081633;
+      --rsd-navy-deep: #050E22;
+      --rsd-blue: #0066B2;
+      --rsd-blue-hover: #005291;
+      --rsd-blue-soft: #E0F2FE;
+      --rsd-cyan: #00C2FF;
+      --rsd-lime: #8CC63F;
+      --rsd-lime-hover: #7AB332;
+      --rsd-green: #65A30D;
+      --rsd-green-hover: #4D7C0F;
+      --rsd-bg: #F4F7FA;
+      --rsd-white: #FFFFFF;
+      --rsd-border: #E2E8F0;
+      --rsd-text: #081633;
+      --rsd-muted: #475569;
+      --grade-a-text: #16A34A;
+      --grade-a-bg: #DCFCE7;
+      --grade-b-text: #D97706;
+      --grade-b-bg: #FEF3C7;
+      --fail-text: #DC2626;
+      --fail-bg: #FEE2E2;
+      --sidebar-width: 268px;
+      --font-main: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: var(--font-main);
+      background-color: var(--rsd-bg);
+      color: var(--rsd-text);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select, textarea, table {
+      font-family: var(--font-main);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* =========================================================
+       2. STAGE 1: CLEAN, MINIMALIST LOGIN SCREEN (#loginScreen)
+    ========================================================= */
+    .login-screen {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      background: radial-gradient(circle at 80% 18%, #102B63 0%, #081633 56%, #040B1B 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+      overflow: hidden;
+    }
+
+    .login-pcb-tl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 520px;
+      max-width: 72vw;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .login-pcb-br {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 540px;
+      max-width: 75vw;
+      pointer-events: none;
+      opacity: 0.72;
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 440px;
+      background: var(--rsd-white);
+      border-radius: 18px;
+      padding: 34px 32px 30px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(0, 194, 255, 0.22);
+    }
+
+    .login-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--rsd-border);
+    }
+
+    .brand-logo-img {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-fallback {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-wordmark {
+      font-weight: 900;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-wordmark .r-blue { color: var(--rsd-blue); }
+    .brand-wordmark .sd2-lime { color: var(--rsd-lime); }
+
+    .portal-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F3FAE8;
+      color: var(--rsd-green);
+      border: 1px solid rgba(140, 198, 63, 0.48);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .portal-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--rsd-lime);
+    }
+
+    .login-title {
+      font-size: 23px;
+      font-weight: 900;
+      color: var(--rsd-navy);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--rsd-muted);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .login-error {
+      display: none;
+      background: var(--fail-bg);
+      color: var(--fail-text);
+      border: 1px solid #FCA5A5;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .field-group {
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+      margin-bottom: 6px;
+    }
+
+    .field-input,
+    .field-select,
+    .field-textarea {
+      width: 100%;
+      border: 1.5px solid var(--rsd-border);
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-size: 14px;
+      color: var(--rsd-text);
+      background: var(--rsd-white);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field-input:focus,
+    .field-select:focus,
+    .field-textarea:focus {
+      border-color: var(--rsd-blue);
+      box-shadow: 0 0 0 3px rgba(0, 102, 178, 0.14);
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap .field-input {
+      padding-right: 44px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 9px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--rsd-muted);
+      cursor: pointer;
+      padding: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .password-toggle:hover {
+      color: var(--rsd-blue);
+      background: var(--rsd-bg);
+    }
+
+    .login-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 22px;
+      font-size: 13px;
+    }
+
+    .checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--rsd-muted);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .checkbox-label input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--rsd-blue);
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      background: none;
+      border: none;
+      color: var(--rsd-blue);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .forgot-link:hover {
+      color: var(--rsd-navy);
+      text-decoration: underline;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(180deg, #0B78CA 0%, #0066B2 100%);
+      color: var(--rsd-white);
+      border: none;
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 102, 178, 0.25);
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #0E83DB 0%, #005291 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 102, 178, 0.34);
+    }
+
+    .btn-lime {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: var(--rsd-lime);
+      color: var(--rsd-navy);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-lime:hover {
+      background: var(--rsd-lime-hover);
+      color: var(--rsd-white);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--rsd-white);
+      color: var(--rsd-text);
+      border: 1.5px solid var(--rsd-border);
+      border-radius: 9px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--rsd-blue);
+      color: var(--rsd-blue);
+      background: #F8FBFF;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    .btn-login-full {
+      width: 100%;
+      min-height: 46px;
+      font-size: 15px;
+      border-radius: 11px;
+    }
+
+    /* =========================================================
+       3. STAGE 2: SIDEBAR DASHBOARD SHELL (#portalApp)
+    ========================================================= */
+    .dashboard-shell {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      background: var(--rsd-bg);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--rsd-navy);
+      color: var(--rsd-white);
+      display: flex;
+      flex-direction: column;
+      z-index: 60;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-header {
+      padding: 18px 18px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-logo-pill {
+      background: var(--rsd-white);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+    }
+
+    .sidebar-logo-pill .brand-logo-img {
+      height: 30px;
+    }
+
+    .sidebar-close-mobile {
+      display: none;
+      background: var(--rsd-bg);
+      border: none;
+      color: var(--rsd-navy);
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .sidebar-portal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--rsd-lime);
+      background: rgba(140, 198, 63, 0.14);
+      border: 1px solid rgba(140, 198, 63, 0.35);
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 14px 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-section-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(203, 213, 225, 0.55);
+      padding: 8px 12px 4px;
+    }
+
+    .nav-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: transparent;
+      border: none;
+      color: #CBD5E1;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 11px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .nav-item-left span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-item svg {
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--rsd-white);
+    }
+
+    .nav-item.active {
+      background: var(--rsd-blue);
+      color: var(--rsd-white);
+      box-shadow: 0 4px 14px rgba(0, 102, 178, 0.38);
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+    }
+
+    .nav-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .nav-badge-red {
+      background: #EF4444;
+      color: var(--rsd-white);
+    }
+
+    .nav-badge-lime {
+      background: var(--rsd-lime);
+      color: var(--rsd-navy);
+    }
+
+    .sidebar-footer {
+      padding: 14px 14px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar-user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .sidebar-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--rsd-lime);
+      color: var(--rsd-navy);
+      font-weight: 900;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-account-mini {
+      font-size: 11.5px;
+      color: #94A3B8;
+      line-height: 1.3;
+      min-width: 0;
+    }
+
+    .sidebar-account-mini strong {
+      display: block;
+      color: var(--rsd-white);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-signout {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #E2E8F0;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .btn-signout:hover {
+      background: rgba(220, 38, 38, 0.22);
+      border-color: rgba(248, 113, 113, 0.5);
+      color: #FECACA;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 14, 34, 0.6);
+      z-index: 50;
+      display: none;
+    }
+
+    .sidebar-overlay.open {
+      display: block;
+    }
+
+    /* Main Content Column */
+    .main-area {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top Sticky Header Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--rsd-white);
+      border-bottom: 1px solid var(--rsd-border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(8, 22, 51, 0.04);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .btn-hamburger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1.5px solid var(--rsd-border);
+      background: var(--rsd-white);
+      color: var(--rsd-navy);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .page-title-block {
+      min-width: 0;
+    }
+
+    .breadcrumb {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--rsd-muted);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .breadcrumb span.current {
+      color: var(--rsd-blue);
+    }
+
+    .topbar-title {
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--rsd-navy);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .global-serial-form {
+      display: flex;
+      align-items: center;
+      background: var(--rsd-bg);
+      border: 1.5px solid var(--rsd-border);
+      border-radius: 999px;
+      padding: 3px 4px 3px 12px;
+      width: 265px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .global-serial-form:focus-within {
+      background: var(--rsd-white);
+      border-color: var(--rsd-blue);
+      box-shadow: 0 0 0 3px rgba(0, 102, 178, 0.12);
+    }
+
+    .global-serial-input {
+      border: none;
+      background: transparent;
+      font-size: 12.5px;
+      color: var(--rsd-text);
+      width: 100%;
+      outline: none;
+    }
+
+    .global-serial-btn {
+      background: var(--rsd-blue);
+      color: var(--rsd-white);
+      border: none;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .global-serial-btn:hover {
+      background: var(--rsd-blue-hover);
+    }
+
+    .profile-pill-wrap {
+      position: relative;
+    }
+
+    .profile-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--rsd-bg);
+      border: 1px solid var(--rsd-border);
+      border-radius: 999px;
+      padding: 4px 12px 4px 5px;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .profile-pill:hover {
+      border-color: var(--rsd-blue);
+    }
+
+    .profile-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--rsd-navy);
+      color: var(--rsd-lime);
+      font-weight: 900;
+      font-size: 12.5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .profile-meta {
+      text-align: left;
+      line-height: 1.2;
+    }
+
+    .profile-name {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+      display: block;
+    }
+
+    .profile-role {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--rsd-muted);
+      display: block;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 235px;
+      background: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 12px;
+      box-shadow: 0 14px 32px rgba(8, 22, 51, 0.14);
+      padding: 8px;
+      display: none;
+      z-index: 80;
+    }
+
+    .profile-dropdown.open {
+      display: block;
+    }
+
+    .profile-dd-info {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--rsd-border);
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--rsd-muted);
+    }
+
+    .profile-dd-info strong {
+      display: block;
+      color: var(--rsd-navy);
+      font-size: 13px;
+    }
+
+    .profile-dd-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rsd-text);
+      cursor: pointer;
+    }
+
+    .profile-dd-btn:hover {
+      background: var(--rsd-bg);
+      color: var(--rsd-blue);
+    }
+
+    .profile-dd-btn.danger {
+      color: var(--fail-text);
+    }
+
+    .profile-dd-btn.danger:hover {
+      background: var(--fail-bg);
+    }
+
+    /* Main Workspace */
+    .workspace {
+      padding: 24px;
+      flex: 1;
+      max-width: 1460px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       4. OVERVIEW ELEMENTS, KPI CARDS, LOOKUP & STEPPER
+    ========================================================= */
+    .welcome-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .welcome-title {
+      font-size: 23px;
+      font-weight: 900;
+      color: var(--rsd-navy);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .welcome-sub {
+      font-size: 13.5px;
+      color: var(--rsd-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .action-banner {
+      background: linear-gradient(90deg, #FEF2F2 0%, #FFFBEB 100%);
+      border: 1.5px solid #FCA5A5;
+      border-left: 5px solid var(--fail-text);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .action-banner-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .action-banner-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--fail-bg);
+      color: var(--fail-text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .action-banner-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #991B1B;
+    }
+
+    .action-banner-sub {
+      font-size: 13px;
+      color: #7F1D1D;
+      margin-top: 2px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      background: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(8, 22, 51, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.16s ease, border-color 0.2s ease;
+    }
+
+    .kpi-card.clickable {
+      cursor: pointer;
+    }
+
+    .kpi-card.clickable:hover {
+      transform: translateY(-2px);
+      border-color: var(--fail-text);
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--rsd-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .kpi-icon.blue { background: var(--rsd-blue-soft); color: var(--rsd-blue); }
+    .kpi-icon.green { background: var(--grade-a-bg); color: var(--grade-a-text); }
+    .kpi-icon.red { background: var(--fail-bg); color: var(--fail-text); }
+    .kpi-icon.lime { background: #F3FAE8; color: var(--rsd-green); }
+
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--rsd-navy);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-trend {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--rsd-muted);
+    }
+
+    .kpi-trend.positive { color: var(--grade-a-text); }
+    .kpi-trend.alert { color: var(--fail-text); }
+
+    /* Instant Serial Lookup Card */
+    .lookup-hero-card {
+      background: linear-gradient(125deg, #081633 0%, #0E2758 100%);
+      color: var(--rsd-white);
+      border-radius: 16px;
+      padding: 24px 26px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(0, 194, 255, 0.25);
+      box-shadow: 0 12px 28px rgba(8, 22, 51, 0.16);
+    }
+
+    .lookup-hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .lookup-hero-title {
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--rsd-white);
+      margin-bottom: 6px;
+    }
+
+    .lookup-hero-title span {
+      color: var(--rsd-lime);
+    }
+
+    .lookup-hero-sub {
+      font-size: 13.5px;
+      color: #CBD5E1;
+      line-height: 1.55;
+    }
+
+    .lookup-search-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .lookup-search-input {
+      flex: 1;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      border-radius: 10px;
+      padding: 11px 14px;
+      background: var(--rsd-white);
+      color: var(--rsd-navy);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .lookup-search-input:focus {
+      border-color: var(--rsd-cyan);
+    }
+
+    .sample-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #CBD5E1;
+    }
+
+    .sample-chip-dark {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--rsd-white);
+      border: 1px solid rgba(0, 194, 255, 0.35);
+      border-radius: 7px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .sample-chip-dark:hover {
+      background: var(--rsd-lime);
+      color: var(--rsd-navy);
+      border-color: var(--rsd-lime);
+    }
+
+    /* Panel Cards & 7-Step Tracker */
+    .panel-card {
+      background: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(8, 22, 51, 0.03);
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--rsd-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+    }
+
+    .panel-subtitle {
+      font-size: 12.5px;
+      color: var(--rsd-muted);
+      margin-top: 2px;
+    }
+
+    .stepper-wrap {
+      padding: 18px 20px 20px;
+      overflow-x: auto;
+    }
+
+    .stepper-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(126px, 1fr));
+      gap: 10px;
+    }
+
+    .step-node {
+      background: var(--rsd-bg);
+      border: 1px solid var(--rsd-border);
+      border-top: 3px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 12px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .step-node.completed {
+      background: #F7FCEB;
+      border-color: rgba(140, 198, 63, 0.4);
+      border-top-color: var(--rsd-lime);
+    }
+
+    .step-node.active {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      border-top-color: var(--rsd-blue);
+    }
+
+    .step-node-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .step-num-tag {
+      font-size: 10.5px;
+      font-weight: 900;
+      color: var(--rsd-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .step-node.completed .step-num-tag { color: var(--rsd-green); }
+    .step-node.active .step-num-tag { color: var(--rsd-blue); }
+
+    .step-check-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .step-node.completed .step-check-dot {
+      background: var(--rsd-lime);
+      color: var(--rsd-navy);
+    }
+
+    .step-node.active .step-check-dot {
+      background: var(--rsd-blue);
+      color: var(--rsd-white);
+    }
+
+    .step-node.upcoming .step-check-dot {
+      background: #E2E8F0;
+      color: var(--rsd-muted);
+    }
+
+    .step-node-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+      line-height: 1.25;
+    }
+
+    .step-node-status {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--rsd-muted);
+    }
+
+    .step-node.completed .step-node-status { color: var(--rsd-green); }
+    .step-node.active .step-node-status { color: var(--rsd-blue); }
+
+    /* =========================================================
+       5. TABLES, BADGES, HEALTH BAR & FAILED CARDS
+    ========================================================= */
+    .table-toolbar {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--rsd-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #FAFBFD;
+    }
+
+    .toolbar-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .toolbar-search {
+      width: 240px;
+      max-width: 100%;
+    }
+
+    .toolbar-select {
+      width: auto;
+      min-width: 145px;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      min-width: 820px;
+    }
+
+    .data-table.compact {
+      min-width: 600px;
+    }
+
+    .data-table thead th {
+      background: #F8FAFC;
+      color: var(--rsd-muted);
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--rsd-border);
+      white-space: nowrap;
+    }
+
+    .data-table tbody td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--rsd-border);
+      vertical-align: middle;
+      color: var(--rsd-muted);
+    }
+
+    .data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: #F8FBFF;
+    }
+
+    .mono-serial {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--rsd-blue);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .mono-serial:hover {
+      text-decoration: underline;
+      color: var(--rsd-navy);
+    }
+
+    .cell-primary {
+      font-weight: 800;
+      color: var(--rsd-navy);
+      display: block;
+    }
+
+    .cell-sub {
+      font-size: 12px;
+      color: var(--rsd-muted);
+      display: block;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .badge-grade-a { background: var(--grade-a-bg); color: var(--grade-a-text); }
+    .badge-grade-b { background: var(--grade-b-bg); color: var(--grade-b-text); }
+    .badge-failed { background: var(--fail-bg); color: var(--fail-text); }
+    .badge-info { background: var(--rsd-blue-soft); color: var(--rsd-blue); }
+    .badge-lime { background: #F3FAE8; color: var(--rsd-green); border: 1px solid rgba(140, 198, 63, 0.4); }
+
+    .drive-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .drive-chip {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #EFF6FF;
+      color: var(--rsd-blue);
+      border: 1px solid #BFDBFE;
+      white-space: nowrap;
+    }
+
+    .health-cell {
+      min-width: 140px;
+    }
+
+    .health-bar-track {
+      width: 100%;
+      height: 7px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .health-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .health-high { background: var(--grade-a-text); }
+    .health-mid { background: var(--grade-b-text); }
+    .health-low { background: var(--fail-text); }
+
+    .file-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rsd-navy);
+      cursor: pointer;
+      max-width: 240px;
+      transition: border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .file-pill:hover {
+      border-color: var(--rsd-blue);
+      background: #EFF6FF;
+      color: var(--rsd-blue);
+    }
+
+    .file-pill-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .submission-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .submission-card {
+      background: var(--rsd-white);
+      border: 1.5px solid var(--rsd-border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(8, 22, 51, 0.03);
+    }
+
+    .submission-card-head {
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--rsd-border);
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .submission-card-body {
+      padding: 18px;
+    }
+
+    .submission-fields-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .submission-fields-grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .submission-confirm-banner {
+      background: #F3FAE8;
+      border: 1.5px solid rgba(140, 198, 63, 0.55);
+      border-left: 5px solid var(--rsd-lime);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin: 18px 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--rsd-navy);
+      font-size: 13.5px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .empty-state {
+      padding: 38px 20px;
+      text-align: center;
+      color: var(--rsd-muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Failed Drives Decision Cards */
+    .policy-callout {
+      background: #F8FAFC;
+      border: 1px solid var(--rsd-border);
+      border-left: 4px solid var(--rsd-blue);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--rsd-muted);
+      line-height: 1.6;
+    }
+
+    .policy-callout strong {
+      color: var(--rsd-navy);
+    }
+
+    .failed-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .failed-card {
+      background: var(--rsd-white);
+      border: 1.5px solid var(--rsd-border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 2px 10px rgba(8, 22, 51, 0.03);
+    }
+
+    .failed-card.pending {
+      border-color: #FCA5A5;
+    }
+
+    .failed-card-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rsd-border);
+    }
+
+    .failed-diag-box {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 10px;
+      padding: 11px 13px;
+      font-size: 13px;
+      color: #991B1B;
+    }
+
+    .decision-options {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .decision-radio-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 13px;
+      border: 1.5px solid var(--rsd-border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .decision-radio-card:hover {
+      border-color: var(--rsd-blue);
+      background: #F8FBFF;
+    }
+
+    .decision-radio-card input {
+      margin-top: 3px;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--rsd-blue);
+      flex-shrink: 0;
+    }
+
+    .decision-radio-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+      display: block;
+    }
+
+    .decision-radio-sub {
+      font-size: 12px;
+      color: var(--rsd-muted);
+      display: block;
+    }
+
+    .decision-confirmed-box {
+      background: #F3FAE8;
+      border: 1px solid rgba(140, 198, 63, 0.5);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--rsd-navy);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* Account & Support Layout */
+    .account-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .support-navy-card {
+      background: linear-gradient(155deg, #081633 0%, #0E2758 100%);
+      color: var(--rsd-white);
+      border-radius: 16px;
+      padding: 26px 24px;
+      border: 1px solid rgba(0, 194, 255, 0.22);
+      box-shadow: 0 14px 32px rgba(8, 22, 51, 0.18);
+    }
+
+    .support-phone-big {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--rsd-lime);
+      margin: 12px 0 6px;
+    }
+
+    .support-phone-big:hover {
+      color: #A3DF52;
+      text-decoration: underline;
+    }
+
+    .support-cert-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .support-cert-box {
+      background: var(--rsd-white);
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 70px;
+      text-align: center;
+    }
+
+    .support-cert-box img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .support-cert-fallback {
+      display: none;
+      font-size: 10.5px;
+      font-weight: 900;
+      color: var(--rsd-navy);
+    }
+
+    /* =========================================================
+       6. MODALS, FILE DROP & CERTIFICATES
+    ========================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 14, 34, 0.72);
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: 720px;
+      background: var(--rsd-white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.42);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-dialog.wide {
+      max-width: 840px;
+    }
+
+    .modal-head {
+      background: linear-gradient(90deg, var(--rsd-navy) 0%, #0E2758 100%);
+      color: var(--rsd-white);
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 3px solid var(--rsd-lime);
+    }
+
+    .modal-head-title {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .modal-head-sub {
+      font-size: 12px;
+      color: #CBD5E1;
+      margin-top: 2px;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.14);
+      border: none;
+      color: var(--rsd-white);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .modal-body {
+      padding: 22px;
+      overflow-y: auto;
+    }
+
+    .modal-foot {
+      padding: 14px 22px;
+      border-top: 1px solid var(--rsd-border);
+      background: #F8FAFC;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .detail-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .detail-box {
+      background: var(--rsd-bg);
+      border: 1px solid var(--rsd-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--rsd-muted);
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--rsd-navy);
+      word-break: break-word;
+    }
+
+    .cert-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #F3FAE8;
+      border: 1px solid rgba(140, 198, 63, 0.5);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .cert-banner.failed-banner {
+      background: var(--fail-bg);
+      border-color: #FCA5A5;
+    }
+
+    .cert-serial-big {
+      font-family: var(--font-mono);
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--rsd-navy);
+    }
+
+    .cert-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--rsd-white);
+      border: 1px solid var(--rsd-border);
+      border-radius: 10px;
+    }
+
+    .cert-badge-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--rsd-navy);
+    }
+
+    .cert-badge-item img {
+      height: 36px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .cert-badge-fallback {
+      display: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #F3FAE8;
+      border: 1px solid rgba(140, 198, 63, 0.5);
+      color: var(--rsd-green);
+      font-size: 10.5px;
+      font-weight: 900;
+    }
+
+    .file-preview-box {
+      background: #0B1528;
+      color: #E2E8F0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      padding: 16px;
+      border-radius: 10px;
+      max-height: 280px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+
+    .file-preview-img {
+      display: block;
+      max-width: 100%;
+      max-height: 260px;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+
+    .drive-pills-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .drive-pill-label {
+      position: relative;
+      cursor: pointer;
+      display: block;
+    }
+
+    .drive-pill-label input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .drive-pill-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      background: var(--rsd-bg);
+      border: 1.5px solid var(--rsd-border);
+      color: var(--rsd-navy);
+      border-radius: 8px;
+      padding: 8px 6px;
+      font-size: 12.5px;
+      font-weight: 800;
+      text-align: center;
+      transition: all 0.16s ease;
+    }
+
+    .drive-pill-label input:checked + .drive-pill-box {
+      background: var(--rsd-lime);
+      border-color: var(--rsd-lime);
+      color: var(--rsd-navy);
+    }
+
+    .file-drop-zone {
+      position: relative;
+      border: 2px dashed #CBD5E1;
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: var(--rsd-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .file-drop-zone:hover,
+    .file-drop-zone.drag-over {
+      border-color: var(--rsd-blue);
+      background: #EFF6FF;
+    }
+
+    .file-drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       7. TOAST NOTIFICATIONS
+    ========================================================= */
+    .toast-stack {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+      width: calc(100vw - 40px);
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--rsd-navy);
+      color: var(--rsd-white);
+      border-left: 4px solid var(--rsd-lime);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 700;
+      box-shadow: 0 12px 28px rgba(5, 14, 34, 0.35);
+      animation: toastSlideIn 0.22s ease forwards;
+    }
+
+    .toast.toast-info { border-left-color: var(--rsd-cyan); }
+
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================================
+       8. RESPONSIVE BREAKPOINTS
+    ========================================================= */
+    @media (max-width: 1180px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .lookup-hero-grid,
+      .account-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar-close-mobile {
+        display: inline-flex;
+      }
+
+      .main-area {
+        margin-left: 0;
+      }
+
+      .btn-hamburger {
+        display: inline-flex;
+      }
+
+      .global-serial-form {
+        width: 210px;
+      }
+
+      .failed-cards-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        padding: 10px 14px;
+      }
+
+      .workspace {
+        padding: 16px 14px;
+      }
+
+      .global-serial-form,
+      .profile-meta {
+        display: none;
+      }
+
+      .profile-pill {
+        padding: 4px;
+      }
+
+      .topbar-title {
+        font-size: 16.5px;
+      }
+
+      .kpi-grid,
+      .detail-grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .submission-fields-grid,
+      .submission-fields-grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .lookup-hero-card {
+        padding: 20px 16px;
+      }
+
+      .lookup-search-row {
+        flex-direction: column;
+      }
+
+      .toolbar-search,
+      .toolbar-select {
+        width: 100%;
+      }
+
+      .drive-pills-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .support-cert-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .login-card {
+        padding: 26px 20px;
+      }
+
+      .field-input,
+      .field-select,
+      .field-textarea,
+      .lookup-search-input {
+        font-size: 16px;
+      }
+    }
+
+    /* Print Styles for Active Printable Certificate / Batch Modal */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .modal-backdrop.print-target,
+      .modal-backdrop.print-target * {
+        visibility: visible;
+      }
+      .modal-backdrop.print-target {
+        position: absolute;
+        inset: 0;
+        background: #FFFFFF;
+        padding: 0;
+        display: block !important;
+      }
+      .modal-backdrop.print-target .modal-dialog {
+        max-width: 100%;
+        max-height: none;
+        box-shadow: none;
+        border: none;
+      }
+      .modal-backdrop.print-target .modal-close,
+      .modal-backdrop.print-target .modal-foot {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================
+       STAGE 1: CLEAN, MINIMALIST LOGIN SCREEN (#loginScreen)
+  ========================================================= -->
+  <section id="loginScreen" class="login-screen" aria-label="Customer Portal Sign In">
+    <!-- Glowing Cyan PCB Circuit Traces -->
+    <svg class="login-pcb-tl" viewBox="0 0 520 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g stroke="#00C2FF" stroke-width="1.5" stroke-opacity="0.4">
+        <path d="M-10 28H125L165 68H310"/>
+        <path d="M-10 62H95L140 107H250L280 137H370"/>
+        <path d="M-10 96H70L115 141H205"/>
+        <path d="M180 0V36L208 64H350"/>
+      </g>
+      <g fill="#00C2FF" fill-opacity="0.82">
+        <circle cx="310" cy="68" r="3.5"/>
+        <circle cx="370" cy="137" r="3.5"/>
+        <circle cx="205" cy="141" r="3.5"/>
+        <circle cx="350" cy="64" r="3"/>
+      </g>
+    </svg>
+
+    <svg class="login-pcb-br" viewBox="0 0 540 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g stroke="#00C2FF" stroke-width="1.5" stroke-opacity="0.4">
+        <path d="M550 225H395L350 180H210"/>
+        <path d="M550 190H425L375 140H265L235 110H140"/>
+        <path d="M550 155H455L405 105H305"/>
+      </g>
+      <g fill="#00C2FF" fill-opacity="0.82">
+        <circle cx="210" cy="180" r="3.5"/>
+        <circle cx="140" cy="110" r="3.5"/>
+        <circle cx="305" cy="105" r="3.5"/>
+      </g>
+    </svg>
+
+    <div class="login-card">
+      <div class="login-brand-row">
+        <div>
+          <img
+            src="https://rsd2.com/build/assets/logo-Cl2ju9WF.png"
+            alt="RSD2 Logo"
+            class="brand-logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
+          />
+          <div class="brand-fallback">
+            <svg width="32" height="32" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+              <rect width="36" height="36" rx="7" fill="#8CC63F"/>
+              <rect x="4" y="4" width="28" height="28" rx="4" fill="#FFFFFF"/>
+              <circle cx="18" cy="18" r="9" stroke="#0066B2" stroke-width="2.2" stroke-dasharray="3 2"/>
+              <circle cx="18" cy="18" r="3.5" fill="#0066B2"/>
+            </svg>
+            <div class="brand-wordmark">
+              <span class="r-blue">R</span><span class="sd2-lime">SD2</span>
+            </div>
+          </div>
+        </div>
+        <span class="portal-pill"><span class="portal-pill-dot"></span>CUSTOMER PORTAL</span>
+      </div>
+
+      <h1 class="login-title">Sign in to your portal</h1>
+      <p class="login-subtitle">
+        Track your drives, view erasure certificates, and manage batch payouts.
+      </p>
+
+      <div id="loginError" class="login-error" role="alert"></div>
+
+      <form id="loginForm" action="javascript:void(0)" onsubmit="return handleLogin(event);" novalidate>
+        <div class="field-group">
+          <label class="field-label" for="loginEmail">Email Address</label>
+          <input
+            id="loginEmail"
+            type="email"
+            class="field-input"
+            value="jennifer.leon@unixsurplus.com"
+            placeholder="you@company.com"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="loginPassword">Password</label>
+          <div class="password-wrap">
+            <input
+              id="loginPassword"
+              type="password"
+              class="field-input"
+              value="rsd2customer2026"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              aria-label="Show or hide password"
+              onclick="toggleLoginPassword()"
+            >
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-options-row">
+          <label class="checkbox-label">
+            <input type="checkbox" checked />
+            <span>Remember me</span>
+          </label>
+          <button type="button" class="forgot-link" onclick="handleForgotPassword()">Forgot password?</button>
+        </div>
+
+        <button type="button" id="signInBtn" class="btn-primary btn-login-full" onclick="handleLogin(event)">
+          <span>Sign In to Customer Portal</span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       STAGE 2: RESPONSIVE SIDEBAR DASHBOARD (#portalApp)
+  ========================================================= -->
+  <div id="portalApp" class="dashboard-shell">
+    <!-- Mobile Drawer Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Left Fixed Sidebar (#081633) -->
+    <aside id="sidebar" class="sidebar" aria-label="Customer Portal Navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-pill">
+          <img
+            src="https://rsd2.com/build/assets/logo-Cl2ju9WF.png"
+            alt="RSD2 Logo"
+            class="brand-logo-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
+          />
+          <div class="brand-fallback">
+            <svg width="28" height="28" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+              <rect width="36" height="36" rx="7" fill="#8CC63F"/>
+              <rect x="4" y="4" width="28" height="28" rx="4" fill="#FFFFFF"/>
+              <circle cx="18" cy="18" r="9" stroke="#0066B2" stroke-width="2.2" stroke-dasharray="3 2"/>
+              <circle cx="18" cy="18" r="3.5" fill="#0066B2"/>
+            </svg>
+            <div class="brand-wordmark" style="font-size:20px;">
+              <span class="r-blue">R</span><span class="sd2-lime">SD2</span>
+            </div>
+          </div>
+
+          <button type="button" class="sidebar-close-mobile" aria-label="Close menu" onclick="closeSidebar()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <span class="sidebar-portal-badge">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+          CUSTOMER PORTAL
+        </span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">My Drives &amp; Proof</div>
+
+        <button type="button" class="nav-item active" data-view="overview" onclick="switchView('overview')">
+          <span class="nav-item-left">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+            </svg>
+            <span>Overview</span>
+          </span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="serials" onclick="switchView('serials')">
+          <span class="nav-item-left">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <span>Serial Number Lookup</span>
+          </span>
+          <span id="navBadgeDrives" class="nav-badge nav-badge-lime">10</span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="batches" onclick="switchView('batches')">
+          <span class="nav-item-left">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>Batch Reports &amp; Payouts</span>
+          </span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="failed" onclick="switchView('failed')">
+          <span class="nav-item-left">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <span>Failed Drives</span>
+          </span>
+          <span id="navBadgeFailed" class="nav-badge nav-badge-red">2</span>
+        </button>
+
+        <div class="nav-section-label">Shipments &amp; Account</div>
+
+        <button type="button" class="nav-item" data-view="submissions" onclick="switchView('submissions')">
+          <span class="nav-item-left">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            <span>My Submissions &amp; Files</span>
+          </span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="account" onclick="switchView('account')">
+          <span class="nav-item-left">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            <span>Account &amp; Support</span>
+          </span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user-card">
+          <span class="sidebar-avatar">JL</span>
+          <div class="sidebar-account-mini">
+            <strong id="sidebarUserName">Jennifer Leon</strong>
+            <span id="sidebarUserCompany">UnixSurplus</span>
+          </div>
+        </div>
+        <button type="button" class="btn-signout" onclick="handleSignOut()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+          </svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Right Column -->
+    <div class="main-area">
+      <!-- Top Sticky Header Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="btn-hamburger" aria-label="Open menu" onclick="openSidebar()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+
+          <div class="page-title-block">
+            <div class="breadcrumb">
+              <span>Customer Portal</span>
+              <span>/</span>
+              <span id="breadcrumbCurrent" class="current">Overview</span>
+            </div>
+            <h1 id="topbarTitle" class="topbar-title">Overview</h1>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <form class="global-serial-form" action="javascript:void(0)" onsubmit="return handleTopSerialSearch(event);">
+            <input
+              id="topSerialInput"
+              type="text"
+              class="global-serial-input"
+              placeholder="Quick serial lookup..."
+              aria-label="Quick serial number lookup"
+            />
+            <button type="submit" class="global-serial-btn">Search</button>
+          </form>
+
+          <div class="profile-pill-wrap">
+            <button type="button" class="profile-pill" onclick="toggleProfileMenu()" aria-label="Account menu">
+              <span class="profile-avatar">JL</span>
+              <span class="profile-meta">
+                <span id="topbarUserName" class="profile-name">Jennifer Leon</span>
+                <span id="topbarUserCompany" class="profile-role">UnixSurplus</span>
+              </span>
+            </button>
+
+            <div id="profileDropdown" class="profile-dropdown">
+              <div class="profile-dd-info">
+                <strong id="ddUserName">Jennifer Leon</strong>
+                <span id="ddUserEmail">jennifer.leon@unixsurplus.com</span><br />
+                <span id="ddUserRole">IT Asset Manager</span>
+              </div>
+              <button type="button" class="profile-dd-btn" onclick="toggleProfileMenu(); switchView('account');">
+                Account &amp; Payout Settings
+              </button>
+              <button type="button" class="profile-dd-btn danger" onclick="handleSignOut()">
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Workspace Views -->
+      <main class="workspace">
+
+        <!-- =====================================================
+             VIEW 1: OVERVIEW
+        ====================================================== -->
+        <section id="view-overview" class="view-section">
+          <div class="welcome-banner">
+            <div>
+              <h2 class="welcome-title">Welcome back, Jennifer &mdash; UnixSurplus</h2>
+              <p class="welcome-sub">jennifer.leon@unixsurplus.com &bull; IT Asset Manager</p>
+            </div>
+            <button type="button" class="btn-primary btn-sm" onclick="openNewSubmissionModal()">
+              <span>+ Submit New Drives</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Action Needed Banner for Failed Drives -->
+          <div id="failedAlertBanner" class="action-banner hidden">
+            <div class="action-banner-left">
+              <span class="action-banner-icon" aria-hidden="true">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+              </span>
+              <div>
+                <div id="failedAlertTitle" class="action-banner-title">Action Needed: Failed Drives Awaiting Your Decision</div>
+                <div class="action-banner-sub">
+                  Choose free R2v3 Certified Shredding or Return Drive to Me so we can finalize BATCH-2026-041 and release your payout.
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn-primary btn-sm" onclick="switchView('failed')">
+              <span>Review Failed Drives &rarr;</span>
+            </button>
+          </div>
+
+          <!-- 4 Live KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Total Drives Submitted</span>
+                <span class="kpi-icon blue">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                  </svg>
+                </span>
+              </div>
+              <div id="kpiTotalDrives" class="kpi-value">10</div>
+              <div class="kpi-trend positive">Across 1 active batch (BATCH-2026-041)</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Drives Erased</span>
+                <span class="kpi-icon green">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                </span>
+              </div>
+              <div id="kpiErasedDrives" class="kpi-value">8</div>
+              <div class="kpi-trend positive">100% Verified (NIST / IEEE)</div>
+            </div>
+
+            <div class="kpi-card clickable" onclick="switchView('failed')" title="Click to review failed drives">
+              <div class="kpi-top">
+                <span class="kpi-label">Failed Drives Pending Decision</span>
+                <span class="kpi-icon red">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                </span>
+              </div>
+              <div id="kpiFailedAction" class="kpi-value">2</div>
+              <div id="kpiFailedTrend" class="kpi-trend alert">Click to choose disposition &rarr;</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Estimated Payout</span>
+                <span class="kpi-icon lime">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+              </div>
+              <div id="kpiTotalEarnings" class="kpi-value">$1,145.00</div>
+              <div class="kpi-trend positive">Grade A &amp; B verified buyback</div>
+            </div>
+          </div>
+
+          <!-- Instant Serial Number Proof Lookup Card -->
+          <div class="lookup-hero-card">
+            <div class="lookup-hero-grid">
+              <div>
+                <h2 class="lookup-hero-title">Instant <span>Serial Number</span> Proof Lookup</h2>
+                <p class="lookup-hero-sub">
+                  Enter any serial number from your batches to inspect its SMART health report, erasure certificate, and disposition immediately.
+                </p>
+              </div>
+              <div>
+                <form class="lookup-search-row" action="javascript:void(0)" onsubmit="return handleWidgetSerialLookup(event);">
+                  <input
+                    id="widgetSerialInput"
+                    type="text"
+                    class="lookup-search-input"
+                    placeholder="Enter serial number (e.g., WD-WMC4N098123)"
+                    aria-label="Enter serial number"
+                  />
+                  <button type="submit" class="btn-lime">Search</button>
+                </form>
+                <div class="sample-chips-row">
+                  <span>Sample serials:</span>
+                  <button type="button" class="sample-chip-dark" onclick="openDriveReportModal('WD-WMC4N098123')">WD-WMC4N098123</button>
+                  <button type="button" class="sample-chip-dark" onclick="openDriveReportModal('SAM-S4EVNX0R441')">SAM-S4EVNX0R441</button>
+                  <button type="button" class="sample-chip-dark" onclick="openDriveReportModal('ST8000NM0055-FAIL')">ST8000NM0055-FAIL</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7-Step Active Shipment Progress Tracker (BATCH-2026-041) -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Active Shipment Progress — BATCH-2026-041</h2>
+                <p class="panel-subtitle">Live 7-step tracking from request intake through erasure proof and payout</p>
+              </div>
+              <span id="activeBatchStatusBadge" class="badge badge-grade-b">Step 6 of 7 &bull; Serial Reports Live</span>
+            </div>
+            <div class="stepper-wrap">
+              <div id="sevenStepTracker" class="stepper-grid"></div>
+            </div>
+          </div>
+
+          <!-- Recent Tested Drives Table -->
+          <div class="panel-card" style="margin-bottom:0;">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Recent Tested Drives</h2>
+                <p class="panel-subtitle">Latest drives scanned, tested, and verified in your account</p>
+              </div>
+              <button type="button" class="btn-outline btn-sm" onclick="switchView('serials')">View All Drives &rarr;</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table compact">
+                <thead>
+                  <tr>
+                    <th>Serial Number</th>
+                    <th>Model &amp; Capacity</th>
+                    <th>Batch ID</th>
+                    <th>Health</th>
+                    <th>Grade</th>
+                    <th>Erasure Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="overviewRecentDrivesBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             VIEW 2: SERIAL NUMBER LOOKUP (MY DRIVES DATATABLE)
+        ====================================================== -->
+        <section id="view-serials" class="view-section hidden">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Serial Number Lookup — My Drives</h2>
+                <p class="panel-subtitle">Search any serial number to view its full SMART health diagnostics and printable R2v3 erasure certificate</p>
+              </div>
+              <button type="button" class="btn-outline" onclick="exportMyDrivesCSV()">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                <span>Export CSV</span>
+              </button>
+            </div>
+
+            <div class="table-toolbar">
+              <div class="toolbar-filters">
+                <input
+                  id="driveSearchInput"
+                  type="text"
+                  class="field-input toolbar-search"
+                  placeholder="Search serial, model, or batch..."
+                  oninput="renderDrivesTable()"
+                />
+                <select id="driveGradeFilter" class="field-select toolbar-select" onchange="renderDrivesTable()">
+                  <option value="ALL">All Grades</option>
+                  <option value="Grade A">Grade A</option>
+                  <option value="Grade B">Grade B</option>
+                  <option value="Failed">Failed</option>
+                </select>
+                <select id="driveTypeFilter" class="field-select toolbar-select" onchange="renderDrivesTable()">
+                  <option value="ALL">All Drive Types</option>
+                  <option value="HDD">HDD</option>
+                  <option value="SATA SSD">SATA SSD</option>
+                  <option value="NVMe">NVMe</option>
+                </select>
+              </div>
+              <div id="driveCountLabel" style="font-size:12.5px; font-weight:800; color:var(--rsd-muted);"></div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Serial Number</th>
+                    <th>Model &amp; Capacity</th>
+                    <th>Type</th>
+                    <th>Batch ID</th>
+                    <th>Health</th>
+                    <th>Grade</th>
+                    <th>Erasure Standard &amp; Status</th>
+                    <th>Payout</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="drivesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             VIEW 3: BATCH REPORTS & PAYOUTS
+        ====================================================== -->
+        <section id="view-batches" class="view-section hidden">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Batch Reports &amp; Payouts</h2>
+                <p class="panel-subtitle">Summary of every shipment showing Grade A, Grade B, failed counts, erasure confirmation, and payouts</p>
+              </div>
+              <span class="badge badge-lime">100% Serialized Chain of Custody</span>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Batch ID</th>
+                    <th>Shipment Date</th>
+                    <th>Total Drives</th>
+                    <th>Grade A</th>
+                    <th>Grade B</th>
+                    <th>Failed</th>
+                    <th>Total Payout</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="batchesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             VIEW 4: FAILED DRIVES (YOUR DECISION)
+        ====================================================== -->
+        <section id="view-failed" class="view-section hidden">
+          <div class="policy-callout">
+            <strong>What About Drives That Fail?</strong> Not every drive passes testing. If a drive fails, your batch report lists it and we ask what you’d like us to do with it. You decide, and nothing gets lost.
+          </div>
+
+          <div id="failedCardsContainer" class="failed-cards-grid"></div>
+        </section>
+
+        <!-- =====================================================
+             VIEW 5: MY SUBMISSIONS & UPLOADED FILES
+        ====================================================== -->
+        <section id="view-submissions" class="view-section hidden">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">My Submissions &amp; Uploaded Files</h2>
+                <p class="panel-subtitle">Exact record of your drive intake form submissions and attached manifests</p>
+              </div>
+              <button type="button" class="btn-primary" onclick="openNewSubmissionModal()">
+                <span>+ Submit New Drive Request</span>
+              </button>
+            </div>
+
+            <div id="submissionConfirmBanner" class="submission-confirm-banner hidden" role="status">
+              <span id="submissionConfirmText"></span>
+              <button type="button" class="btn-outline btn-sm" onclick="dismissSubmissionConfirm()">Dismiss</button>
+            </div>
+
+            <div class="table-toolbar">
+              <div class="toolbar-filters">
+                <input
+                  id="subSearchInput"
+                  type="text"
+                  class="field-input toolbar-search"
+                  placeholder="Search request ID, company, notes, file..."
+                  oninput="renderSubmissionsTable()"
+                />
+                <select id="subStatusFilter" class="field-select toolbar-select" onchange="renderSubmissionsTable()">
+                  <option value="ALL">All Statuses</option>
+                  <option value="Received &amp; Tested">Received &amp; Tested</option>
+                  <option value="New Request">New Request</option>
+                </select>
+              </div>
+              <div id="subCountLabel" style="font-size:12.5px; font-weight:800; color:var(--rsd-muted);"></div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Request ID &amp; Date</th>
+                    <th>Name &amp; Company</th>
+                    <th>Email &amp; Phone</th>
+                    <th>Types of Drives</th>
+                    <th>Approx. Quantity</th>
+                    <th>Anything We Should Know</th>
+                    <th>Attached File</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="submissionsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             VIEW 6: ACCOUNT & SUPPORT
+        ====================================================== -->
+        <section id="view-account" class="view-section hidden">
+          <div class="account-grid">
+            <!-- Profile & Payout Preferences Form -->
+            <div class="panel-card" style="margin-bottom:0;">
+              <div class="panel-header">
+                <div>
+                  <h2 class="panel-title">Profile &amp; Payout Preferences</h2>
+                  <p class="panel-subtitle">UnixSurplus &bull; Account ID: RSD2-CUST-1042</p>
+                </div>
+                <span class="badge badge-grade-a">Verified Account</span>
+              </div>
+              <form style="padding:22px;" action="javascript:void(0)" onsubmit="return handleSaveAccountPrefs(event);">
+                <div class="detail-grid-2">
+                  <div class="field-group" style="margin-bottom:0;">
+                    <label class="field-label" for="profName">Full Name</label>
+                    <input id="profName" type="text" class="field-input" value="Jennifer Leon" required />
+                  </div>
+                  <div class="field-group" style="margin-bottom:0;">
+                    <label class="field-label" for="profRole">Role / Title</label>
+                    <input id="profRole" type="text" class="field-input" value="IT Asset Manager" required />
+                  </div>
+                  <div class="field-group" style="margin-bottom:0;">
+                    <label class="field-label" for="profCompany">Company Name</label>
+                    <input id="profCompany" type="text" class="field-input" value="UnixSurplus" required />
+                  </div>
+                  <div class="field-group" style="margin-bottom:0;">
+                    <label class="field-label" for="profEmail">Email Address</label>
+                    <input id="profEmail" type="email" class="field-input" value="jennifer.leon@unixsurplus.com" required />
+                  </div>
+                </div>
+
+                <div class="detail-grid-2" style="margin-top:16px;">
+                  <div class="field-group" style="margin-bottom:0;">
+                    <label class="field-label" for="profPhone">Phone Number</label>
+                    <input id="profPhone" type="tel" class="field-input" value="(408) 555-0194" />
+                  </div>
+                  <div class="field-group" style="margin-bottom:0;">
+                    <label class="field-label" for="profPayout">Preferred Payout Method</label>
+                    <select id="profPayout" class="field-select">
+                      <option value="ACH Direct Deposit" selected>ACH Direct Deposit</option>
+                      <option value="Corporate Check">Corporate Check</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="margin-top:18px;">
+                  <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- RSD2 R2v3 Certified Support Card -->
+            <div class="support-navy-card">
+              <span class="sidebar-portal-badge" style="margin-bottom:12px;">R2v3 CERTIFIED SUPPORT</span>
+              <h2 style="font-size:20px; font-weight:900; line-height:1.25;">Questions About a Batch or Drive Report?</h2>
+              <p style="font-size:13.5px; color:#CBD5E1; margin-top:8px; line-height:1.6;">
+                Our R2v3 certified processing and data sanitization team is ready to assist with shipping instructions, serial certificates, or failed drive disposition.
+              </p>
+
+              <a href="tel:8883331330" class="support-phone-big">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                </svg>
+                <span>888-333-1330</span>
+              </a>
+
+              <div style="font-size:14px; color:#E2E8F0; font-weight:700;">
+                Email: <a href="mailto:info@rsd2.com" style="color:#00C2FF; text-decoration:underline;">info@rsd2.com</a>
+              </div>
+              <div style="font-size:12.5px; color:#94A3B8; margin-top:4px;">
+                5 West Avenue, Merced, CA 95341 &bull; Mon–Fri 8am–5pm PST
+              </div>
+
+              <!-- All 6 Official Certification Badges -->
+              <div class="support-cert-grid">
+                <div class="support-cert-box">
+                  <img src="https://rsd2.com/build/assets/isor2v30-Dml1lLkl.webp" alt="R2v3 Certified" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <span class="support-cert-fallback">R2v3 Certified</span>
+                </div>
+                <div class="support-cert-box">
+                  <img src="https://rsd2.com/build/assets/nistsp80088certified-BJJ27kbE.webp" alt="NIST SP 800-88" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <span class="support-cert-fallback">NIST SP 800-88</span>
+                </div>
+                <div class="support-cert-box">
+                  <img src="https://rsd2.com/build/assets/ieee2883certified-DCc-ID8n.webp" alt="IEEE 2883" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <span class="support-cert-fallback">IEEE 2883</span>
+                </div>
+                <div class="support-cert-box">
+                  <img src="https://rsd2.com/build/assets/iso20150-BKNt7hjF.webp" alt="ISO 9001:2015" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <span class="support-cert-fallback">ISO 9001:2015</span>
+                </div>
+                <div class="support-cert-box">
+                  <img src="https://rsd2.com/build/assets/iso1400120150-DF-w862j.webp" alt="ISO 14001:2015" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <span class="support-cert-fallback">ISO 14001:2015</span>
+                </div>
+                <div class="support-cert-box">
+                  <img src="https://rsd2.com/build/assets/iso1400120180-6TVqDhck.webp" alt="ISO 45001:2018" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <span class="support-cert-fallback">ISO 45001:2018</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 1: DRIVE TEST REPORT & CERTIFICATE OF ERASURE
+  ========================================================= -->
+  <div id="driveReportModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveReportTitle">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <div>
+          <h3 id="driveReportTitle" class="modal-head-title">Drive Test Report &amp; Certificate of Erasure</h3>
+          <p class="modal-head-sub">R2v3 Certified &bull; NIST SP 800-88 / IEEE 2883 Serialized Verification</p>
+        </div>
+        <button type="button" class="modal-close" aria-label="Close" onclick="closeModal('driveReportModal')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="driveReportBody" class="modal-body"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-outline" onclick="closeModal('driveReportModal')">Close</button>
+        <button type="button" class="btn-primary" onclick="printModal('driveReportModal')">Print / Save Certificate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 2: BATCH EXECUTIVE REPORT
+  ========================================================= -->
+  <div id="batchReportModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="batchReportTitle">
+    <div class="modal-dialog wide">
+      <div class="modal-head">
+        <div>
+          <h3 id="batchReportTitle" class="modal-head-title">Batch Executive Report</h3>
+          <p id="batchReportSub" class="modal-head-sub"></p>
+        </div>
+        <button type="button" class="modal-close" aria-label="Close" onclick="closeModal('batchReportModal')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="batchReportBody" class="modal-body"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-outline" onclick="closeModal('batchReportModal')">Close</button>
+        <button type="button" class="btn-primary" onclick="printModal('batchReportModal')">Print / Save Batch Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 3: SUBMISSION DETAILS & UPLOADED FILE PREVIEW
+  ========================================================= -->
+  <div id="filePreviewModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="filePreviewTitle">
+    <div class="modal-dialog wide">
+      <div class="modal-head">
+        <div>
+          <h3 id="filePreviewTitle" class="modal-head-title">Submission Details &amp; Uploaded File</h3>
+          <p id="filePreviewSub" class="modal-head-sub"></p>
+        </div>
+        <button type="button" class="modal-close" aria-label="Close" onclick="closeModal('filePreviewModal')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="filePreviewBody" class="modal-body"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-outline" onclick="closeModal('filePreviewModal')">Close</button>
+        <button type="button" id="downloadPreviewFileBtn" class="btn-primary">Download File</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 4: SUBMIT NEW DRIVE REQUEST
+  ========================================================= -->
+  <div id="newSubmissionModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="newSubTitle">
+    <div class="modal-dialog">
+      <div class="modal-head">
+        <div>
+          <h3 id="newSubTitle" class="modal-head-title">Submit New Drive Request</h3>
+          <p class="modal-head-sub">Tell us what you have and we will send shipping instructions within one business day</p>
+        </div>
+        <button type="button" class="modal-close" aria-label="Close" onclick="closeModal('newSubmissionModal')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="newSubmissionForm" action="javascript:void(0)" onsubmit="return handleNewSubmission(event);">
+        <div class="modal-body">
+          <div class="detail-grid-2">
+            <div class="field-group" style="margin-bottom:0;">
+              <label class="field-label" for="subName">Name *</label>
+              <input id="subName" type="text" class="field-input" value="Jennifer Leon" required />
+            </div>
+            <div class="field-group" style="margin-bottom:0;">
+              <label class="field-label" for="subCompany">Company *</label>
+              <input id="subCompany" type="text" class="field-input" value="UnixSurplus" required />
+            </div>
+            <div class="field-group" style="margin-bottom:0;">
+              <label class="field-label" for="subEmail">Email *</label>
+              <input id="subEmail" type="email" class="field-input" value="jennifer.leon@unixsurplus.com" required />
+            </div>
+            <div class="field-group" style="margin-bottom:0;">
+              <label class="field-label" for="subPhone">Phone</label>
+              <input id="subPhone" type="tel" class="field-input" value="(408) 555-0194" />
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-top:16px;">
+            <span class="field-label">Types of drives (HDD, SATA SSD, NVMe, other)</span>
+            <div class="drive-pills-grid">
+              <label class="drive-pill-label">
+                <input type="checkbox" name="subDriveTypes" value="HDD" checked />
+                <span class="drive-pill-box">HDD</span>
+              </label>
+              <label class="drive-pill-label">
+                <input type="checkbox" name="subDriveTypes" value="SATA SSD" />
+                <span class="drive-pill-box">SATA SSD</span>
+              </label>
+              <label class="drive-pill-label">
+                <input type="checkbox" name="subDriveTypes" value="NVMe" />
+                <span class="drive-pill-box">NVMe</span>
+              </label>
+              <label class="drive-pill-label">
+                <input type="checkbox" name="subDriveTypes" value="Other" />
+                <span class="drive-pill-box">Other</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="subQty">Approximate quantity *</label>
+            <input id="subQty" type="text" class="field-input" placeholder="e.g., 10" required />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="subNotes">Anything we should know (damaged, encrypted, etc.)</label>
+            <textarea id="subNotes" class="field-textarea" rows="3" placeholder="e.g., Encrypted server pulls, damaged units, or packed in anti-static sleeves..."></textarea>
+          </div>
+
+          <div class="field-group" style="margin-bottom:0;">
+            <label class="field-label" for="subFile">Attach file</label>
+            <div id="subDropZone" class="file-drop-zone">
+              <input id="subFile" type="file" onchange="handleSubFileChange(this)" />
+              <span id="subFileName" style="font-size:13px; color:var(--rsd-muted); font-weight:700;">Click to choose file or drag &amp; drop</span>
+              <span class="badge badge-info">Browse</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn-outline" onclick="closeModal('newSubmissionModal')">Cancel</button>
+          <button type="submit" class="btn-primary">Send My Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Stack -->
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <!-- =========================================================
+       ROCK-SOLID VANILLA JAVASCRIPT APPLICATION LOGIC
+  ========================================================= -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------
+         1. CUSTOMER PROFILE & SEED DATA (JENNIFER LEON @ UNIXSURPLUS)
+      ------------------------------------------------------- */
+      var customerProfile = {
+        name: 'Jennifer Leon',
+        initials: 'JL',
+        role: 'IT Asset Manager',
+        company: 'UnixSurplus',
+        email: 'jennifer.leon@unixsurplus.com',
+        phone: '(408) 555-0194',
+        payoutMethod: 'ACH Direct Deposit'
+      };
+
+      var myDrives = [
+        {
+          serial: 'WD-WMC4N098123',
+          model: 'Western Digital Gold',
+          capacity: '4TB',
+          type: 'HDD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 98,
+          smartDetails: 'Passed Extended Self-Test · 0 Reallocated Sectors · Enterprise HDD Pull',
+          grade: 'Grade A',
+          erasureMethod: 'NIST SP 800-88 Purge',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 17:12:08 UTC',
+          certId: 'CERT-R2-2026-88412',
+          payout: 110.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'SAM-S4EVNX0R441',
+          model: 'Samsung PM9A3',
+          capacity: '1.92TB',
+          type: 'NVMe',
+          batchId: 'BATCH-2026-041',
+          healthPct: 92,
+          smartDetails: 'BitLocker Encryption Cleared · Passed Full Verification · 8% TBW Wear',
+          grade: 'Grade B',
+          erasureMethod: 'IEEE 2883 / NIST SP 800-88 Cryptographic Erase',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 17:28:44 UTC',
+          certId: 'CERT-R2-2026-88413',
+          payout: 125.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'ST8000NM0055-FAIL',
+          model: 'Seagate Exos',
+          capacity: '8TB',
+          type: 'HDD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 18,
+          smartDetails: 'SMART Reallocated Sectors (418) · Damaged Sectors Noted in Submission Form',
+          grade: 'Failed',
+          erasureMethod: 'SMART Reallocated Sectors — Physical Destruction Recommended',
+          erasureStatus: 'Awaiting Decision',
+          timestamp: '2026-11-24 17:41:19 UTC',
+          certId: 'HOLD-R2-2026-88414',
+          payout: 0.00,
+          failureReason: 'Enterprise HDD with 418 SMART reallocated/damaged sectors (flagged in REQ-2026-041); physical destruction recommended.',
+          disposition: 'Awaiting Decision',
+          decisionStatus: 'Pending'
+        },
+        {
+          serial: 'HUS726T6TALE6L4-FAIL',
+          model: 'HGST Ultrastar 7K6',
+          capacity: '6TB',
+          type: 'HDD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 14,
+          smartDetails: 'SMART Damaged Sectors & Seek Fault · Flagged in Submission Form',
+          grade: 'Failed',
+          erasureMethod: 'Quarantined — Physical Destruction Recommended',
+          erasureStatus: 'Awaiting Decision',
+          timestamp: '2026-11-24 17:58:02 UTC',
+          certId: 'HOLD-R2-2026-88415',
+          payout: 0.00,
+          failureReason: 'Enterprise HDD with unrecoverable SMART/damaged sectors (flagged in REQ-2026-041); quarantined for your decision.',
+          disposition: 'Awaiting Decision',
+          decisionStatus: 'Pending'
+        },
+        {
+          serial: 'MIC-7450PRO-3840',
+          model: 'Micron 7450 PRO U.3',
+          capacity: '3.84TB',
+          type: 'NVMe',
+          batchId: 'BATCH-2026-041',
+          healthPct: 97,
+          smartDetails: 'BitLocker Encryption Cleared · Passed Full Verification · 3% Wear Level',
+          grade: 'Grade A',
+          erasureMethod: 'IEEE 2883 / NIST SP 800-88 Cryptographic Erase',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 18:10:31 UTC',
+          certId: 'CERT-R2-2026-88416',
+          payout: 185.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'INT-SSDSC2KB019T8',
+          model: 'Intel D3-S4510 Enterprise',
+          capacity: '1.92TB',
+          type: 'SATA SSD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 99,
+          smartDetails: 'Retired Server Pull · Healthy · 0 Media Errors · Passed Post-Wipe Verify',
+          grade: 'Grade A',
+          erasureMethod: 'NIST SP 800-88 Purge',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 18:22:10 UTC',
+          certId: 'CERT-R2-2026-88417',
+          payout: 130.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'WD-WUH721816ALE6',
+          model: 'WD Ultrastar DC HC550',
+          capacity: '16TB',
+          type: 'HDD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 100,
+          smartDetails: 'Healthy · 0 Pending Sectors · Passed Full Surface Scan',
+          grade: 'Grade A',
+          erasureMethod: 'NIST SP 800-88 Purge',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 18:36:42 UTC',
+          certId: 'CERT-R2-2026-88418',
+          payout: 165.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'SAM-MZ7LH3T8HMLT',
+          model: 'Samsung PM883 Enterprise',
+          capacity: '3.84TB',
+          type: 'SATA SSD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 87,
+          smartDetails: 'Retired Server Pull · Good · 13% Wear Level · Passed Full Verification',
+          grade: 'Grade B',
+          erasureMethod: 'NIST SP 800-88 Purge',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 18:49:15 UTC',
+          certId: 'CERT-R2-2026-88419',
+          payout: 115.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'KIO-CM6R-3840NV',
+          model: 'Kioxia CM6-R Enterprise',
+          capacity: '3.84TB',
+          type: 'NVMe',
+          batchId: 'BATCH-2026-041',
+          healthPct: 95,
+          smartDetails: 'BitLocker Encryption Cleared · Healthy · 5% TBW Used · 0 Media Errors',
+          grade: 'Grade A',
+          erasureMethod: 'IEEE 2883 / NIST SP 800-88 Cryptographic Erase',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 19:02:04 UTC',
+          certId: 'CERT-R2-2026-88420',
+          payout: 190.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        },
+        {
+          serial: 'MIC-5300PRO-1920S',
+          model: 'Micron 5300 PRO Enterprise',
+          capacity: '1.92TB',
+          type: 'SATA SSD',
+          batchId: 'BATCH-2026-041',
+          healthPct: 89,
+          smartDetails: 'Retired Server Pull · Good · 11% Wear Level · Passed Post-Wipe Verify',
+          grade: 'Grade B',
+          erasureMethod: 'NIST SP 800-88 Purge',
+          erasureStatus: 'Erased & Verified',
+          timestamp: '2026-11-24 19:14:55 UTC',
+          certId: 'CERT-R2-2026-88421',
+          payout: 125.00,
+          failureReason: null,
+          disposition: 'Erased & Approved for Payout',
+          decisionStatus: null
+        }
+      ];
+
+      var batchInfo = {
+        'BATCH-2026-041': { date: '2026-11-22', paid: false }
+      };
+
+      var mySubmissions = [
+        {
+          id: 'REQ-2026-041',
+          batchId: 'BATCH-2026-041',
+          date: '2026-11-20',
+          name: 'Jennifer Leon',
+          company: 'UnixSurplus',
+          email: 'jennifer.leon@unixsurplus.com',
+          phone: '(408) 555-0194',
+          driveTypes: ['HDD', 'SATA SSD', 'NVMe'],
+          quantity: '10 drives',
+          notes: '2 enterprise HDDs may have SMART/damaged sectors; 3 NVMe drives are BitLocker encrypted; remaining SATA SSDs pulled from retired servers.',
+          fileName: 'unixsurplus_drive_manifest_nov2026.csv',
+          fileSize: '18 KB',
+          fileType: 'text/csv',
+          filePreviewText: 'Serial,Model,Type,Capacity,Notes\nWD-WMC4N098123,Western Digital Gold,HDD,4TB,Enterprise HDD Pull\nWD-WUH721816ALE6,WD Ultrastar DC HC550,HDD,16TB,Enterprise HDD Pull\nST8000NM0055-FAIL,Seagate Exos,HDD,8TB,Suspected SMART/damaged sectors\nHUS726T6TALE6L4-FAIL,HGST Ultrastar 7K6,HDD,6TB,Suspected SMART/damaged sectors\nINT-SSDSC2KB019T8,Intel D3-S4510 Enterprise,SATA SSD,1.92TB,Retired server pull\nSAM-MZ7LH3T8HMLT,Samsung PM883 Enterprise,SATA SSD,3.84TB,Retired server pull\nMIC-5300PRO-1920S,Micron 5300 PRO Enterprise,SATA SSD,1.92TB,Retired server pull\nSAM-S4EVNX0R441,Samsung PM9A3,NVMe,1.92TB,BitLocker encrypted\nMIC-7450PRO-3840,Micron 7450 PRO U.3,NVMe,3.84TB,BitLocker encrypted\nKIO-CM6R-3840NV,Kioxia CM6-R Enterprise,NVMe,3.84TB,BitLocker encrypted',
+          fileDataUrl: null,
+          status: 'Received & Tested'
+        }
+      ];
+
+      var VIEW_TITLES = {
+        overview: 'Overview',
+        serials: 'Serial Number Lookup',
+        batches: 'Batch Reports & Payouts',
+        failed: 'Failed Drives (Your Decision)',
+        submissions: 'My Submissions & Uploaded Files',
+        account: 'Account & Support'
+      };
+
+      /* -------------------------------------------------------
+         2. BULLETPROOF LOGIN & SIGN OUT
+      ------------------------------------------------------- */
+      function handleLogin(e) {
+        if (e && typeof e.preventDefault === 'function') {
+          e.preventDefault();
+        }
+        try {
+          var emailEl = document.getElementById('loginEmail');
+          var pwdEl = document.getElementById('loginPassword');
+          var errEl = document.getElementById('loginError');
+          var loginScreen = document.getElementById('loginScreen');
+          var portalApp = document.getElementById('portalApp');
+
+          var email = emailEl ? emailEl.value.trim() : '';
+          var pwd = pwdEl ? pwdEl.value.trim() : '';
+
+          if (!email || !pwd) {
+            if (errEl) {
+              errEl.textContent = 'Please enter both your email address and password.';
+              errEl.classList.add('show');
+            }
+            return false;
+          }
+
+          if (errEl) {
+            errEl.classList.remove('show');
+          }
+
+          if (loginScreen) loginScreen.style.display = 'none';
+          if (portalApp) portalApp.style.display = 'flex';
+
+          window.scrollTo(0, 0);
+          refreshAllViews();
+          showToast('Welcome back, ' + customerProfile.name + '!');
+        } catch (err) {
+          console.error('Login handler error:', err);
+        }
+        return false;
+      }
+
+      function handleSignOut() {
+        var dd = document.getElementById('profileDropdown');
+        if (dd) dd.classList.remove('open');
+        closeSidebar();
+
+        var loginScreen = document.getElementById('loginScreen');
+        var portalApp = document.getElementById('portalApp');
+        if (portalApp) portalApp.style.display = 'none';
+        if (loginScreen) loginScreen.style.display = 'flex';
+
+        window.scrollTo(0, 0);
+        showToast('Signed out of Customer Portal', 'info');
+      }
+
+      function toggleLoginPassword() {
+        var pwd = document.getElementById('loginPassword');
+        if (pwd) {
+          pwd.type = (pwd.type === 'password') ? 'text' : 'password';
+        }
+      }
+
+      function handleForgotPassword() {
+        var emailEl = document.getElementById('loginEmail');
+        var email = (emailEl && emailEl.value.trim()) ? emailEl.value.trim() : 'your email';
+        showToast('Password reset link sent to ' + email, 'info');
+      }
+
+      /* -------------------------------------------------------
+         3. NAVIGATION & SIDEBAR CONTROLS
+      ------------------------------------------------------- */
+      function switchView(viewKey) {
+        var sections = document.querySelectorAll('.view-section');
+        for (var i = 0; i < sections.length; i++) {
+          sections[i].classList.add('hidden');
+        }
+        var target = document.getElementById('view-' + viewKey);
+        if (target) target.classList.remove('hidden');
+
+        var navItems = document.querySelectorAll('.nav-item');
+        for (var j = 0; j < navItems.length; j++) {
+          navItems[j].classList.toggle('active', navItems[j].getAttribute('data-view') === viewKey);
+        }
+
+        var title = VIEW_TITLES[viewKey] || 'Overview';
+        var topTitle = document.getElementById('topbarTitle');
+        var crumb = document.getElementById('breadcrumbCurrent');
+        if (topTitle) topTitle.textContent = title;
+        if (crumb) crumb.textContent = title;
+
+        closeSidebar();
+        refreshAllViews();
+      }
+
+      function openSidebar() {
+        var sb = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if (sb) sb.classList.add('mobile-open');
+        if (ov) ov.classList.add('open');
+      }
+
+      function closeSidebar() {
+        var sb = document.getElementById('sidebar');
+        var ov = document.getElementById('sidebarOverlay');
+        if (sb) sb.classList.remove('mobile-open');
+        if (ov) ov.classList.remove('open');
+      }
+
+      function toggleProfileMenu() {
+        var dd = document.getElementById('profileDropdown');
+        if (dd) dd.classList.toggle('open');
+      }
+
+      /* -------------------------------------------------------
+         4. QUICK SERIAL SEARCH HANDLERS
+      ------------------------------------------------------- */
+      function handleTopSerialSearch(e) {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        var input = document.getElementById('topSerialInput');
+        var q = input ? input.value.trim() : '';
+        if (q) findAndOpenSerial(q);
+        return false;
+      }
+
+      function handleWidgetSerialLookup(e) {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        var input = document.getElementById('widgetSerialInput');
+        var q = input ? input.value.trim() : '';
+        if (!q) {
+          showToast('Please enter a serial number to look up.', 'info');
+          return false;
+        }
+        findAndOpenSerial(q);
+        return false;
+      }
+
+      function findAndOpenSerial(query) {
+        var upper = query.toUpperCase();
+        var exact = myDrives.find(function (d) { return d.serial.toUpperCase() === upper; });
+        if (exact) {
+          openDriveReportModal(exact.serial);
+          return;
+        }
+        var partial = myDrives.find(function (d) { return d.serial.toUpperCase().indexOf(upper) !== -1; });
+        if (partial) {
+          openDriveReportModal(partial.serial);
+          return;
+        }
+        var dsInput = document.getElementById('driveSearchInput');
+        var dgFilter = document.getElementById('driveGradeFilter');
+        var dtFilter = document.getElementById('driveTypeFilter');
+        if (dsInput) dsInput.value = query;
+        if (dgFilter) dgFilter.value = 'ALL';
+        if (dtFilter) dtFilter.value = 'ALL';
+        switchView('serials');
+        showToast('Filtered your drives for "' + query + '"', 'info');
+      }
+
+      /* -------------------------------------------------------
+         5. MASTER REFRESH & OVERVIEW RENDERING
+      ------------------------------------------------------- */
+      function refreshAllViews() {
+        renderKPIsAndAlerts();
+        renderSevenStepTracker();
+        renderOverviewRecentDrives();
+        renderDrivesTable();
+        renderBatchesTable();
+        renderFailedCards();
+        renderSubmissionsTable();
+      }
+
+      function renderKPIsAndAlerts() {
+        var total = myDrives.length;
+        var erased = myDrives.filter(function (d) { return d.grade !== 'Failed'; }).length;
+        var pendingFailed = myDrives.filter(function (d) { return d.grade === 'Failed' && d.decisionStatus === 'Pending'; });
+        var totalEarnings = myDrives.reduce(function (sum, d) { return sum + Number(d.payout || 0); }, 0);
+
+        setText('kpiTotalDrives', total);
+        setText('kpiErasedDrives', erased);
+        setText('kpiFailedAction', pendingFailed.length);
+        setText('kpiTotalEarnings', formatCurrency(totalEarnings));
+        setText('navBadgeDrives', total);
+
+        var failedBadge = document.getElementById('navBadgeFailed');
+        if (failedBadge) {
+          failedBadge.textContent = pendingFailed.length;
+          failedBadge.classList.toggle('hidden', pendingFailed.length === 0);
+        }
+
+        var banner = document.getElementById('failedAlertBanner');
+        var kpiTrend = document.getElementById('kpiFailedTrend');
+        if (pendingFailed.length > 0) {
+          if (banner) banner.classList.remove('hidden');
+          setText('failedAlertTitle', 'Action Needed: ' + pendingFailed.length + (pendingFailed.length === 1 ? ' Failed Drive' : ' Failed Drives') + ' Awaiting Your Decision');
+          if (kpiTrend) {
+            kpiTrend.textContent = 'Click to choose disposition →';
+            kpiTrend.className = 'kpi-trend alert';
+          }
+        } else {
+          if (banner) banner.classList.add('hidden');
+          if (kpiTrend) {
+            kpiTrend.textContent = 'All failed drives resolved ✓';
+            kpiTrend.className = 'kpi-trend positive';
+          }
+        }
+      }
+
+      function renderSevenStepTracker() {
+        var pendingIn041 = myDrives.filter(function (d) {
+          return d.batchId === 'BATCH-2026-041' && d.grade === 'Failed' && d.decisionStatus === 'Pending';
+        }).length;
+
+        var badge = document.getElementById('activeBatchStatusBadge');
+        if (badge) {
+          if (pendingIn041 === 0) {
+            badge.className = 'badge badge-grade-a';
+            badge.textContent = 'Step 7 of 7 • Finalizing Payout';
+          } else {
+            badge.className = 'badge badge-grade-b';
+            badge.textContent = 'Step 6 of 7 • Look up your drives';
+          }
+        }
+
+        var steps = [
+          { num: '01', title: 'Tell us what you have', state: 'completed', status: 'Completed' },
+          { num: '02', title: 'We get back to you', state: 'completed', status: 'Completed' },
+          { num: '03', title: 'Ship us your drives', state: 'completed', status: 'Received' },
+          { num: '04', title: 'We test and erase every drive', state: 'completed', status: 'Verified' },
+          { num: '05', title: 'Get your login', state: 'completed', status: 'Active' },
+          { num: '06', title: 'Look up your drives', state: pendingIn041 === 0 ? 'completed' : 'active', status: pendingIn041 === 0 ? 'Reviewed' : 'Active Now' },
+          { num: '07', title: 'Get your batch report and get paid', state: pendingIn041 === 0 ? 'active' : 'upcoming', status: pendingIn041 === 0 ? 'Processing' : 'Upcoming' }
+        ];
+
+        var tracker = document.getElementById('sevenStepTracker');
+        if (tracker) {
+          tracker.innerHTML = steps.map(function (st) {
+            var icon = st.state === 'completed' ? '✓' : (st.state === 'active' ? '•' : st.num);
+            return (
+              '<div class="step-node ' + st.state + '">' +
+                '<div class="step-node-top">' +
+                  '<span class="step-num-tag">STEP ' + st.num + '</span>' +
+                  '<span class="step-check-dot">' + icon + '</span>' +
+                '</div>' +
+                '<div class="step-node-title">' + escapeHtml(st.title) + '</div>' +
+                '<div class="step-node-status">' + escapeHtml(st.status) + '</div>' +
+              '</div>'
+            );
+          }).join('');
+        }
+      }
+
+      function renderOverviewRecentDrives() {
+        var tbody = document.getElementById('overviewRecentDrivesBody');
+        if (!tbody) return;
+        tbody.innerHTML = myDrives.slice(0, 5).map(function (d) {
+          return (
+            '<tr>' +
+              '<td><span class="mono-serial" onclick="openDriveReportModal(\'' + escapeJs(d.serial) + '\')">' + escapeHtml(d.serial) + '</span></td>' +
+              '<td><span class="cell-primary">' + escapeHtml(d.model) + '</span><span class="cell-sub">' + escapeHtml(d.type + ' · ' + d.capacity) + '</span></td>' +
+              '<td><span class="drive-chip">' + escapeHtml(d.batchId) + '</span></td>' +
+              '<td><strong>' + d.healthPct + '%</strong></td>' +
+              '<td>' + renderGradeBadge(d.grade) + '</td>' +
+              '<td><span class="cell-sub" style="color:var(--rsd-text); font-weight:700;">' + escapeHtml(d.erasureStatus) + '</span></td>' +
+              '<td><button type="button" class="btn-primary btn-sm" onclick="openDriveReportModal(\'' + escapeJs(d.serial) + '\')">View Proof</button></td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      /* -------------------------------------------------------
+         6. VIEW 2: SERIAL NUMBER LOOKUP (DATATABLE)
+      ------------------------------------------------------- */
+      function renderDrivesTable() {
+        var searchEl = document.getElementById('driveSearchInput');
+        var gradeEl = document.getElementById('driveGradeFilter');
+        var typeEl = document.getElementById('driveTypeFilter');
+        var tbody = document.getElementById('drivesTableBody');
+        if (!tbody) return;
+
+        var q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+        var gradeF = gradeEl ? gradeEl.value : 'ALL';
+        var typeF = typeEl ? typeEl.value : 'ALL';
+
+        var filtered = myDrives.filter(function (d) {
+          var mGrade = (gradeF === 'ALL' || d.grade === gradeF);
+          var mType = (typeF === 'ALL' || d.type === typeF);
+          var hay = (d.serial + ' ' + d.model + ' ' + d.capacity + ' ' + d.batchId + ' ' + d.erasureMethod).toLowerCase();
+          var mQ = !q || hay.indexOf(q) !== -1;
+          return mGrade && mType && mQ;
+        });
+
+        setText('driveCountLabel', 'Showing ' + filtered.length + ' of ' + myDrives.length + ' drives');
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No drives match your search or filter criteria.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(function (d) {
+          var barClass = d.healthPct >= 90 ? 'health-high' : (d.healthPct >= 65 ? 'health-mid' : 'health-low');
+          return (
+            '<tr>' +
+              '<td><span class="mono-serial" onclick="openDriveReportModal(\'' + escapeJs(d.serial) + '\')">' + escapeHtml(d.serial) + '</span></td>' +
+              '<td><span class="cell-primary">' + escapeHtml(d.model) + '</span><span class="cell-sub">' + escapeHtml(d.capacity) + '</span></td>' +
+              '<td><span class="drive-chip">' + escapeHtml(d.type) + '</span></td>' +
+              '<td><span class="cell-primary" style="font-size:12.5px;">' + escapeHtml(d.batchId) + '</span></td>' +
+              '<td class="health-cell">' +
+                '<div class="health-bar-track"><div class="health-bar-fill ' + barClass + '" style="width:' + d.healthPct + '%;"></div></div>' +
+                '<span class="cell-sub"><strong style="color:var(--rsd-navy);">' + d.healthPct + '%</strong> Health</span>' +
+              '</td>' +
+              '<td>' + renderGradeBadge(d.grade) + '</td>' +
+              '<td><span class="cell-primary" style="font-size:12.5px;">' + escapeHtml(d.erasureMethod) + '</span><span class="cell-sub">' + escapeHtml(d.erasureStatus) + '</span></td>' +
+              '<td><strong style="color:var(--rsd-navy);">' + formatCurrency(d.payout) + '</strong></td>' +
+              '<td><button type="button" class="btn-primary btn-sm" onclick="openDriveReportModal(\'' + escapeJs(d.serial) + '\')">View Proof</button></td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      function openDriveReportModal(serial) {
+        var d = myDrives.find(function (item) { return item.serial === serial; });
+        var body = document.getElementById('driveReportBody');
+        if (!d || !body) return;
+
+        var isFailed = d.grade === 'Failed';
+        var barClass = d.healthPct >= 90 ? 'health-high' : (d.healthPct >= 65 ? 'health-mid' : 'health-low');
+
+        body.innerHTML =
+          '<div class="cert-banner ' + (isFailed ? 'failed-banner' : '') + '">' +
+            '<div>' +
+              '<div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--rsd-muted);">Serialized Drive Report</div>' +
+              '<div class="cert-serial-big">' + escapeHtml(d.serial) + '</div>' +
+              '<div style="font-size:13px; color:var(--rsd-muted); font-weight:700;">' + escapeHtml(d.model + ' · ' + d.type + ' · ' + d.capacity) + '</div>' +
+            '</div>' +
+            '<div style="text-align:right;">' +
+              renderGradeBadge(d.grade) +
+              '<div style="font-size:11.5px; font-weight:800; color:var(--rsd-green); margin-top:6px;">Cert ID: ' + escapeHtml(d.certId) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="detail-grid-2">' +
+            '<div class="detail-box"><div class="detail-label">Customer &amp; Batch ID</div><div class="detail-value">' + escapeHtml(customerProfile.name + ' — ' + customerProfile.company) + ' (' + escapeHtml(d.batchId) + ')</div></div>' +
+            '<div class="detail-box">' +
+              '<div class="detail-label">SMART Health Score (' + d.healthPct + '%)</div>' +
+              '<div class="health-bar-track" style="margin:6px 0;"><div class="health-bar-fill ' + barClass + '" style="width:' + d.healthPct + '%;"></div></div>' +
+              '<div style="font-size:12.5px; color:var(--rsd-muted); font-weight:700;">' + escapeHtml(d.smartDetails) + '</div>' +
+            '</div>' +
+            '<div class="detail-box"><div class="detail-label">Erasure Standard</div><div class="detail-value">' + escapeHtml(d.erasureMethod) + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Verification Timestamp</div><div class="detail-value">' + escapeHtml(d.timestamp) + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Disposition / Outcome</div><div class="detail-value">' + escapeHtml(d.disposition) + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Buyback Payout Value</div><div class="detail-value">' + formatCurrency(d.payout) + '</div></div>' +
+          '</div>' +
+          (isFailed && d.decisionStatus === 'Pending'
+            ? '<div class="failed-diag-box" style="margin-bottom:14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">' +
+                '<span><strong>Action Required:</strong> Choose R2v3 Certified Shredding or Return Drive to Me.</span>' +
+                '<button type="button" class="btn-primary btn-sm" onclick="closeModal(\'driveReportModal\'); switchView(\'failed\');">Choose Disposition &rarr;</button>' +
+              '</div>'
+            : '') +
+          '<div class="detail-box" style="background:#081633; color:#CBD5E1; border-color:rgba(0,194,255,0.3);">' +
+            '<div class="detail-label" style="color:#8CC63F;">R2v3 Certified Chain-of-Custody Log</div>' +
+            '<div style="font-family:var(--font-mono); font-size:12px; line-height:1.6;">' +
+              'CERTIFICATE_ID: ' + escapeHtml(d.certId) + '\n' +
+              'FACILITY: RSD2 Certified Data Sanitization Center (Merced, CA)\n' +
+              'VERIFICATION: ' + (isFailed ? 'FAILED DIAGNOSTICS — TRACKED & HELD FOR CUSTOMER DISPOSITION' : '100% SANITIZED & POST-ERASURE VERIFIED') +
+            '</div>' +
+          '</div>' +
+          '<div class="cert-badges-row">' +
+            '<div class="cert-badge-item">' +
+              '<img src="https://rsd2.com/build/assets/isor2v30-Dml1lLkl.webp" alt="R2v3 Certified" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'inline-block\';" />' +
+              '<span class="cert-badge-fallback">R2v3 Certified</span>' +
+              '<span>R2v3 Certified</span>' +
+            '</div>' +
+            '<div class="cert-badge-item">' +
+              '<img src="https://rsd2.com/build/assets/nistsp80088certified-BJJ27kbE.webp" alt="NIST SP 800-88" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'inline-block\';" />' +
+              '<span class="cert-badge-fallback">NIST 800-88</span>' +
+              '<span>NIST SP 800-88</span>' +
+            '</div>' +
+            '<div class="cert-badge-item">' +
+              '<img src="https://rsd2.com/build/assets/ieee2883certified-DCc-ID8n.webp" alt="IEEE 2883" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'inline-block\';" />' +
+              '<span class="cert-badge-fallback">IEEE 2883</span>' +
+              '<span>IEEE 2883</span>' +
+            '</div>' +
+          '</div>';
+
+        openModal('driveReportModal');
+      }
+
+      function exportMyDrivesCSV() {
+        var headers = ['Serial Number', 'Model', 'Capacity', 'Drive Type', 'Batch ID', 'Health %', 'Grade', 'Erasure Standard', 'Erasure Status', 'Certificate ID', 'Timestamp', 'Disposition', 'Payout'];
+        var rows = myDrives.map(function (d) {
+          return [
+            d.serial, d.model, d.capacity, d.type, d.batchId,
+            d.healthPct + '%', d.grade, d.erasureMethod, d.erasureStatus,
+            d.certId, d.timestamp, d.disposition, '$' + Number(d.payout).toFixed(2)
+          ].map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(',');
+        });
+
+        var csv = headers.join(',') + '\n' + rows.join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'rsd2_unixsurplus_drives_report.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('Exported ' + myDrives.length + ' drive records to CSV');
+      }
+
+      /* -------------------------------------------------------
+         7. VIEW 3: BATCH REPORTS & PAYOUTS
+      ------------------------------------------------------- */
+      function computeBatches() {
+        return Object.keys(batchInfo).map(function (bid) {
+          var drives = myDrives.filter(function (d) { return d.batchId === bid; });
+          var gradeA = drives.filter(function (d) { return d.grade === 'Grade A'; }).length;
+          var gradeB = drives.filter(function (d) { return d.grade === 'Grade B'; }).length;
+          var failed = drives.filter(function (d) { return d.grade === 'Failed'; }).length;
+          var pendingFailed = drives.filter(function (d) { return d.grade === 'Failed' && d.decisionStatus === 'Pending'; }).length;
+          var payout = drives.reduce(function (sum, d) { return sum + Number(d.payout || 0); }, 0);
+
+          var statusLabel = batchInfo[bid].paid
+            ? 'Paid via ACH'
+            : (pendingFailed > 0 ? 'In Review / Awaiting Failed Decisions' : 'Ready for ACH Payout');
+
+          return {
+            batchId: bid,
+            date: batchInfo[bid].date,
+            drives: drives,
+            gradeA: gradeA,
+            gradeB: gradeB,
+            failed: failed,
+            payout: payout,
+            status: statusLabel
+          };
+        });
+      }
+
+      function renderBatchesTable() {
+        var tbody = document.getElementById('batchesTableBody');
+        if (!tbody) return;
+        var batches = computeBatches();
+        tbody.innerHTML = batches.map(function (b) {
+          var statusBadge = b.status === 'Paid via ACH'
+            ? '<span class="badge badge-grade-a">Paid via ACH</span>'
+            : (b.status === 'Ready for ACH Payout' ? '<span class="badge badge-info">Ready for ACH Payout</span>' : '<span class="badge badge-grade-b">In Review</span>');
+
+          return (
+            '<tr>' +
+              '<td><span class="mono-serial" onclick="openBatchReportModal(\'' + b.batchId + '\')">' + escapeHtml(b.batchId) + '</span></td>' +
+              '<td>' + escapeHtml(b.date) + '</td>' +
+              '<td><strong>' + b.drives.length + '</strong></td>' +
+              '<td><span class="badge badge-grade-a">' + b.gradeA + '</span></td>' +
+              '<td><span class="badge badge-grade-b">' + b.gradeB + '</span></td>' +
+              '<td><span class="badge badge-failed">' + b.failed + '</span></td>' +
+              '<td><strong style="color:var(--rsd-navy);">' + formatCurrency(b.payout) + '</strong></td>' +
+              '<td>' + statusBadge + '</td>' +
+              '<td><button type="button" class="btn-primary btn-sm" onclick="openBatchReportModal(\'' + b.batchId + '\')">View Batch Report</button></td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      function openBatchReportModal(batchId) {
+        var b = computeBatches().find(function (item) { return item.batchId === batchId; });
+        var body = document.getElementById('batchReportBody');
+        if (!b || !body) return;
+
+        setText('batchReportTitle', 'Batch Executive Report — ' + b.batchId);
+        setText('batchReportSub', customerProfile.name + ' — ' + customerProfile.company + ' • Received ' + b.date);
+
+        var rows = b.drives.map(function (d) {
+          return (
+            '<tr>' +
+              '<td><span class="mono-serial" onclick="closeModal(\'batchReportModal\'); openDriveReportModal(\'' + escapeJs(d.serial) + '\')">' + escapeHtml(d.serial) + '</span></td>' +
+              '<td>' + escapeHtml(d.model + ' ' + d.capacity) + '</td>' +
+              '<td>' + renderGradeBadge(d.grade) + '</td>' +
+              '<td>' + escapeHtml(d.erasureMethod) + '</td>' +
+              '<td>' + escapeHtml(d.disposition) + '</td>' +
+              '<td><strong>' + formatCurrency(d.payout) + '</strong></td>' +
+            '</tr>'
+          );
+        }).join('');
+
+        body.innerHTML =
+          '<div class="detail-grid-2">' +
+            '<div class="detail-box"><div class="detail-label">Batch Summary</div><div class="detail-value">Total: ' + b.drives.length + ' &nbsp;|&nbsp; Grade A: ' + b.gradeA + ' &nbsp;|&nbsp; Grade B: ' + b.gradeB + ' &nbsp;|&nbsp; Failed: ' + b.failed + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Total Payout &amp; Status</div><div class="detail-value">' + formatCurrency(b.payout) + ' (' + escapeHtml(b.status) + ')</div></div>' +
+          '</div>' +
+          '<div class="detail-box" style="margin-bottom:16px; background:#F3FAE8; border-color:rgba(140,198,63,0.5);">' +
+            '<div class="detail-label" style="color:var(--rsd-green);">Erasure Certification Statement</div>' +
+            '<div style="font-size:13px; color:var(--rsd-navy); font-weight:600;">RSD2 certifies that every passing drive in ' + escapeHtml(b.batchId) + ' has been tracked by serial number and securely sanitized in compliance with R2v3, NIST SP 800-88, and IEEE 2883 standards.</div>' +
+          '</div>' +
+          '<div class="table-responsive" style="margin-bottom:14px;">' +
+            '<table class="data-table compact">' +
+              '<thead><tr><th>Serial Number</th><th>Model</th><th>Grade</th><th>Erasure Standard</th><th>Disposition</th><th>Payout</th></tr></thead>' +
+              '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+          '</div>' +
+          '<div class="cert-badges-row">' +
+            '<div class="cert-badge-item"><img src="https://rsd2.com/build/assets/isor2v30-Dml1lLkl.webp" alt="R2v3" onerror="this.style.display=\'none\';" /><span>R2v3 Certified</span></div>' +
+            '<div class="cert-badge-item"><img src="https://rsd2.com/build/assets/nistsp80088certified-BJJ27kbE.webp" alt="NIST 800-88" onerror="this.style.display=\'none\';" /><span>NIST SP 800-88</span></div>' +
+            '<div class="cert-badge-item"><img src="https://rsd2.com/build/assets/ieee2883certified-DCc-ID8n.webp" alt="IEEE 2883" onerror="this.style.display=\'none\';" /><span>IEEE 2883</span></div>' +
+            '<div class="cert-badge-item"><img src="https://rsd2.com/build/assets/iso20150-BKNt7hjF.webp" alt="ISO 9001" onerror="this.style.display=\'none\';" /><span>ISO 9001:2015</span></div>' +
+          '</div>';
+
+        openModal('batchReportModal');
+      }
+
+      /* -------------------------------------------------------
+         8. VIEW 4: FAILED DRIVES (YOUR DECISION)
+      ------------------------------------------------------- */
+      function renderFailedCards() {
+        var container = document.getElementById('failedCardsContainer');
+        if (!container) return;
+
+        var failed = myDrives.filter(function (d) { return d.grade === 'Failed'; });
+        if (failed.length === 0) {
+          container.innerHTML = '<div class="panel-card" style="grid-column:1/-1;"><div class="empty-state">Great news! None of your drives failed testing.</div></div>';
+          return;
+        }
+
+        container.innerHTML = failed.map(function (d) {
+          var isPending = d.decisionStatus === 'Pending';
+          var radioName = 'decision_' + d.serial.replace(/[^a-zA-Z0-9]/g, '_');
+
+          var controlsHtml = isPending ? (
+            '<div class="decision-options">' +
+              '<label class="decision-radio-card">' +
+                '<input type="radio" name="' + radioName + '" value="R2v3 Certified Shredding (Free + Certificate of Destruction)" checked />' +
+                '<span>' +
+                  '<span class="decision-radio-title">R2v3 Certified Shredding (Free + Certificate of Destruction)</span>' +
+                  '<span class="decision-radio-sub">Physical destruction at our R2v3 facility with serialized Certificate of Destruction.</span>' +
+                '</span>' +
+              '</label>' +
+              '<label class="decision-radio-card">' +
+                '<input type="radio" name="' + radioName + '" value="Return Drive to Me (Shipped back with next statement)" />' +
+                '<span>' +
+                  '<span class="decision-radio-title">Return Drive to Me (Shipped back with next statement)</span>' +
+                  '<span class="decision-radio-sub">Securely packaged and returned to ' + escapeHtml(customerProfile.company) + '.</span>' +
+                '</span>' +
+              '</label>' +
+            '</div>' +
+            '<div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center;">' +
+              '<button type="button" class="btn-outline btn-sm" onclick="openDriveReportModal(\'' + escapeJs(d.serial) + '\')">View Diagnostic Report</button>' +
+              '<button type="button" class="btn-primary btn-sm" onclick="confirmFailedDisposition(\'' + escapeJs(d.serial) + '\', \'' + radioName + '\')">Save Decision</button>' +
+            '</div>'
+          ) : (
+            '<div class="decision-confirmed-box">' +
+              '<div>' +
+                '<strong style="color:var(--rsd-green); display:block;">✓ Decision Confirmed</strong>' +
+                '<span>' + escapeHtml(d.disposition) + '</span>' +
+              '</div>' +
+              '<button type="button" class="btn-outline btn-sm" onclick="reopenFailedDecision(\'' + escapeJs(d.serial) + '\')">Change Choice</button>' +
+            '</div>'
+          );
+
+          return (
+            '<article class="failed-card ' + (isPending ? 'pending' : '') + '">' +
+              '<div class="failed-card-head">' +
+                '<div>' +
+                  '<div class="mono-serial" onclick="openDriveReportModal(\'' + escapeJs(d.serial) + '\')">' + escapeHtml(d.serial) + '</div>' +
+                  '<div style="font-size:13.5px; font-weight:800; color:var(--rsd-navy); margin-top:2px;">' + escapeHtml(d.model + ' · ' + d.capacity) + '</div>' +
+                  '<div style="font-size:12px; color:var(--rsd-muted);">' + escapeHtml(d.batchId + ' · ' + d.type) + '</div>' +
+                '</div>' +
+                (isPending
+                  ? '<span class="badge badge-failed">Action Needed</span>'
+                  : '<span class="badge badge-grade-a">Resolved</span>') +
+              '</div>' +
+              '<div class="failed-diag-box">' +
+                '<strong>Diagnostic Failure (' + d.healthPct + '% Health):</strong> ' + escapeHtml(d.failureReason || d.smartDetails) +
+              '</div>' +
+              controlsHtml +
+            '</article>'
+          );
+        }).join('');
+      }
+
+      function confirmFailedDisposition(serial, radioName) {
+        var selected = document.querySelector('input[name="' + radioName + '"]:checked');
+        if (!selected) return;
+        var choice = selected.value;
+        var drive = myDrives.find(function (d) { return d.serial === serial; });
+        if (!drive) return;
+
+        drive.decisionStatus = 'Confirmed';
+        drive.disposition = choice;
+        drive.erasureStatus = choice.indexOf('Shredding') !== -1 ? 'Queued for R2v3 Shredding' : 'Scheduled for Return';
+        drive.erasureMethod = choice.indexOf('Shredding') !== -1 ? 'R2v3 Physical Destruction Authorized' : 'Customer Return Authorized';
+
+        refreshAllViews();
+        showToast('Decision saved for ' + serial + ': ' + choice);
+      }
+
+      function reopenFailedDecision(serial) {
+        var drive = myDrives.find(function (d) { return d.serial === serial; });
+        if (!drive) return;
+        drive.decisionStatus = 'Pending';
+        drive.disposition = 'Awaiting Decision';
+        drive.erasureStatus = 'Awaiting Decision';
+        drive.erasureMethod = 'Quarantined — Physical Destruction Recommended';
+        refreshAllViews();
+        showToast('Reopened decision for ' + serial, 'info');
+      }
+
+      /* -------------------------------------------------------
+         9. VIEW 5: MY SUBMISSIONS & UPLOADED FILES (DATATABLE)
+      ------------------------------------------------------- */
+      function renderSubmissionsTable() {
+        var tbody = document.getElementById('submissionsTableBody');
+        if (!tbody) return;
+
+        var searchEl = document.getElementById('subSearchInput');
+        var statusEl = document.getElementById('subStatusFilter');
+        var q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+        var statusF = statusEl ? statusEl.value : 'ALL';
+
+        var filtered = mySubmissions.filter(function (s) {
+          var matchStatus = (statusF === 'ALL' || s.status === statusF);
+          var hay = (s.id + ' ' + (s.batchId || '') + ' ' + s.name + ' ' + s.company + ' ' + s.email + ' ' + s.phone + ' ' + s.driveTypes.join(' ') + ' ' + s.quantity + ' ' + s.notes + ' ' + (s.fileName || '')).toLowerCase();
+          var matchQ = !q || hay.indexOf(q) !== -1;
+          return matchStatus && matchQ;
+        });
+
+        setText('subCountLabel', 'Showing ' + filtered.length + ' of ' + mySubmissions.length + (mySubmissions.length === 1 ? ' submission' : ' submissions'));
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No drive submissions match your search or filter criteria.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(function (s) {
+          var statusBadge = s.status === 'New Request'
+            ? '<span class="badge badge-lime">' + escapeHtml(s.status) + '</span>'
+            : '<span class="badge badge-grade-a">' + escapeHtml(s.status) + '</span>';
+
+          var fileControl = s.fileName
+            ? '<button type="button" class="file-pill" onclick="openFilePreviewModal(\'' + escapeJs(s.id) + '\')" title="Preview &amp; download ' + escapeHtml(s.fileName) + '">' +
+                '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" /></svg>' +
+                '<span class="file-pill-name">' + escapeHtml(s.fileName) + '</span>' +
+              '</button>'
+            : '<span class="cell-sub">No file attached</span>';
+
+          return (
+            '<tr>' +
+              '<td>' +
+                '<span class="mono-serial" onclick="openFilePreviewModal(\'' + escapeJs(s.id) + '\')">' + escapeHtml(s.id) + '</span>' +
+                '<span class="cell-sub">' + (s.batchId ? escapeHtml(s.batchId) + ' &bull; ' : '') + escapeHtml(s.date) + '</span>' +
+              '</td>' +
+              '<td><span class="cell-primary">' + escapeHtml(s.name) + '</span><span class="cell-sub">' + escapeHtml(s.company) + '</span></td>' +
+              '<td><span class="cell-primary" style="font-size:12.5px;">' + escapeHtml(s.email) + '</span><span class="cell-sub">' + escapeHtml(s.phone || 'Not provided') + '</span></td>' +
+              '<td><div class="drive-chips">' + s.driveTypes.map(function (t) { return '<span class="drive-chip">' + escapeHtml(t) + '</span>'; }).join('') + '</div></td>' +
+              '<td><strong style="color:var(--rsd-navy);">' + escapeHtml(s.quantity) + '</strong></td>' +
+              '<td style="max-width:260px;"><span class="cell-sub" style="color:var(--rsd-text);">' + escapeHtml(s.notes || 'None provided') + '</span></td>' +
+              '<td>' + fileControl + '</td>' +
+              '<td>' + statusBadge + '</td>' +
+              '<td><button type="button" class="btn-primary btn-sm" onclick="openFilePreviewModal(\'' + escapeJs(s.id) + '\')">View Details</button></td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      function dismissSubmissionConfirm() {
+        var banner = document.getElementById('submissionConfirmBanner');
+        if (banner) banner.classList.add('hidden');
+      }
+
+      function openFilePreviewModal(subId) {
+        var s = mySubmissions.find(function (item) { return item.id === subId; });
+        var body = document.getElementById('filePreviewBody');
+        if (!s || !body) return;
+
+        setText('filePreviewTitle', 'Submission ' + s.id + (s.batchId ? ' — ' + s.batchId : ''));
+        setText('filePreviewSub', s.name + ' (' + s.company + ') • Submitted ' + s.date);
+
+        var filePreviewHtml = '';
+        if (s.fileName) {
+          if (s.fileDataUrl && s.fileType && s.fileType.indexOf('image/') === 0) {
+            filePreviewHtml =
+              '<div class="detail-label" style="margin-bottom:8px;">Attached File: ' + escapeHtml(s.fileName) + ' (' + escapeHtml(s.fileSize) + ')</div>' +
+              '<img src="' + s.fileDataUrl + '" alt="Uploaded attachment" class="file-preview-img" />';
+          } else {
+            filePreviewHtml =
+              '<div class="detail-label" style="margin-bottom:8px;">Attached File: ' + escapeHtml(s.fileName) + ' (' + escapeHtml(s.fileSize) + ')</div>' +
+              '<div class="file-preview-box">' + escapeHtml(s.filePreviewText || 'Attachment ready for download.') + '</div>';
+          }
+        } else {
+          filePreviewHtml = '<div class="detail-box">No file was attached with this submission.</div>';
+        }
+
+        body.innerHTML =
+          '<div class="detail-grid-2">' +
+            '<div class="detail-box"><div class="detail-label">Name</div><div class="detail-value">' + escapeHtml(s.name) + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Company</div><div class="detail-value">' + escapeHtml(s.company) + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Email</div><div class="detail-value">' + escapeHtml(s.email) + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Phone</div><div class="detail-value">' + escapeHtml(s.phone || 'Not provided') + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Types of drives</div><div class="drive-chips" style="margin-top:4px;">' + s.driveTypes.map(function (t) { return '<span class="drive-chip">' + escapeHtml(t) + '</span>'; }).join('') + '</div></div>' +
+            '<div class="detail-box"><div class="detail-label">Approximate quantity</div><div class="detail-value">' + escapeHtml(s.quantity) + '</div></div>' +
+          '</div>' +
+          '<div class="detail-box" style="margin-bottom:16px;">' +
+            '<div class="detail-label">Anything we should know (damaged, encrypted, etc.)</div>' +
+            '<div class="detail-value" style="font-weight:600;">' + escapeHtml(s.notes || 'None provided') + '</div>' +
+          '</div>' +
+          filePreviewHtml;
+
+        var dlBtn = document.getElementById('downloadPreviewFileBtn');
+        if (dlBtn) {
+          if (s.fileName) {
+            dlBtn.classList.remove('hidden');
+            dlBtn.onclick = function () {
+              var a = document.createElement('a');
+              if (s.fileDataUrl) {
+                a.href = s.fileDataUrl;
+              } else {
+                var blob = new Blob([s.filePreviewText || ('File: ' + s.fileName)], { type: 'text/plain;charset=utf-8;' });
+                a.href = URL.createObjectURL(blob);
+              }
+              a.download = s.fileName;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              showToast('Downloaded ' + s.fileName);
+            };
+          } else {
+            dlBtn.classList.add('hidden');
+          }
+        }
+
+        openModal('filePreviewModal');
+      }
+
+      function openNewSubmissionModal() {
+        var form = document.getElementById('newSubmissionForm');
+        if (form) form.reset();
+        setValue('subName', customerProfile.name);
+        setValue('subCompany', customerProfile.company);
+        setValue('subEmail', customerProfile.email);
+        setValue('subPhone', customerProfile.phone);
+        var fn = document.getElementById('subFileName');
+        if (fn) {
+          fn.textContent = 'Click to choose file or drag & drop';
+          fn.style.color = 'var(--rsd-muted)';
+        }
+        openModal('newSubmissionModal');
+      }
+
+      function handleSubFileChange(input) {
+        var label = document.getElementById('subFileName');
+        if (label && input && input.files && input.files.length > 0) {
+          label.textContent = input.files[0].name;
+          label.style.color = 'var(--rsd-blue)';
+        }
+      }
+
+      function handleNewSubmission(e) {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        var name = getValue('subName') || customerProfile.name;
+        var company = getValue('subCompany') || customerProfile.company;
+        var email = getValue('subEmail') || customerProfile.email;
+        var phone = getValue('subPhone') || customerProfile.phone;
+        var qty = getValue('subQty');
+        var notes = getValue('subNotes');
+        var fileInput = document.getElementById('subFile');
+
+        var checked = document.querySelectorAll('input[name="subDriveTypes"]:checked');
+        var types = [];
+        for (var i = 0; i < checked.length; i++) types.push(checked[i].value);
+        if (types.length === 0) types = ['HDD'];
+
+        var firstName = name ? name.split(/\s+/)[0] : 'Jennifer';
+        var newId = 'REQ-2026-0' + (41 + mySubmissions.length);
+        var confirmMsg = 'Thanks, ' + firstName + '! We got your request and will contact you within one business day with shipping instructions. Questions in the meantime? Reach us at info@rsd2.com or 888-333-1330.';
+
+        var finalize = function (fileName, fileSize, fileType, previewText, dataUrl) {
+          mySubmissions.unshift({
+            id: newId,
+            batchId: '',
+            date: '2026-11-25',
+            name: name,
+            company: company,
+            email: email,
+            phone: phone,
+            driveTypes: types,
+            quantity: qty || 'Unspecified',
+            notes: notes,
+            fileName: fileName,
+            fileSize: fileSize,
+            fileType: fileType,
+            filePreviewText: previewText,
+            fileDataUrl: dataUrl,
+            status: 'New Request'
+          });
+          closeModal('newSubmissionModal');
+          switchView('submissions');
+
+          var banner = document.getElementById('submissionConfirmBanner');
+          setText('submissionConfirmText', confirmMsg);
+          if (banner) banner.classList.remove('hidden');
+          showToast(confirmMsg);
+        };
+
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+          var f = fileInput.files[0];
+          var sizeStr = f.size < 1024 ? f.size + ' B' : (f.size < 1048576 ? Math.round(f.size / 1024) + ' KB' : (f.size / 1048576).toFixed(1) + ' MB');
+          var reader = new FileReader();
+
+          if (f.type && f.type.indexOf('image/') === 0) {
+            reader.onload = function (ev) { finalize(f.name, sizeStr, f.type, 'Image attachment', ev.target.result); };
+            reader.readAsDataURL(f);
+          } else if ((f.type && f.type.indexOf('text/') === 0) || /\.(csv|txt|json|log|xml)$/i.test(f.name)) {
+            reader.onload = function (ev) { finalize(f.name, sizeStr, f.type || 'text/plain', String(ev.target.result || '').slice(0, 3500), null); };
+            reader.readAsText(f);
+          } else {
+            reader.onload = function (ev) {
+              finalize(f.name, sizeStr, f.type || 'application/octet-stream', '[Uploaded File]\nFilename: ' + f.name + '\nSize: ' + sizeStr + '\nReady for download.', ev.target.result);
+            };
+            reader.readAsDataURL(f);
+          }
+        } else {
+          finalize('', '', '', '', null);
+        }
+        return false;
+      }
+
+      /* -------------------------------------------------------
+         10. VIEW 6: ACCOUNT PREFERENCES & UTILITIES
+      ------------------------------------------------------- */
+      function handleSaveAccountPrefs(e) {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        customerProfile.name = getValue('profName') || customerProfile.name;
+        customerProfile.role = getValue('profRole') || customerProfile.role;
+        customerProfile.company = getValue('profCompany') || customerProfile.company;
+        customerProfile.email = getValue('profEmail') || customerProfile.email;
+        customerProfile.phone = getValue('profPhone') || customerProfile.phone;
+        customerProfile.payoutMethod = getValue('profPayout') || customerProfile.payoutMethod;
+
+        setText('sidebarUserName', customerProfile.name);
+        setText('sidebarUserCompany', customerProfile.company);
+        setText('topbarUserName', customerProfile.name);
+        setText('topbarUserCompany', customerProfile.company);
+        setText('ddUserName', customerProfile.name);
+        setText('ddUserEmail', customerProfile.email);
+        setText('ddUserRole', customerProfile.role);
+
+        showToast('Account & payout preferences saved (' + customerProfile.payoutMethod + ')');
+        return false;
+      }
+
+      function renderGradeBadge(grade) {
+        if (grade === 'Grade A') return '<span class="badge badge-grade-a">Grade A</span>';
+        if (grade === 'Grade B') return '<span class="badge badge-grade-b">Grade B</span>';
+        return '<span class="badge badge-failed">Failed</span>';
+      }
+
+      function formatCurrency(val) {
+        return '$' + Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function openModal(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.add('open');
+      }
+
+      function closeModal(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          el.classList.remove('open');
+          el.classList.remove('print-target');
+        }
+      }
+
+      function printModal(id) {
+        var all = document.querySelectorAll('.modal-backdrop');
+        for (var i = 0; i < all.length; i++) all[i].classList.remove('print-target');
+        var target = document.getElementById(id);
+        if (target) {
+          target.classList.add('print-target');
+          window.print();
+        }
+      }
+
+      function showToast(message, type) {
+        var stack = document.getElementById('toastStack');
+        if (!stack) return;
+        var toast = document.createElement('div');
+        toast.className = 'toast' + (type === 'info' ? ' toast-info' : '');
+        toast.textContent = message;
+        stack.appendChild(toast);
+
+        setTimeout(function () {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity 0.25s ease';
+          setTimeout(function () {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 260);
+        }, 3400);
+      }
+
+      function setText(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = String(val);
+      }
+
+      function setValue(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.value = String(val);
+      }
+
+      function getValue(id) {
+        var el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      }
+
+      function escapeHtml(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escapeJs(str) {
+        return String(str == null ? '' : str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      }
+
+      /* -------------------------------------------------------
+         11. SAFE INITIALIZATION & GLOBAL EXPORTS
+      ------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', function () {
+        // Enter key triggers handleLogin on login inputs
+        ['loginEmail', 'loginPassword'].forEach(function (id) {
+          var input = document.getElementById(id);
+          if (input) {
+            input.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter') {
+                handleLogin(e);
+              }
+            });
+          }
+        });
+
+        // Close profile dropdown on outside click
+        document.addEventListener('click', function (e) {
+          var wrap = document.querySelector('.profile-pill-wrap');
+          var dd = document.getElementById('profileDropdown');
+          if (wrap && dd && !wrap.contains(e.target)) {
+            dd.classList.remove('open');
+          }
+        });
+
+        // Drag-and-drop styling on submission file dropzone
+        var subDropZone = document.getElementById('subDropZone');
+        if (subDropZone) {
+          subDropZone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            subDropZone.classList.add('drag-over');
+          });
+          subDropZone.addEventListener('dragleave', function () {
+            subDropZone.classList.remove('drag-over');
+          });
+          subDropZone.addEventListener('drop', function () {
+            subDropZone.classList.remove('drag-over');
+          });
+        }
+
+        // Backdrop click & Escape key close modals
+        var modalIds = ['driveReportModal', 'batchReportModal', 'filePreviewModal', 'newSubmissionModal'];
+        modalIds.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('click', function (e) {
+              if (e.target === el) closeModal(id);
+            });
+          }
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            modalIds.forEach(closeModal);
+            closeSidebar();
+          }
+        });
+      });
+
+      // Expose handlers globally for inline HTML attributes
+      window.handleLogin = handleLogin;
+      window.handleSignOut = handleSignOut;
+      window.toggleLoginPassword = toggleLoginPassword;
+      window.handleForgotPassword = handleForgotPassword;
+      window.switchView = switchView;
+      window.openSidebar = openSidebar;
+      window.closeSidebar = closeSidebar;
+      window.toggleProfileMenu = toggleProfileMenu;
+      window.handleTopSerialSearch = handleTopSerialSearch;
+      window.handleWidgetSerialLookup = handleWidgetSerialLookup;
+      window.openDriveReportModal = openDriveReportModal;
+      window.renderDrivesTable = renderDrivesTable;
+      window.exportMyDrivesCSV = exportMyDrivesCSV;
+      window.openBatchReportModal = openBatchReportModal;
+      window.confirmFailedDisposition = confirmFailedDisposition;
+      window.reopenFailedDecision = reopenFailedDecision;
+      window.openFilePreviewModal = openFilePreviewModal;
+      window.renderSubmissionsTable = renderSubmissionsTable;
+      window.dismissSubmissionConfirm = dismissSubmissionConfirm;
+      window.openNewSubmissionModal = openNewSubmissionModal;
+      window.handleSubFileChange = handleSubFileChange;
+      window.handleNewSubmission = handleNewSubmission;
+      window.handleSaveAccountPrefs = handleSaveAccountPrefs;
+      window.openModal = openModal;
+      window.closeModal = closeModal;
+      window.printModal = printModal;
+    })();
+  </script>
+</body>
+</html>
